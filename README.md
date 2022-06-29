@@ -26,7 +26,7 @@ Delphi 10.4.2
 
 [Main Screen]
 <p align="center">
-  <img src="https://github.com/mbillig02/PingGUI/blob/master/ScreenShots/MainScreen.PNG">
+  <img src="https://github.com/mbillig02/APS/blob/master/ScreenShots/MainScreen.PNG">
 </p>
 
 ## License
