@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2022/06/16 16:34:15.000.524,C:\TMP\Delphi.Win32\APS\APS.dproj=C:\TMP\Delphi.Win32\APS\Template.dproj</Transaction>
+    <Transaction>2022/06/16 16:34:15.000.524,C:\TMP\Delphi.Win32\APS\Template.dproj=C:\TMP\Delphi.Win32\APS\APS.dproj</Transaction>
     <Transaction>2022/06/18 10:45:01.000.553,=C:\TMP\Delphi.Win32\APS\APS.todo</Transaction>
   </Transactions>
 </BorlandProject>

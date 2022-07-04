@@ -10,7 +10,7 @@ No installation required
 
 ## Usage
 
-APS
+Use APS to "GET" or "SET" applications position and size. Click and drag the target to select the application. Click get to retrieve the applications current position and size. Save in a database or adjust and use set to change the applications position and size.
 
 ## Built with
 

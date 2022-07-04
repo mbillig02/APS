@@ -110,6 +110,15 @@ type
     mmiRestartElevated: TMenuItem;
     N6: TMenuItem;
     aRestartElevated: TAction;
+    mmiScreenQuarters1: TMenuItem;
+    aCenterInScreen: TAction;
+    aCenterInScreen1: TMenuItem;
+    a75Percent: TAction;
+    mmi75Percent: TMenuItem;
+    mmiScreenPercents: TMenuItem;
+    aAllAppsToCSV: TAction;
+    mmiAllAppsToCSV: TMenuItem;
+    N7: TMenuItem;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -152,6 +161,9 @@ type
     procedure a95PercentExecute(Sender: TObject);
     procedure aFullMinus5Execute(Sender: TObject);
     procedure aRestartElevatedExecute(Sender: TObject);
+    procedure aCenterInScreenExecute(Sender: TObject);
+    procedure a75PercentExecute(Sender: TObject);
+    procedure aAllAppsToCSVExecute(Sender: TObject);
   private
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
     function MatchingFileName(ListOfEditsText: String): String;
@@ -184,11 +196,12 @@ implementation
 
 uses
   JclSecurity, ShellApi, ClipBrd, JclSysInfo, IniFiles,
-  SelectFileUnit, SetUnit, JclAnsiStrings, System.IOUtils;
+  SelectFileUnit, SetUnit, JclAnsiStrings, System.IOUtils, Winapi.PsAPI;
 
 var
   FInitialized: Boolean;
   FServiceListFileName: String;
+  AppLst: TStringList;
 
 {$R *.dfm}
 
@@ -207,7 +220,8 @@ end;
 procedure TMainForm.MostRecentFilesMenuClick(Sender: TObject;
   const Filename: String);
 begin
-  LoadListFile(FileName);
+//  LoadListFile(FileName);
+  FileNameEdit.Text := ExtractFileName(FileName);
 end;
 
 function TMainForm.GetServiceListFileName: String;
@@ -276,6 +290,14 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight div 2;
 end;
 
+procedure TMainForm.a75PercentExecute(Sender: TObject);
+begin
+  LeftSpinEdit.Value := Screen.WorkAreaWidth div 8;
+  TopSpinEdit.Value := Screen.WorkAreaHeight div 8;
+  WidthSpinEdit.Value := (Screen.WorkAreaWidth div 4) * 3;
+  HeightSpinEdit.Value := (Screen.WorkAreaHeight div 4) * 3;
+end;
+
 procedure TMainForm.a90PercentExecute(Sender: TObject);
 begin
   LeftSpinEdit.Value := Screen.WorkAreaWidth div 20;
@@ -290,6 +312,92 @@ begin
   TopSpinEdit.Value := Screen.WorkAreaHeight div 40;
   WidthSpinEdit.Value := Screen.WorkAreaWidth - (Screen.WorkAreaWidth div 20);
   HeightSpinEdit.Value := Screen.WorkAreaHeight - (Screen.WorkAreaHeight div 20);
+end;
+
+function GetPathFromPID(const PID: Cardinal): String;
+var
+  hProcess: THandle;
+  TmpPath: array[0 .. MAX_PATH - 1] of char;
+begin
+  hProcess := OpenProcess(PROCESS_QUERY_INFORMATION or PROCESS_VM_READ, False, PID);
+  if hProcess <> 0 then
+    try
+      if GetModuleFileNameEx(hProcess, 0, TmpPath, MAX_PATH) = 0 then RaiseLastOSError;
+      Result := TmpPath;
+    finally
+      CloseHandle(hProcess)
+    end
+  else
+    RaiseLastOSError;
+end;
+
+function EnumWindowsProc(AppHandle: HWND; lParam: LPARAM): BOOL; stdcall;
+Const
+  MAX_TEXT = MAX_PATH;
+var
+  AppTitleStr, AppClassStr: array[0 .. MAX_TEXT] of Char;
+  AppPathStr: String;
+  ProcId: Cardinal;
+  IsVisible, IsOwned, IsAppWindow: Boolean;
+  WindowRect: TRect;
+begin
+  Result := True;
+
+  IsVisible := IsWindowVisible(AppHandle);
+  if not IsVisible then exit;
+
+  IsOwned := GetWindow(AppHandle, GW_OWNER) <> 0;
+  if IsOwned then exit;
+
+  IsAppWindow := GetWindowLongPtr(AppHandle, GWL_STYLE) and WS_EX_APPWINDOW <> 0;
+  if not IsAppWindow then exit;
+
+  GetWindowText(AppHandle, AppTitleStr, MAX_TEXT);
+  GetClassName(AppHandle, AppClassStr, MAX_TEXT);
+  GetWindowThreadProcessID(AppHandle, ProcId);
+
+  try
+    AppPathStr := GetPathFromPID(ProcId);
+  except
+    AppPathStr := '???';
+  end;
+
+  if AppClassStr <> 'ApplicationFrameWindow' then
+  begin
+//    AppLst.Append(IntToStr(ProcId) + ' | ' + AppClassStr + ' | ' + AppTitleStr + ' | ' + AppPathStr);
+    GetWindowRect(AppHandle, WindowRect);
+    AppLst.Append('"' + String(AppTitleStr) + '",' +
+      IntToStr(WindowRect.Left) + ',' +
+      IntToStr(WindowRect.Top) + ',' +
+      IntToStr(WindowRect.Width) + ',' +
+      IntToStr(WindowRect.Height) + ',');
+  end;
+end;
+
+procedure TMainForm.aAllAppsToCSVExecute(Sender: TObject);
+begin
+  AppLst := TStringList.Create;
+  AppLst.Clear;
+  AppLst.Append('WindowName,Left,Top,Width,Height,Notes');
+  EnumWindows(@EnumWindowsProc, 0);
+  AppLst.SaveToFile(LstDir + 'AllApps.csv');
+  AppLst.Free;
+end;
+
+procedure TMainForm.aCenterInScreenExecute(Sender: TObject);
+var
+  SelectedAppHandle: hwnd;
+  WindowRect: TRect;
+begin
+  SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameEdit.Text));
+  if SelectedAppHandle <> 0 then
+  begin
+    GetWindowRect(SelectedAppHandle, WindowRect);
+    LeftSpinEdit.Value := (Screen.WorkAreaWidth div 2) - (WindowRect.Width div 2);
+    TopSpinEdit.Value :=  (Screen.WorkAreaHeight div 2) - (WindowRect.Height div 2);
+    WidthSpinEdit.Value := WindowRect.Width;
+    HeightSpinEdit.Value := WindowRect.Height;
+  end;
 end;
 
 procedure TMainForm.aCloseDBExecute(Sender: TObject);
@@ -348,13 +456,13 @@ end;
 
 procedure TMainForm.aGetAppPosAndSizeExecute(Sender: TObject);
 var
-  NotepadHandle: hwnd;
+  SelectedAppHandle: hwnd;
   WindowRect: TRect;
 begin
-  NotepadHandle := FindWindow(nil, PWideChar(WindowNameEdit.Text));
-  if NotepadHandle <> 0 then
+  SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameEdit.Text));
+  if SelectedAppHandle <> 0 then
   begin
-    GetWindowRect(NotepadHandle, WindowRect);
+    GetWindowRect(SelectedAppHandle, WindowRect);
     LeftSpinEdit.Value := WindowRect.Left;
     TopSpinEdit.Value := WindowRect.Top;
     WidthSpinEdit.Value := WindowRect.Width;
@@ -452,6 +560,7 @@ begin
     begin
       TmpStr := Copy(SelectFileDlg.FileName, 5);
       FileNameEdit.Text := ExtractFileName(TmpStr);
+      MostRecentFiles.AddFile(TmpStr);
     end;
     if Pos('[E] ', SelectFileDlg.FileName) = 1 then
     begin
@@ -486,12 +595,12 @@ end;
 
 procedure TMainForm.aSetAppPosAndSizeExecute(Sender: TObject);
 var
-  NotepadHandle: hwnd;
+  SelectedAppHandle: hwnd;
 begin
-  NotepadHandle := FindWindow(nil, PWideChar(WindowNameEdit.Text));
-  if NotepadHandle <> 0 then
+  SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameEdit.Text));
+  if SelectedAppHandle <> 0 then
   begin
-    SetWindowPos(NotepadHandle, HWND_TOP,
+    SetWindowPos(SelectedAppHandle, HWND_TOP,
       LeftSpinEdit.Value,
       TopSpinEdit.Value,
       WidthSpinEdit.Value,

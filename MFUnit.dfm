@@ -17,16 +17,6 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object InfoMemo: TMemo
-    Left = 79
-    Top = 20
-    Width = 185
-    Height = 89
-    Lines.Strings = (
-      'InfoMemo')
-    TabOrder = 2
-    Visible = False
-  end
   object BottomPanel: TPanel
     Left = 0
     Top = 21
@@ -34,6 +24,16 @@ object MainForm: TMainForm
     Height = 164
     Align = alClient
     TabOrder = 0
+    object InfoMemo: TMemo
+      Left = 8
+      Top = 20
+      Width = 529
+      Height = 133
+      Lines.Strings = (
+        'InfoMemo')
+      TabOrder = 2
+      Visible = False
+    end
     object LeftPanel: TPanel
       Left = 1
       Top = 1
@@ -51,7 +51,7 @@ object MainForm: TMainForm
         Caption = 'Height:'
       end
       object LeftLbl: TLabel
-        Left = 6
+        Left = 7
         Top = 1
         Width = 23
         Height = 13
@@ -335,29 +335,47 @@ object MainForm: TMainForm
       object mmiFullScreen: TMenuItem
         Action = aFullScreen
       end
+      object aCenterInScreen1: TMenuItem
+        Action = aCenterInScreen
+      end
       object mmiFullMinus5: TMenuItem
         Action = aFullMinus5
-      end
-      object mmi95Percent: TMenuItem
-        Action = a95Percent
-      end
-      object mmi90Percent: TMenuItem
-        Action = a90Percent
       end
       object N5: TMenuItem
         Caption = '-'
       end
-      object mmi1of4: TMenuItem
-        Action = a1of4
+      object mmiScreenPercents: TMenuItem
+        Caption = 'Screen Percents'
+        object mmi95Percent: TMenuItem
+          Action = a95Percent
+        end
+        object mmi90Percent: TMenuItem
+          Action = a90Percent
+        end
+        object mmi75Percent: TMenuItem
+          Action = a75Percent
+        end
       end
-      object mmi2of4: TMenuItem
-        Action = a2of4
+      object mmiScreenQuarters1: TMenuItem
+        Caption = 'Screen Quarters'
+        object mmi1of4: TMenuItem
+          Action = a1of4
+        end
+        object mmi2of4: TMenuItem
+          Action = a2of4
+        end
+        object mmi3of4: TMenuItem
+          Action = a3of4
+        end
+        object mmi4of4: TMenuItem
+          Action = a4of4
+        end
       end
-      object mmi3of4: TMenuItem
-        Action = a3of4
+      object N7: TMenuItem
+        Caption = '-'
       end
-      object mmi4of4: TMenuItem
-        Action = a4of4
+      object mmiAllAppsToCSV: TMenuItem
+        Action = aAllAppsToCSV
       end
     end
     object mmiSettings: TMenuItem
@@ -469,22 +487,22 @@ object MainForm: TMainForm
     end
     object a1of4: TAction
       Category = 'AppPosAndSize'
-      Caption = '1/4'
+      Caption = '1/4 (Left/Top)'
       OnExecute = a1of4Execute
     end
     object a2of4: TAction
       Category = 'AppPosAndSize'
-      Caption = '2/4'
+      Caption = '2/4 (Right/Top)'
       OnExecute = a2of4Execute
     end
     object a3of4: TAction
       Category = 'AppPosAndSize'
-      Caption = '3/4'
+      Caption = '3/4 (Left/Bottom)'
       OnExecute = a3of4Execute
     end
     object a4of4: TAction
       Category = 'AppPosAndSize'
-      Caption = '4/4'
+      Caption = '4/4 (Right/Bottom)'
       OnExecute = a4of4Execute
     end
     object a90Percent: TAction
@@ -506,6 +524,21 @@ object MainForm: TMainForm
       Caption = 'Restart Elevated'
       Enabled = False
       OnExecute = aRestartElevatedExecute
+    end
+    object aCenterInScreen: TAction
+      Category = 'AppPosAndSize'
+      Caption = 'Center In Screen'
+      OnExecute = aCenterInScreenExecute
+    end
+    object a75Percent: TAction
+      Category = 'AppPosAndSize'
+      Caption = '75 %'
+      OnExecute = a75PercentExecute
+    end
+    object aAllAppsToCSV: TAction
+      Category = 'AppPosAndSize'
+      Caption = 'All Apps To CSV'
+      OnExecute = aAllAppsToCSVExecute
     end
   end
   object MostRecentFiles: TMostRecentFiles
