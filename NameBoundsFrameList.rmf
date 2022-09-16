@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rxm:regexmagic xmlns:rxm="http://www.regexmagic.com/regexmagic2C.xsd" version="2.12">
+	<formula>
+		<samples>
+			<sample name="FrameList.txt">
+				<text format="win1252">VG90YWwgQ29tbWFuZGVyICg0NTUsOTAsMTY1MCwxMjAwKQ0KTm90ZXBhZCsrICgxMjg2LDUwLDExMDAsNzAwKQ0K</text>
+				<field>
+					<pos start="0" stop="15"/>
+				</field>
+				<field>
+					<pos start="15" stop="17"/>
+				</field>
+				<field>
+					<pos start="17" stop="20"/>
+				</field>
+				<field>
+					<pos start="20" stop="21"/>
+				</field>
+				<field>
+					<pos start="21" stop="23"/>
+				</field>
+				<field>
+					<pos start="23" stop="24"/>
+				</field>
+				<field>
+					<pos start="24" stop="28"/>
+				</field>
+				<field>
+					<pos start="28" stop="29"/>
+				</field>
+				<field>
+					<pos start="29" stop="33"/>
+				</field>
+				<field>
+					<pos start="33" stop="34"/>
+				</field>
+			</sample>
+		</samples>
+		<match start="line" stop="line" validation="strict">
+			<field maxrepeat="unlimited" quantifier="lazy">
+				<charsbasic lettersupper="1" letterslower="1" digits="1" whitespace="1" punctuation="1"/>
+			</field>
+			<field>
+				<literal>
+					<literal> (</literal>
+				</literal>
+			</field>
+			<field>
+				<integer>
+					<format>dec</format>
+					<ranges>455</ranges>
+				</integer>
+			</field>
+			<field>
+				<literal>
+					<literal>,</literal>
+				</literal>
+			</field>
+			<field>
+				<integer>
+					<format>dec</format>
+					<ranges>90</ranges>
+				</integer>
+			</field>
+			<field>
+				<literal>
+					<literal>,</literal>
+				</literal>
+			</field>
+			<field>
+				<integer>
+					<format>dec</format>
+					<ranges>1650</ranges>
+				</integer>
+			</field>
+			<field>
+				<literal>
+					<literal>,</literal>
+				</literal>
+			</field>
+			<field>
+				<integer>
+					<format>dec</format>
+					<ranges>1200</ranges>
+				</integer>
+			</field>
+			<field>
+				<literal>
+					<literal>)</literal>
+				</literal>
+			</field>
+		</match>
+		<action>
+			<captures>
+				<capture name="Left" field="2"/>
+				<capture name="Top" field="4"/>
+				<capture name="Width" field="6"/>
+				<capture name="Height" field="8"/>
+				<capture name="Name"/>
+			</captures>
+		</action>
+	</formula>
+</rxm:regexmagic>

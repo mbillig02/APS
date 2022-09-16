@@ -15,76 +15,219 @@ object SettingsForm: TSettingsForm
   OnActivate = FormActivate
   PixelsPerInch = 96
   TextHeight = 13
-  object JvSettingsTreeView: TJvSettingsTreeView
-    Left = 0
-    Top = 0
-    Width = 97
-    Height = 326
-    PageDefault = 0
-    PageList = JvPageList
-    Align = alLeft
-    Indent = 19
-    TabOrder = 0
-    Items.NodeData = {
-      030300000034000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000020000
-      0000000000010B4400690072006500630074006F007200690065007300260000
-      00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000100000000000000010446
-      006F0072006D002A000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000000000
-      0000000000000001065300740079006C0065007300}
-    Items.Links = {03000000020000000100000000000000}
-  end
   object JvPageList: TJvPageList
-    Left = 97
+    Left = 75
     Top = 0
-    Width = 337
+    Width = 359
     Height = 326
-    ActivePage = JvStandardPageForm
+    ActivePage = JvStandardPageAdmin
     PropagateEnable = False
     Align = alClient
-    object JvStandardPageStyles: TJvStandardPage
+    object JvStandardPageAdmin: TJvStandardPage
       Left = 0
       Top = 0
-      Width = 337
+      Width = 359
       Height = 326
-      Caption = ' '
-      object StylesListBox: TListBox
-        Left = 24
-        Top = 24
-        Width = 121
-        Height = 193
-        ItemHeight = 13
+      Caption = 'JvStandardPageAdmin'
+      object PublicDesktopGroupBox: TGroupBox
+        Left = 0
+        Top = 0
+        Width = 359
+        Height = 35
+        Hint = 'C:\Users\Public\Desktop\APS.lnk'
+        Align = alTop
+        Caption = 'Public Desktop'
         TabOrder = 0
-        OnClick = StylesListBoxClick
+        object PublicDesktopRunAsCheckBox: TCheckBox
+          Left = 6
+          Top = 15
+          Width = 97
+          Height = 17
+          Caption = 'Run as admin'
+          TabOrder = 0
+          OnClick = RunAsAdminCheckBoxClick
+        end
       end
-      object StylesMMCheckBox: TCheckBox
-        Left = 24
-        Top = 232
-        Width = 121
-        Height = 17
-        Caption = 'Styles on MainMenu'
+      object PublicStartMenuGroupBox: TGroupBox
+        Left = 0
+        Top = 35
+        Width = 359
+        Height = 35
+        Hint = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\APS\APS.lnk'
+        Align = alTop
+        Caption = 'Public Start Menu'
         TabOrder = 1
-        OnClick = StylesMMCheckBoxClick
+        object PublicStartMenuRunAsCheckBox: TCheckBox
+          Left = 6
+          Top = 15
+          Width = 97
+          Height = 17
+          Caption = 'Run as admin'
+          TabOrder = 0
+          OnClick = RunAsAdminCheckBoxClick
+        end
       end
-      object EnableStylesSettingsCheckBox: TCheckBox
-        Left = 24
-        Top = 255
-        Width = 145
-        Height = 17
-        Hint = 'Causes access violation'
-        Caption = 'Enable Styles on Settings'
+      object UserTaskbarGroupBox: TGroupBox
+        Left = 0
+        Top = 105
+        Width = 359
+        Height = 35
+        Hint = 
+          'C:\Users\user\AppData\Roaming\Microsoft\Internet Explorer\Quick ' +
+          'Launch\User Pinned\TaskBar\APS.lnk'
+        Align = alTop
+        Caption = 'User Taskbar'
         TabOrder = 2
-        OnClick = EnableStylesSettingsCheckBoxClick
+        object UserTaskbarRunAsCheckBox: TCheckBox
+          Left = 6
+          Top = 15
+          Width = 97
+          Height = 17
+          Caption = 'Run as admin'
+          TabOrder = 0
+          OnClick = RunAsAdminCheckBoxClick
+        end
+      end
+      object UserDesktopGroupBox: TGroupBox
+        Left = 0
+        Top = 70
+        Width = 359
+        Height = 35
+        Hint = 
+          'C:\Users\user\AppData\Roaming\Microsoft\Internet Explorer\Quick ' +
+          'Launch\User Pinned\TaskBar\APS.lnk'
+        Align = alTop
+        Caption = 'User Desktop'
+        TabOrder = 3
+        object UserDesktopRunAsCheckBox: TCheckBox
+          Left = 6
+          Top = 15
+          Width = 97
+          Height = 17
+          Caption = 'Run as admin'
+          TabOrder = 0
+          OnClick = RunAsAdminCheckBoxClick
+        end
+      end
+    end
+    object JvStandardPageDirectories: TJvStandardPage
+      Left = 0
+      Top = 0
+      Width = 359
+      Height = 326
+      Caption = 'JvStandardPageDirectories'
+      object DtaDirGrpBox: TGroupBox
+        Left = 0
+        Top = 0
+        Width = 359
+        Height = 65
+        Align = alTop
+        Caption = 'DtaDir'
+        TabOrder = 0
+        object DtaDirLbl: TLabel
+          Left = 8
+          Top = 16
+          Width = 43
+          Height = 13
+          Caption = 'DtaDirLbl'
+        end
+        object DtaDirCopyToClpBrdBtn: TButton
+          Left = 7
+          Top = 34
+          Width = 104
+          Height = 25
+          Caption = 'Copy to Clipboard'
+          TabOrder = 0
+          OnClick = DtaDirCopyToClpBrdBtnClick
+        end
+        object DtaDirOpenInExplorerBtn: TButton
+          Left = 117
+          Top = 34
+          Width = 104
+          Height = 25
+          Caption = 'Open in Explorer'
+          TabOrder = 1
+          OnClick = DtaDirOpenInExplorerBtnClick
+        end
+      end
+      object TmpDirGrpBox: TGroupBox
+        Left = 0
+        Top = 130
+        Width = 359
+        Height = 65
+        Align = alTop
+        Caption = 'TmpDir'
+        TabOrder = 1
+        object TmpDirLbl: TLabel
+          Left = 8
+          Top = 16
+          Width = 46
+          Height = 13
+          Caption = 'TmpDirLbl'
+        end
+        object TmpDirCopyToClpBrdBtn: TButton
+          Left = 7
+          Top = 34
+          Width = 104
+          Height = 25
+          Caption = 'Copy to Clipboard'
+          TabOrder = 0
+          OnClick = TmpDirCopyToClpBrdBtnClick
+        end
+        object TmpDirOpenInExplorerBtn: TButton
+          Left = 117
+          Top = 34
+          Width = 104
+          Height = 25
+          Caption = 'Open in Explorer'
+          TabOrder = 1
+          OnClick = TmpDirOpenInExplorerBtnClick
+        end
+      end
+      object LstDirGrpBox: TGroupBox
+        Left = 0
+        Top = 65
+        Width = 359
+        Height = 65
+        Align = alTop
+        Caption = 'LstDir'
+        TabOrder = 2
+        object LstDirLbl: TLabel
+          Left = 8
+          Top = 16
+          Width = 40
+          Height = 13
+          Caption = 'LstDirLbl'
+        end
+        object LstDirCopyToClpBrdBtn: TButton
+          Left = 7
+          Top = 34
+          Width = 104
+          Height = 25
+          Caption = 'Copy to Clipboard'
+          TabOrder = 0
+          OnClick = LstDirCopyToClpBrdBtnClick
+        end
+        object LstDirOpenInExplorerBtn: TButton
+          Left = 117
+          Top = 34
+          Width = 104
+          Height = 25
+          Caption = 'Open in Explorer'
+          TabOrder = 1
+          OnClick = LstDirOpenInExplorerBtnClick
+        end
       end
     end
     object JvStandardPageForm: TJvStandardPage
       Left = 0
       Top = 0
-      Width = 337
+      Width = 359
       Height = 326
       Caption = ' '
       object SetDefaultScreenBtn: TButton
         Left = 17
-        Top = 24
+        Top = 17
         Width = 121
         Height = 25
         Caption = 'Set Default Screen'
@@ -93,7 +236,7 @@ object SettingsForm: TSettingsForm
       end
       object SetAlomstFullScreenBtn: TButton
         Left = 17
-        Top = 64
+        Top = 73
         Width = 121
         Height = 25
         Caption = 'Set Alomst Full Screen'
@@ -209,115 +352,107 @@ object SettingsForm: TSettingsForm
         TabOrder = 9
         OnClick = StayOnTopCheckBoxClick
       end
+      object SetDefaultPosBtn: TButton
+        Left = 17
+        Top = 45
+        Width = 55
+        Height = 25
+        Caption = 'Pos'
+        TabOrder = 10
+        OnClick = SetDefaultPosBtnClick
+      end
+      object SetDefaultSizeBtn: TButton
+        Left = 83
+        Top = 45
+        Width = 55
+        Height = 25
+        Caption = 'Size'
+        TabOrder = 11
+        OnClick = SetDefaultSizeBtnClick
+      end
     end
-    object JvStandardPageDirectories: TJvStandardPage
+    object JvStandardPageStyles: TJvStandardPage
       Left = 0
       Top = 0
-      Width = 337
+      Width = 359
       Height = 326
-      Caption = 'JvStandardPageDirectories'
-      object DtaDirGrpBox: TGroupBox
-        Left = 0
-        Top = 0
-        Width = 337
-        Height = 65
-        Align = alTop
-        Caption = 'DtaDir'
+      Caption = ' '
+      object StylesListBox: TListBox
+        Left = 24
+        Top = 24
+        Width = 121
+        Height = 193
+        ItemHeight = 13
         TabOrder = 0
-        object DtaDirLbl: TLabel
-          Left = 8
-          Top = 16
-          Width = 43
-          Height = 13
-          Caption = 'DtaDirLbl'
-        end
-        object DtaDirCopyToClpBrdBtn: TButton
-          Left = 7
-          Top = 34
-          Width = 104
-          Height = 25
-          Caption = 'Copy to Clipboard'
-          TabOrder = 0
-          OnClick = DtaDirCopyToClpBrdBtnClick
-        end
-        object DtaDirOpenInExplorerBtn: TButton
-          Left = 117
-          Top = 34
-          Width = 104
-          Height = 25
-          Caption = 'Open in Explorer'
-          TabOrder = 1
-          OnClick = DtaDirOpenInExplorerBtnClick
-        end
+        OnClick = StylesListBoxClick
       end
-      object TmpDirGrpBox: TGroupBox
-        Left = 0
-        Top = 130
-        Width = 337
-        Height = 65
-        Align = alTop
-        Caption = 'TmpDir'
+      object StylesMMCheckBox: TCheckBox
+        Left = 24
+        Top = 232
+        Width = 121
+        Height = 17
+        Caption = 'Styles on MainMenu'
         TabOrder = 1
-        object TmpDirLbl: TLabel
-          Left = 8
-          Top = 16
-          Width = 46
-          Height = 13
-          Caption = 'TmpDirLbl'
-        end
-        object TmpDirCopyToClpBrdBtn: TButton
-          Left = 7
-          Top = 34
-          Width = 104
-          Height = 25
-          Caption = 'Copy to Clipboard'
-          TabOrder = 0
-          OnClick = TmpDirCopyToClpBrdBtnClick
-        end
-        object TmpDirOpenInExplorerBtn: TButton
-          Left = 117
-          Top = 34
-          Width = 104
-          Height = 25
-          Caption = 'Open in Explorer'
-          TabOrder = 1
-          OnClick = TmpDirOpenInExplorerBtnClick
-        end
+        OnClick = StylesMMCheckBoxClick
       end
-      object LstDirGrpBox: TGroupBox
-        Left = 0
-        Top = 65
-        Width = 337
-        Height = 65
-        Align = alTop
-        Caption = 'LstDir'
+      object EnableStylesSettingsCheckBox: TCheckBox
+        Left = 24
+        Top = 255
+        Width = 145
+        Height = 17
+        Hint = 'Causes access violation'
+        Caption = 'Enable Styles on Settings'
         TabOrder = 2
-        object LstDirLbl: TLabel
-          Left = 8
-          Top = 16
-          Width = 40
-          Height = 13
-          Caption = 'LstDirLbl'
-        end
-        object LstDirCopyToClpBrdBtn: TButton
-          Left = 7
-          Top = 34
-          Width = 104
-          Height = 25
-          Caption = 'Copy to Clipboard'
-          TabOrder = 0
-          OnContextPopup = LstDirCopyToClpBrdBtnContextPopup
-        end
-        object LstDirOpenInExplorerBtn: TButton
-          Left = 117
-          Top = 34
-          Width = 104
-          Height = 25
-          Caption = 'Open in Explorer'
-          TabOrder = 1
-          OnClick = LstDirOpenInExplorerBtnClick
-        end
+        OnClick = EnableStylesSettingsCheckBoxClick
       end
+    end
+  end
+  object SetLeftPanel: TPanel
+    Left = 0
+    Top = 0
+    Width = 75
+    Height = 326
+    Align = alLeft
+    TabOrder = 1
+    object AdminBtn: TButton
+      Left = 1
+      Top = 1
+      Width = 73
+      Height = 25
+      Align = alTop
+      Caption = 'Admin'
+      TabOrder = 0
+      OnClick = AdminBtnClick
+    end
+    object DirBtn: TButton
+      Left = 1
+      Top = 26
+      Width = 73
+      Height = 25
+      Align = alTop
+      Caption = 'Directories'
+      TabOrder = 1
+      OnClick = DirBtnClick
+    end
+    object FormBtn: TButton
+      Left = 1
+      Top = 51
+      Width = 73
+      Height = 25
+      Align = alTop
+      Caption = 'Form'
+      TabOrder = 2
+      OnClick = FormBtnClick
+    end
+    object StylesBtn: TButton
+      Left = 1
+      Top = 76
+      Width = 73
+      Height = 25
+      Align = alTop
+      Caption = 'Styles'
+      TabOrder = 3
+      OnClick = StylesBtnClick
     end
   end
   object DtaDirJvBalloonHint: TJvBalloonHint

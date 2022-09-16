@@ -4,16 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, ExtCtrls, VirtualTrees,
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls, VirtualTrees, System.Types,
   JvComponentBase, JvBalloonHint, UtlUnit, Menus, About, ActnList,
   System.Actions, System.UITypes, Themes, MruUnit, comp.reticle,
   Vcl.Samples.Spin, Data.DB, Vcl.Grids, Vcl.DBGrids, JvDataSource, JvCsvData,
-  Vcl.DBCtrls;
-
-const
-  PgmName = 'APS';
-  PgmIni = PgmName + '.INI';
-  DtaDirLoc = 'PublicDocs'; // ['MyDocs', 'PublicDocs', 'AppDataRoaming', 'AppDataLocal', 'AppDataCommon']
+  Vcl.DBCtrls, JvPageList, JvExControls, InitAppUnit, ABFrameUnit, GSFrameUnit;
 
 type
   TTopLeftHeightWidth = record
@@ -21,6 +16,15 @@ type
     Left: Integer;
     Height: Integer;
     Width: Integer;
+  end;
+  PTreeData = ^TTreeData;
+  TTreeData = record
+    FFileDescription: String[80];
+    FLeft: Integer;
+    FTop: Integer;
+    FWidth: Integer;
+    FHeight: Integer;
+    AppHandle: UINT_PTR;
   end;
   TMainForm = class(TForm)
     aCopyDtaDirPathToClipboard: TAction;
@@ -119,6 +123,61 @@ type
     aAllAppsToCSV: TAction;
     mmiAllAppsToCSV: TMenuItem;
     N7: TMenuItem;
+    JvPageList: TJvPageList;
+    JvStandardPage1: TJvStandardPage;
+    aPage1: TAction;
+    aPage2: TAction;
+    JvStandardPage2: TJvStandardPage;
+    aListProcs: TAction;
+    P2Memo: TMemo;
+    Button3: TButton;
+    P2LeftPanel: TPanel;
+    mmiAutoStartElevated: TMenuItem;
+    mmiPages: TMenuItem;
+    mmiPage1: TMenuItem;
+    mmiPage2: TMenuItem;
+    aTest: TAction;
+    Button1: TButton;
+    VST: TVirtualStringTree;
+    P2RightPanel: TPanel;
+    Splitter1: TSplitter;
+    VSTPopupMenu: TPopupMenu;
+    pmiGet: TMenuItem;
+    JvStandardPage3: TJvStandardPage;
+    ApplicationBoundsFrame: TApplicationBoundsFrame;
+    aPage3: TAction;
+    mmiPage3: TMenuItem;
+    FrameScrollBox: TScrollBox;
+    aLoadFrameList: TAction;
+    aSaveFrameList: TAction;
+    aClearGetSetFrames: TAction;
+    aAddFrame: TAction;
+    GSFramePopupMenu: TPopupMenu;
+    pmiGSRemoveFrame: TMenuItem;
+    aSaveAsFrameList: TAction;
+    aSelectFrameList: TAction;
+    mmiFrames: TMenuItem;
+    mmiAddFrame: TMenuItem;
+    pmiGSClearFrames: TMenuItem;
+    mmiClearGetSetFrames: TMenuItem;
+    N8: TMenuItem;
+    mmiSaveAsFrameList: TMenuItem;
+    mmiSelectFrameListFile: TMenuItem;
+    N9: TMenuItem;
+    mmiSaveFrames: TMenuItem;
+    mmiLoadFrames: TMenuItem;
+    ConfirmSetGroupBox: TGroupBox;
+    BeforeCheckBox: TCheckBox;
+    AfterCheckBox: TCheckBox;
+    FrameScrollPopupMenu: TPopupMenu;
+    pmiFSAddFrame: TMenuItem;
+    pmiGSAddFrame: TMenuItem;
+    pmiFSClearFrames: TMenuItem;
+    pmiFSSelectFile: TMenuItem;
+    pmiFSSaveAsFrameList: TMenuItem;
+    N10: TMenuItem;
+    N11: TMenuItem;
+    Panel1: TPanel;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -164,6 +223,25 @@ type
     procedure aCenterInScreenExecute(Sender: TObject);
     procedure a75PercentExecute(Sender: TObject);
     procedure aAllAppsToCSVExecute(Sender: TObject);
+    procedure aPage1Execute(Sender: TObject);
+    procedure aPage2Execute(Sender: TObject);
+    procedure aListProcsExecute(Sender: TObject);
+    procedure aTestExecute(Sender: TObject);
+    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure VSTMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure pmiGetClick(Sender: TObject);
+    procedure aPage3Execute(Sender: TObject);
+    procedure aLoadFrameListExecute(Sender: TObject);
+    procedure aSaveFrameListExecute(Sender: TObject);
+    procedure aClearGetSetFramesExecute(Sender: TObject);
+    procedure aAddFrameExecute(Sender: TObject);
+    procedure pmiGSRemoveFrameClick(Sender: TObject);
+    procedure aSaveAsFrameListExecute(Sender: TObject);
+    procedure aSelectFrameListExecute(Sender: TObject);
+    procedure AfterCheckBoxClick(Sender: TObject);
+    procedure BeforeCheckBoxClick(Sender: TObject);
   private
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
     function MatchingFileName(ListOfEditsText: String): String;
@@ -181,6 +259,14 @@ type
     procedure RestoreMainFormPositionAndSize;
     procedure SaveSettings;
     procedure UnCheckStyles(Menu: TMenuItem);
+    procedure LoadVST(lclAppLst: TStringList);
+    function StrLstToTreeData(lclAppStr: String): TTreeData;
+    function GetDataByColumn(Data: TTreeData; Column: Integer): String;
+    procedure ClearGetSetFrames;
+    function ExtractValue(SearchString, SubjectString: String): String;
+    procedure LoadFrameList(TempFileName: String);
+    procedure SaveFramesToFile(TempFileName: string);
+    procedure AddGetSetFrame;
     { Private declarations }
   public
     { Public declarations }
@@ -188,22 +274,25 @@ type
 
 var
   MainForm: TMainForm;
-  ExeDir, DtaDir, TmpDir, LstDir, PgmUpdDir, StyleStr: String;
+  ExeDir, TmpDir, LstDir, PgmUpdDir, StyleStr: String;
   MainFormDefaultRect, MainFormRect: TTopLeftHeightWidth;
   SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB: Boolean;
 
 implementation
 
 uses
-  JclSecurity, ShellApi, ClipBrd, JclSysInfo, IniFiles,
-  SelectFileUnit, SetUnit, JclAnsiStrings, System.IOUtils, Winapi.PsAPI;
+  JclSecurity, ShellApi, ClipBrd, JclSysInfo, IniFiles, JclFileUtils,
+  SelectFileUnit, SetUnit, JclAnsiStrings, System.IOUtils, Winapi.PsAPI,
+  System.RegularExpressions, System.RegularExpressionsCore;
 
 var
-  FInitialized: Boolean;
+  FInitialized, AutoElevateDoNotSave: Boolean;
   FServiceListFileName: String;
-  AppLst: TStringList;
+  AppLst, AppLst2, AppLst3: TStringList;
+  GetSetFrameA: array of TGetSetFrame;
 
 {$R *.dfm}
+//{$R administrator.res}
 
 procedure TMainForm.mmiVersionAboutClick(Sender: TObject);
 var
@@ -220,8 +309,8 @@ end;
 procedure TMainForm.MostRecentFilesMenuClick(Sender: TObject;
   const Filename: String);
 begin
-//  LoadListFile(FileName);
-  FileNameEdit.Text := ExtractFileName(FileName);
+  if ExtractFileExt(Filename) = '.csv' then FileNameEdit.Text := ExtractFileName(FileName);
+  if ExtractFileExt(Filename) = '.txt' then LoadFrameList(FileName);
 end;
 
 function TMainForm.GetServiceListFileName: String;
@@ -336,7 +425,7 @@ Const
   MAX_TEXT = MAX_PATH;
 var
   AppTitleStr, AppClassStr: array[0 .. MAX_TEXT] of Char;
-  AppPathStr: String;
+  AppPathStr, AppFDStr: String;
   ProcId: Cardinal;
   IsVisible, IsOwned, IsAppWindow: Boolean;
   WindowRect: TRect;
@@ -358,20 +447,52 @@ begin
 
   try
     AppPathStr := GetPathFromPID(ProcId);
+
+    if VersionResourceAvailable(AppPathStr) then
+      with TJclFileVersionInfo.Create(AppPathStr) do
+      try
+        AppFDStr := FileDescription;
+      finally
+        Free;
+      end;
+
   except
     AppPathStr := '???';
+    AppFDStr := '---';
   end;
 
   if AppClassStr <> 'ApplicationFrameWindow' then
   begin
-//    AppLst.Append(IntToStr(ProcId) + ' | ' + AppClassStr + ' | ' + AppTitleStr + ' | ' + AppPathStr);
-    GetWindowRect(AppHandle, WindowRect);
-    AppLst.Append('"' + String(AppTitleStr) + '",' +
-      IntToStr(WindowRect.Left) + ',' +
-      IntToStr(WindowRect.Top) + ',' +
-      IntToStr(WindowRect.Width) + ',' +
-      IntToStr(WindowRect.Height) + ',');
+    if Assigned(AppLst2) then
+    begin
+      AppLst2.Append(IntToStr(ProcId) + ' | ' + AppClassStr + ' | ' + AppTitleStr + ' | ' + AppPathStr);
+    end;
+    if Assigned(AppLst) then
+    begin
+      GetWindowRect(AppHandle, WindowRect);
+      AppLst.Append('"' + String(AppTitleStr) + '",' +
+        IntToStr(WindowRect.Left) + ',' +
+        IntToStr(WindowRect.Top) + ',' +
+        IntToStr(WindowRect.Width) + ',' +
+        IntToStr(WindowRect.Height) + ',');
+    end;
+    if Assigned(AppLst3) then
+    begin
+      GetWindowRect(AppHandle, WindowRect);
+      AppLst3.Append(String(AppFDStr) + '|' +
+        IntToStr(WindowRect.Left) + '|' +
+        IntToStr(WindowRect.Top) + '|' +
+        IntToStr(WindowRect.Width) + '|' +
+        IntToStr(WindowRect.Height) + '|' +
+        IntToStr(AppHandle) + '|' +
+        String(AppTitleStr));
+    end;
   end;
+end;
+
+procedure TMainForm.aAddFrameExecute(Sender: TObject);
+begin
+  AddGetSetFrame;
 end;
 
 procedure TMainForm.aAllAppsToCSVExecute(Sender: TObject);
@@ -398,6 +519,11 @@ begin
     WidthSpinEdit.Value := WindowRect.Width;
     HeightSpinEdit.Value := WindowRect.Height;
   end;
+end;
+
+procedure TMainForm.aClearGetSetFramesExecute(Sender: TObject);
+begin
+  ClearGetSetFrames;
 end;
 
 procedure TMainForm.aCloseDBExecute(Sender: TObject);
@@ -436,6 +562,12 @@ begin
   TopSpinEdit.Value := JvCsvDataSet.FieldByName('Top').AsInteger;
   WidthSpinEdit.Value := JvCsvDataSet.FieldByName('Width').AsInteger;
   HeightSpinEdit.Value := JvCsvDataSet.FieldByName('Height').AsInteger;
+end;
+
+procedure TMainForm.AfterCheckBoxClick(Sender: TObject);
+begin
+  ABConfirmAfter := AfterCheckBox.Checked;
+  ConfirmAfter := AfterCheckBox.Checked;
 end;
 
 procedure TMainForm.aFullMinus5Execute(Sender: TObject);
@@ -509,6 +641,21 @@ begin
   OpenDirectory(TmpDir);
 end;
 
+procedure TMainForm.aPage1Execute(Sender: TObject);
+begin
+  JvPageList.ActivePage := JvStandardPage1;
+end;
+
+procedure TMainForm.aPage2Execute(Sender: TObject);
+begin
+  JvPageList.ActivePage := JvStandardPage2;
+end;
+
+procedure TMainForm.aPage3Execute(Sender: TObject);
+begin
+  JvPageList.ActivePage := JvStandardPage3;
+end;
+
 procedure TMainForm.aRestartElevatedExecute(Sender: TObject);
 begin
   ShellExecute(Handle, 'runas', PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
@@ -534,6 +681,111 @@ begin
   FindClose(SR);
 end;
 
+function TMainForm.ExtractValue(SearchString, SubjectString: String): String;
+var
+  UsMatch: TMatch;
+  RegExPattern: String;
+begin
+  Result := '';
+  try
+    // Bounds - Name
+    // First check for Bounds & Name
+    RegExPattern := '^\((?<Left>-?\d+),(?<Top>-?\d+),(?<Width>[0-9]+),(?<Height>[0-9]+)\) (?<Name>[]\w\t !"#$%&''()*+,./:;<=>?@[\\`{|}~^-]+)$';
+  	UsMatch := TRegEx.Match(SubjectString, RegExPattern, [roMultiLine]);
+    if UsMatch.Success then
+    begin
+      // if Bounds & Name
+    	Result := TRegEx.Match(SubjectString, '^\((?<Left>-?\d+),(?<Top>-?\d+),(?<Width>[0-9]+),(?<Height>[0-9]+)\) (?<Name>[]\w\t !"#$%&''()*+,./:;<=>?@[\\`{|}~^-]+)$', [roMultiLine]).Groups[SearchString].Value;
+    end
+    else
+    begin
+      // if Bounds with no Name
+    	Result := TRegEx.Match(SubjectString, '^\((?<Left>-?\d+),(?<Top>-?\d+),(?<Width>[0-9]+),(?<Height>[0-9]+)\) (?:(?<Name>[]\w\t !"#$%&''()*+,./:;<=>?@[\\`{|}~^-]+)|[]\w\t !"#$%&''()*+,./:;<=>?@[\\`{|}~^-]?)+$', [roMultiLine]).Groups[SearchString].Value;
+    end;
+  except
+  // Syntax error in the regular expression
+  end;
+end;
+
+procedure TMainForm.LoadFrameList(TempFileName: String);
+var
+  FrmStrLst: TStringList;
+  i: Integer;
+begin
+  if FileExists(TempFileName) then
+  begin
+    ClearGetSetFrames;
+    FrmStrLst := TStringList.Create;
+    FrmStrLst.LoadFromFile(TempFileName);
+    for i := 0 to FrmStrLst.Count - 1 do
+    begin
+      AddGetSetFrame;
+      GetSetFrameA[High(GetSetFrameA)].NameEdit.Text := ExtractValue('Name', FrmStrLst[i]);
+      GetSetFrameA[High(GetSetFrameA)].LeftSpinEdit.Value := StrToInt(ExtractValue('Left', FrmStrLst[i]));
+      GetSetFrameA[High(GetSetFrameA)].TopSpinEdit.Value := StrToInt(ExtractValue('Top', FrmStrLst[i]));
+      GetSetFrameA[High(GetSetFrameA)].WidthSpinEdit.Value := StrToInt(ExtractValue('Width', FrmStrLst[i]));
+      GetSetFrameA[High(GetSetFrameA)].HeightSpinEdit.Value := StrToInt(ExtractValue('Height', FrmStrLst[i]));
+    end;
+    FrmStrLst.Free;
+  end;
+end;
+
+procedure TMainForm.SaveFramesToFile(TempFileName: String);
+var
+  FrmStrLst: TStringList;
+  i: Integer;
+  RectStr: String;
+begin
+  FrmStrLst := TStringList.Create;
+  for i := 0 to High(GetSetFrameA) do
+  begin
+    RectStr := '(' + IntToStr(GetSetFrameA[i].LeftSpinEdit.Value) + ',' + IntToStr(GetSetFrameA[i].TopSpinEdit.Value) + ',' + IntToStr(GetSetFrameA[i].WidthSpinEdit.Value) + ',' + IntToStr(GetSetFrameA[i].HeightSpinEdit.Value) + ') ';
+    FrmStrLst.Append(RectStr + GetSetFrameA[i].NameEdit.Text);
+  end;
+  FrmStrLst.SaveToFile(TempFileName);
+  FrmStrLst.Free;
+end;
+
+procedure TMainForm.AddGetSetFrame;
+var
+  TmpDPI: Integer;
+begin
+  TmpDPI := 96;
+  SetLength(GetSetFrameA, Length(GetSetFrameA) + 1);
+  GetSetFrameA[High(GetSetFrameA)] := TGetSetFrame.Create(FrameScrollBox);
+  with GetSetFrameA[High(GetSetFrameA)] do
+  begin
+    Parent := FrameScrollBox;
+    Top := High(GetSetFrameA) * Height + 5;
+    Align := alTop;
+    Name := 'GetSetFrame_' + IntToStr(High(GetSetFrameA));
+    Tag := High(GetSetFrameA);
+    PopupMenu := GSFramePopupMenu;
+
+    // Get
+    GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Left :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Left, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Top :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Top, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Width :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Width, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Height :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.Height, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSGetWindowReticle.ScaleForPPI(TmpDPI);
+
+    // Set
+    GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Left :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Left, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Top :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Top, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Width :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Width, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Height :=
+      MulDiv(GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.Height, Screen.PixelsPerInch, TmpDPI);
+    GetSetFrameA[High(GetSetFrameA)].GSSetWindowReticle.ScaleForPPI(TmpDPI);
+  end;
+end;
+
 procedure TMainForm.LoadListFile(FileName: String);
 begin
   if FileExists(FileName) then
@@ -541,6 +793,35 @@ begin
     InfoMemo.Lines.LoadFromFile(FileName);
     MostRecentFiles.AddFile(FileName);
   end;
+end;
+
+procedure TMainForm.aSelectFrameListExecute(Sender: TObject);
+var
+  TmpStr: String;
+  TmpBool: Boolean;
+begin
+  TmpBool := SettingsForm.StayOnTopCheckBox.Checked;
+  SettingsForm.StayOnTopCheckBox.Checked := False;
+  SetStayOnTopStatus;
+  SelectFileDlg.SelectFileFrame.SetFileListPath(LstDir);
+  SelectFileDlg.SelectFileFrame.SetFileListMask('*.txt');
+  SelectFileDlg.SelectFileFrame.LoadFileList;
+  if SelectFileDlg.ShowModal = mrOk then
+  begin
+    if Pos('[L] ', SelectFileDlg.FileName) = 1 then
+    begin
+      TmpStr := Copy(SelectFileDlg.FileName, 5);
+      LoadFrameList(TmpStr);
+      MostRecentFiles.AddFile(TmpStr);
+    end;
+    if Pos('[E] ', SelectFileDlg.FileName) = 1 then
+    begin
+      TmpStr := Copy(SelectFileDlg.FileName, 5);
+      ShellExecute(Handle, 'open', PChar(TmpStr), nil, nil, SW_SHOWNORMAL); // Open file in default text editor
+    end;
+  end;
+  SettingsForm.StayOnTopCheckBox.Checked := TmpBool;
+  SetStayOnTopStatus;
 end;
 
 procedure TMainForm.aSelectListFileExecute(Sender: TObject);
@@ -572,11 +853,53 @@ begin
   SetStayOnTopStatus;
 end;
 
+procedure TMainForm.aListProcsExecute(Sender: TObject);
+begin
+  AppLst2 := TStringList.Create;
+  AppLst2.Clear;
+  EnumWindows(@EnumWindowsProc, 0);
+  P2Memo.Text := AppLst2.Text;
+  AppLst2.Free;
+end;
+
+procedure TMainForm.aLoadFrameListExecute(Sender: TObject);
+begin
+  LoadFrameList(LstDir + 'FrameList.txt');
+end;
+
 procedure TMainForm.aLoadListFileExecute(Sender: TObject);
 begin
   OpenDialog.InitialDir := LstDir;
   OpenDialog.Filter := 'CSV Files (*.CSV)|*.CSV|All Files (*.*)|*.*';
   if OpenDialog.Execute then FileNameEdit.Text := ExtractFileName(OpenDialog.FileName);
+end;
+
+procedure TMainForm.aSaveAsFrameListExecute(Sender: TObject);
+var
+  TempFileName: String;
+  OkToSave: Boolean;
+begin
+  SaveDialog.InitialDir := LstDir;
+  SaveDialog.Filter := 'Text Files (*.TXT)|*.TXT|All Files (*.*)|*.*';
+  if SaveDialog.Execute then
+  begin
+    TempFileName := SaveDialog.FileName;
+    if ExtractFileExt(TempFileName) = '' then TempFileName := TempFileName + '.txt';
+    OkToSave := True;
+    if FileExists(TempFileName) then
+    begin
+      OkToSave := (MessageDlg('Okay to overwrite: ' + ExtractFileName(TempFileName) + '?', mtConfirmation, [mbYes,mbNo], 0, mbNo) = mrYes);
+    end;
+    if OkToSave then
+    begin
+      SaveFramesToFile(TempFileName);
+    end;
+  end;
+end;
+
+procedure TMainForm.aSaveFrameListExecute(Sender: TObject);
+begin
+  SaveFramesToFile(LstDir + 'FrameList.txt');
 end;
 
 procedure TMainForm.aSaveListFileExecute(Sender: TObject);
@@ -622,7 +945,77 @@ begin
   SettingsForm.Top := MainForm.Top; SettingsForm.Left := MainForm.Left + MainForm.Width;
   if SettingsForm.MainFormSettingsListBox.Count > 0 then
     SettingsForm.MainFormSettingsListBox.ItemIndex := 0;
+  SettingsForm.UpdateSettingsAdminStatus;
   SettingsForm.Show;
+end;
+
+function TMainForm.StrLstToTreeData(lclAppStr: String): TTreeData;
+var
+  Words: TStringList;
+begin
+  Words := TStringList.Create;
+  Parse(lclAppStr, '|', Words);
+
+  if Words[0] = '---' then
+  begin
+    Result.FFileDescription := Words[6];
+  end
+  else
+  begin
+    Result.FFileDescription := Words[0];
+  end;
+  Result.FLeft := StrToInt(Words[1]);
+  Result.FTop := StrToInt(Words[2]);
+  Result.FWidth := StrToInt(Words[3]);
+  Result.FHeight := StrToInt(Words[4]);
+  Result.AppHandle := StrToInt(Words[5]);
+
+  Words.Free;
+end;
+
+procedure TMainForm.LoadVST(lclAppLst: TStringList);
+var
+  Data: PTreeData;
+  Node: PVirtualNode;
+  i: Integer;
+begin
+  VST.Header.SortColumn := NoColumn;
+  VST.NodeDataSize := SizeOf(TTreeData);
+  VST.BeginUpdate;
+  VST.Clear;
+  for i := 0 to lclAppLst.Count - 1 do
+  begin
+    Node := VST.AddChild(nil);
+    Data := VST.GetNodeData(Node);
+    VST.ValidateNode(Node, False);
+    Data^ := StrLstToTreeData(lclAppLst[i]);
+  end;
+  VST.EndUpdate;
+end;
+
+procedure TMainForm.aTestExecute(Sender: TObject);
+var
+  Filename: String;
+  FileVersionInfo: TJclFileVersionInfo;
+begin
+{
+  P2Memo.Clear;
+//  Filename := 'c:\TMP\Delphi.Win32\APS\APS.EXE';
+  Filename := 'c:\HOLD\totalcmd\TOTALCMD.EXE';
+  FileVersionInfo := TJclFileVersionInfo.Create(FileName);
+  try
+    P2Memo.Lines.Append(FileVersionInfo.FileDescription);
+  finally
+    FileVersionInfo.Free;
+  end;
+}
+  AppLst3 := TStringList.Create;
+  AppLst3.Clear;
+  EnumWindows(@EnumWindowsProc, 0);
+  P2Memo.Text := AppLst3.Text;
+  LoadVST(AppLst3);
+  AppLst3.Free;
+
 end;
 
 procedure TMainForm.aToDBExecute(Sender: TObject);
@@ -637,6 +1030,12 @@ begin
   JvCsvDataSet.Post;
 end;
 
+procedure TMainForm.BeforeCheckBoxClick(Sender: TObject);
+begin
+  ABConfirmBefore := BeforeCheckBox.Checked;
+  ConfirmBefore := BeforeCheckBox.Checked;
+end;
+
 procedure TMainForm.OpenDirectory(DirectoryName: String);
 begin
   ShellExecute(Application.Handle,
@@ -646,6 +1045,63 @@ begin
     nil,
     SW_NORMAL     //see other possibilities by ctrl+clicking on SW_NORMAL
     );
+end;
+
+procedure TMainForm.pmiGetClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+  SelectedAppHandle: hwnd;
+  WindowRect: TRect;
+begin
+  P2Memo.Clear;
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    P2Memo.Lines.Append(NodeData^.FFileDescription);
+
+    SelectedAppHandle := NodeData^.AppHandle;
+    if SelectedAppHandle <> 0 then
+    begin
+      GetWindowRect(SelectedAppHandle, WindowRect);
+      P2Memo.Lines.Append('Left: ' + IntToStr(WindowRect.Left) +
+      ' Top: ' + IntToStr(WindowRect.Top) +
+      ' Width: ' + IntToStr(WindowRect.Width) +
+      ' Height: ' + IntToStr(WindowRect.Height));
+    end;
+
+  end;
+end;
+
+procedure TMainForm.pmiGSRemoveFrameClick(Sender: TObject);
+var
+  Caller: TObject;
+  i, SelectedFrame, TopFrame: Integer;
+begin
+  Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
+  SelectedFrame := (Caller as TControl).Tag;
+  TopFrame := GetSetFrameA[High(GetSetFrameA)].Tag;
+  if SelectedFrame = TopFrame then
+  begin
+    GetSetFrameA[(Caller as TControl).Tag].Free;
+    GetSetFrameA[(Caller as TControl).Tag] := nil;
+    SetLength(GetSetFrameA, Length(GetSetFrameA) - 1);
+  end
+  else
+  begin
+    for i := SelectedFrame to TopFrame - 1 do
+    begin
+      GetSetFrameA[i].NameEdit.Text := GetSetFrameA[i + 1].NameEdit.Text;
+      GetSetFrameA[i].LeftSpinEdit.Value := GetSetFrameA[i + 1].LeftSpinEdit.Value;
+      GetSetFrameA[i].TopSpinEdit.Value := GetSetFrameA[i + 1].TopSpinEdit.Value;
+      GetSetFrameA[i].WidthSpinEdit.Value := GetSetFrameA[i + 1].WidthSpinEdit.Value;
+      GetSetFrameA[i].HeightSpinEdit.Value := GetSetFrameA[i + 1].HeightSpinEdit.Value;
+    end;
+    GetSetFrameA[High(GetSetFrameA)].Free;
+    GetSetFrameA[High(GetSetFrameA)] := nil;
+    SetLength(GetSetFrameA, Length(GetSetFrameA) - 1);
+  end;
 end;
 
 // https://stackoverflow.com/questions/11594084/shift-in-the-right-of-last-item-of-the-menu
@@ -682,43 +1138,15 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-{
-  InfoMemo.Lines.Append('%MYDOCUMENTS%' + ' : ' + TPath.GetDocumentsPath);       // C:\Users\user\Documents       MyDocs
-  InfoMemo.Lines.Append('%COMMONDOCUMENTS%' + ' : ' + GetCommonDocumentsFolder); // C:\Users\Public\Documents     PublicDocs
-  InfoMemo.Lines.Append('%APPDATAROOT%' + ' : ' + GetAppdataFolder);             // C:\Users\user\AppData\Roaming AppDataRoaming
-  InfoMemo.Lines.Append('%LOCALAPPDATAROOT%' + ' : ' + GetLocalAppData);         // C:\Users\user\AppData\Local   AppDataLocal
-  InfoMemo.Lines.Append('%COMMONAPPDATAROOT%' + ' : ' + GetCommonAppdataFolder); // C:\ProgramData                AppDataCommon
-}
-  case StrIndex(DtaDirLoc, ['MyDocs', 'PublicDocs', 'AppDataRoaming', 'AppDataLocal', 'AppDataCommon']) of
-    0: begin
-         // DeployMaster - %MYDOCUMENTS%       C:\Users\user\Documents
-         DtaDir := TPath.GetDocumentsPath + '\MWB\' + PgmName + '\';
-         ForceDirectories(DtaDir);
-       end;
-    1: begin
-         // DeployMaster - %COMMONDOCUMENTS%   C:\Users\Public\Documents
-         DtaDir := GetCommonDocumentsFolder + '\MWB\' + PgmName + '\';
-         ForceDirectories(DtaDir);
-       end;
-    2: begin
-         // DeployMaster - %APPDATAROOT%       C:\Users\user\AppData\Roaming
-         DtaDir := GetAppdataFolder + '\MWB\' + PgmName + '\';
-         ForceDirectories(DtaDir);
-       end;
-    3: begin
-         // DeployMaster - %LOCALAPPDATAROOT%  C:\Users\user\AppData\Local
-         DtaDir := GetLocalAppData + '\MWB\' + PgmName + '\';
-         ForceDirectories(DtaDir);
-       end;
-    4: begin
-         // DeployMaster - %COMMONAPPDATAROOT% C:\ProgramData
-         DtaDir := GetCommonAppdataFolder + '\MWB\' + PgmName + '\';
-         ForceDirectories(DtaDir);
-       end;
-  end;
+  InitDtaDir;
   LoadStyleSettings;
   TStyleManager.TrySetStyle(StyleStr);
   LoadSettingsFromFormCreate;
+  if mmiAutoStartElevated.Checked then
+    if not IsAdministrator then
+    begin
+      ShellExecute(Handle, 'runas', PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
+    end;
   if StylesMM then mmiStyles.Visible := True else mmiStyles.Visible := False;
   LoadSettingsFromFormCreate;
   RestoreMainFormPositionAndSize;
@@ -866,9 +1294,18 @@ begin
     if Assigned(Item) then Item.Checked := True;
     RightMenu(mmiVersionAbout); // Run after change to MainMenu
 
+    if mmiAutoStartElevated.Checked then
+      if not IsAdministrator then
+      begin
+        AutoElevateDoNotSave := True;
+        Close;
+      end;
+    AutoElevateDoNotSave := False;
+
     if IsAdministrator then
     begin
       mmiRestartElevated.Caption := 'Running as Admin';
+      RightMenu(mmiVersionAbout); // Run after change to MainMenu
     end
     else
     begin
@@ -882,12 +1319,15 @@ begin
 
     AddStylesToListBox;
     SettingsForm.StylesListBox.ItemIndex := SettingsForm.StylesListBox.Items.IndexOf(StyleStr);
+
+    if FileExists(LstDir + 'FrameList.txt') then LoadFrameList(LstDir + 'FrameList.txt');
   end;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  SaveSettings;
+  if not AutoElevateDoNotSave then SaveSettings;
+  SaveFramesToFile(LstDir + 'FrameList.txt');
 end;
 
 procedure TMainForm.OnMoving(var Msg: TWMMoving);
@@ -902,6 +1342,46 @@ begin
   SettingsForm.TScrPosFrame.SpinEditLeft.Value := MainForm.Left;
   SettingsForm.TScrPosFrame.SpinEditHeight.Value := MainForm.Height;
   SettingsForm.TScrPosFrame.SpinEditWidth.Value := MainForm.Width;
+end;
+
+function TMainForm.GetDataByColumn(Data: TTreeData; Column: Integer): String;
+begin
+  case Column of
+    0: Result := Data.FFileDescription;
+    1: Result := IntToStr(Data.FLeft);
+    2: Result := IntToStr(Data.FTop);
+    3: Result := IntToStr(Data.FWidth);
+    4: Result := IntToStr(Data.FHeight);
+  else
+    Result := '';
+  end;
+end;
+
+procedure TMainForm.ClearGetSetFrames;
+var
+  i: Integer;
+begin
+  for i := 0 to High(GetSetFrameA) do
+  begin
+    GetSetFrameA[i].Free;
+    GetSetFrameA[i] := nil;
+  end;
+  SetLength(GetSetFrameA, 0);
+end;
+
+procedure TMainForm.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+var
+  Data: PTreeData;
+begin
+  Data := (Sender as TBaseVirtualTree).GetNodeData(Node);
+  CellText := GetDataByColumn(Data^, Column);
+end;
+
+procedure TMainForm.VSTMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  VST.Selected[VST.GetNodeAt(Point(X, Y))] := True;
 end;
 
 procedure TMainForm.WindowReticleWindowChange(Sender: TObject);
@@ -947,6 +1427,8 @@ begin
       MainFormRect.Width := RegIniFile.ReadInteger('Section-Window', 'Width', MainFormDefaultRect.Width);
     end;
 
+    mmiAutoStartElevated.Checked := RegIniFile.ReadBool('Section-Elevated', 'StartElevated', False);
+
   finally
     RegIniFile.Free;
   end;
@@ -991,6 +1473,20 @@ begin
     TopSpinEdit.Value := RegIniFile.ReadInteger('Section-Bounds', 'Top', 100);
     WidthSpinEdit.Value := RegIniFile.ReadInteger('Section-Bounds', 'Width', 500);
     HeightSpinEdit.Value := RegIniFile.ReadInteger('Section-Bounds', 'Height', 500);
+
+    JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Page', 'CurrentPage', 0);
+
+    SettingsForm.JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Settings', 'CurrentPage', 0);
+
+    AfterCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmAfter', True);
+    ABConfirmAfter := AfterCheckBox.Checked;
+    ConfirmAfter := AfterCheckBox.Checked;
+    BeforeCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmBefore', True);
+    ABConfirmBefore := BeforeCheckBox.Checked;
+    ConfirmBefore := BeforeCheckBox.Checked;
+
+    ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-ABPage', 'CurrentPage', 0);
+
   finally
     RegIniFile.Free;
   end;
@@ -1048,12 +1544,22 @@ begin
     RegIniFile.EraseSection('MainFormSettingsListBox');
     for i := 0 to SettingsForm.MainFormSettingsListBox.Items.Count - 1 do
       RegIniFile.WriteString('MainFormSettingsListBox', IntToStr(i), SettingsForm.MainFormSettingsListBox.Items[i]);
+    RegIniFile.WriteInteger('Section-Settings', 'CurrentPage', SettingsForm.JvPageList.ActivePageIndex);
 
     RegIniFile.WriteString('Section-Bounds', 'WindowName', WindowNameEdit.Text);
     RegIniFile.WriteInteger('Section-Bounds', 'Left', LeftSpinEdit.Value);
     RegIniFile.WriteInteger('Section-Bounds', 'Top', TopSpinEdit.Value);
     RegIniFile.WriteInteger('Section-Bounds', 'Width', WidthSpinEdit.Value);
     RegIniFile.WriteInteger('Section-Bounds', 'Height', HeightSpinEdit.Value);
+
+    RegIniFile.WriteBool('Section-Elevated', 'StartElevated', mmiAutoStartElevated.Checked);
+
+    RegIniFile.WriteInteger('Section-Page', 'CurrentPage', JvPageList.ActivePageIndex);
+
+    RegIniFile.WriteBool('Section-Options', 'ConfirmAfter', AfterCheckBox.Checked);
+    RegIniFile.WriteBool('Section-Options', 'ConfirmBefore', BeforeCheckBox.Checked);
+
+    RegIniFile.WriteInteger('Section-ABPage', 'CurrentPage', ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex);
 
   finally
     RegIniFile.Free;

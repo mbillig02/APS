@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rxm:regexmagic xmlns:rxm="http://www.regexmagic.com/regexmagic2C.xsd" version="2.12">
+	<formula>
+		<samples scope="line">
+			<sample name="FrameList.txt">
+				<text format="win1252">KDQ1NSw5MCwxNjUwLDEyMDApIFRvdGFsIENvbW1hbmRlcg0KKDEyODYsNTAsMTEwMCw3MDApIE5vdGVwYWQrKw0KKDE1MCwxNTAsMTUwMCwxMTAwKSBVbHRyYUVkaXQNCigtMTIsLTEyLDI1ODUsMTQwNCkgQVBTIC0gRGVscGhpIDEwLjQgLSBNRlVuaXQNCigwLDI2LDEyODAsOTU4KSBPdXRsb29rICYgQ2hyb21lDQooMTI3MiwtOCwxMjk2LDEwNDApIFJveWFsIFRTIC0gUmlnaHQgU2NyZWVuDQooMCwwLDUwMCwzMDApIA0K</text>
+				<field>
+					<pos start="0" stop="1"/>
+				</field>
+				<field>
+					<pos start="1" stop="4"/>
+				</field>
+				<field>
+					<pos start="4" stop="5"/>
+				</field>
+				<field>
+					<pos start="5" stop="7"/>
+				</field>
+				<field>
+					<pos start="7" stop="8"/>
+				</field>
+				<field>
+					<pos start="8" stop="12"/>
+				</field>
+				<field>
+					<pos start="12" stop="13"/>
+				</field>
+				<field>
+					<pos start="13" stop="17"/>
+				</field>
+				<field>
+					<pos start="17" stop="19"/>
+				</field>
+				<field/>
+				<field>
+					<pos start="19" stop="34"/>
+				</field>
+			</sample>
+		</samples>
+		<match start="line" stop="line" validation="strict">
+			<field>
+				<literal>
+					<literal>(</literal>
+				</literal>
+			</field>
+			<field>
+				<number signminus="1" integerrequired="1"/>
+			</field>
+			<field>
+				<literal>
+					<literal>,</literal>
+				</literal>
+			</field>
+			<field>
+				<number leadingzeros="1" signminus="1" integerrequired="1"/>
+			</field>
+			<field>
+				<literal>
+					<literal>,</literal>
+				</literal>
+			</field>
+			<field>
+				<integer>
+					<format>dec</format>
+					<ranges>1650</ranges>
+				</integer>
+			</field>
+			<field>
+				<literal>
+					<literal>,</literal>
+				</literal>
+			</field>
+			<field>
+				<integer>
+					<format>dec</format>
+					<ranges>1200</ranges>
+				</integer>
+			</field>
+			<field>
+				<literal>
+					<literal>) </literal>
+				</literal>
+			</field>
+			<field kind="alternation" maxrepeat="unlimited">
+				<fields>
+					<field maxrepeat="unlimited">
+						<charsbasic lettersupper="1" letterslower="1" digits="1" whitespace="1" punctuation="1"/>
+					</field>
+					<field minrepeat="0" maxrepeat="1">
+						<charsbasic lettersupper="1" letterslower="1" digits="1" whitespace="1" punctuation="1"/>
+					</field>
+				</fields>
+			</field>
+		</match>
+		<action>
+			<captures>
+				<capture name="Left" field="1"/>
+				<capture name="Top" field="3"/>
+				<capture name="Width" field="5"/>
+				<capture name="Height" field="7"/>
+				<capture name="Name" field="10"/>
+			</captures>
+		</action>
+	</formula>
+</rxm:regexmagic>

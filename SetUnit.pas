@@ -10,7 +10,6 @@ uses
 
 type
   TSettingsForm = class(TForm)
-    JvSettingsTreeView: TJvSettingsTreeView;
     JvPageList: TJvPageList;
     JvStandardPageForm: TJvStandardPage;
     SetDefaultScreenBtn: TButton;
@@ -46,6 +45,22 @@ type
     LstDirCopyToClpBrdBtn: TButton;
     LstDirOpenInExplorerBtn: TButton;
     StayOnTopCheckBox: TCheckBox;
+    JvStandardPageAdmin: TJvStandardPage;
+    PublicDesktopRunAsCheckBox: TCheckBox;
+    PublicDesktopGroupBox: TGroupBox;
+    PublicStartMenuGroupBox: TGroupBox;
+    PublicStartMenuRunAsCheckBox: TCheckBox;
+    UserTaskbarGroupBox: TGroupBox;
+    UserTaskbarRunAsCheckBox: TCheckBox;
+    SetLeftPanel: TPanel;
+    AdminBtn: TButton;
+    DirBtn: TButton;
+    FormBtn: TButton;
+    StylesBtn: TButton;
+    UserDesktopGroupBox: TGroupBox;
+    UserDesktopRunAsCheckBox: TCheckBox;
+    SetDefaultPosBtn: TButton;
+    SetDefaultSizeBtn: TButton;
     procedure SetDefaultScreenBtnClick(Sender: TObject);
     procedure SetAlomstFullScreenBtnClick(Sender: TObject);
     procedure SavFrmSizChkBoxClick(Sender: TObject);
@@ -67,13 +82,22 @@ type
     procedure MainFormSizeSettingsToFormBtnClick(Sender: TObject);
     procedure StylesMMCheckBoxClick(Sender: TObject);
     procedure EnableStylesSettingsCheckBoxClick(Sender: TObject);
-    procedure LstDirCopyToClpBrdBtnContextPopup(Sender: TObject;
-      MousePos: TPoint; var Handled: Boolean);
     procedure LstDirOpenInExplorerBtnClick(Sender: TObject);
     procedure StayOnTopCheckBoxClick(Sender: TObject);
+    procedure RunAsAdminCheckBoxClick(Sender: TObject);
+    procedure UpdateSettingsAdminStatus;
+    procedure AdminBtnClick(Sender: TObject);
+    procedure DirBtnClick(Sender: TObject);
+    procedure FormBtnClick(Sender: TObject);
+    procedure StylesBtnClick(Sender: TObject);
+    procedure LstDirCopyToClpBrdBtnClick(Sender: TObject);
+    procedure SetDefaultPosBtnClick(Sender: TObject);
+    procedure SetDefaultSizeBtnClick(Sender: TObject);
   private
     procedure OpenDirectory(DirectoryName: String);
     procedure ListToForm(PositionB, SizeB: Boolean);
+    function GetRunAsSetting(LnkPath: String): Boolean;
+    procedure SetRunAsSetting(LnkPath: String; RunAsAdmin: Boolean);
     { Private declarations }
   public
     { Public declarations }
@@ -86,12 +110,27 @@ implementation
 
 {$R *.dfm}
 
-uses MFUnit, ClipBrd, ShellApi, Themes, PerlRegex;
+uses
+  MFUnit, ClipBrd, ShellApi, Themes, PerlRegex, ActiveX, ComObj, ShlObj, JclSysInfo;
+
+procedure TSettingsForm.SetDefaultPosBtnClick(Sender: TObject);
+begin
+  MainForm.Top := MainFormDefaultRect.Top;
+  MainForm.Left := MainFormDefaultRect.Left;
+  MainForm.UpdateScrPosEdits;
+end;
 
 procedure TSettingsForm.SetDefaultScreenBtnClick(Sender: TObject);
 begin
   MainForm.Top := MainFormDefaultRect.Top;
   MainForm.Left := MainFormDefaultRect.Left;
+  MainForm.Height := MainFormDefaultRect.Height;
+  MainForm.Width := MainFormDefaultRect.Width;
+  MainForm.UpdateScrPosEdits;
+end;
+
+procedure TSettingsForm.SetDefaultSizeBtnClick(Sender: TObject);
+begin
   MainForm.Height := MainFormDefaultRect.Height;
   MainForm.Width := MainFormDefaultRect.Width;
   MainForm.UpdateScrPosEdits;
@@ -176,8 +215,7 @@ begin
   end;
 end;
 
-procedure TSettingsForm.LstDirCopyToClpBrdBtnContextPopup(Sender: TObject;
-  MousePos: TPoint; var Handled: Boolean);
+procedure TSettingsForm.LstDirCopyToClpBrdBtnClick(Sender: TObject);
 begin
   LstDirCopyToClpBrdBtn.Hint := '';
   Clipboard.AsText := MainForm.GetLstDir;
@@ -202,6 +240,130 @@ end;
 procedure TSettingsForm.MainFormSettingsToFormBtnClick(Sender: TObject);
 begin
   ListToForm(True, True);
+end;
+
+function TSettingsForm.GetRunAsSetting(LnkPath: String): Boolean;
+var
+  MyObject: IUnknown;
+  MySLink: IShellLink;
+  MyPFile: IPersistFile;
+  sldl: IShellLinkDataList;
+  Flags: Cardinal;
+begin
+  Result := False;
+  MyObject := CreateComObject(CLSID_ShellLink);
+  MySLink := MyObject as IShellLink;
+  MyPFile := MyObject as IPersistFile;
+  if Succeeded(MyPFile.Load(PChar(WideString(LnkPath)), STGM_READ)) then
+  begin
+    sldl := MySLink as IShellLinkDataList;
+    sldl.GetFlags(Flags);
+    Result := (Flags and SLDF_RUNAS_USER) = SLDF_RUNAS_USER;
+  end;
+end;
+
+procedure TSettingsForm.SetRunAsSetting(LnkPath: String; RunAsAdmin: Boolean);
+var
+  MyObject: IUnknown;
+  MySLink: IShellLink;
+  MyPFile: IPersistFile;
+  sldl: IShellLinkDataList;
+  Flags, NewFlags: Cardinal;
+begin
+  MyObject := CreateComObject(CLSID_ShellLink);
+  MySLink := MyObject as IShellLink;
+  MyPFile := MyObject as IPersistFile;
+  if Succeeded(MyPFile.Load(PChar(WideString(LnkPath)), STGM_READ)) then
+  begin
+    sldl := MySLink as IShellLinkDataList;
+    sldl.GetFlags(Flags);
+    if RunAsAdmin then
+    begin
+      NewFlags := Flags or SLDF_RUNAS_USER;
+    end
+    else
+    begin
+      NewFlags := Flags xor SLDF_RUNAS_USER;
+    end;
+    sldl.SetFlags(NewFlags);
+
+    MyPFile.Save(PWChar(WideString(LnkPath)), False);
+    SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATH, PWideChar(LnkPath), nil);
+  end;
+end;
+
+procedure TSettingsForm.UpdateSettingsAdminStatus;
+begin
+  if FileExists(PublicDesktopGroupBox.Hint) then
+    PublicDesktopRunAsCheckBox.Checked := GetRunAsSetting(PublicDesktopGroupBox.Hint);
+  if FileExists(PublicDesktopGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  begin
+    PublicDesktopRunAsCheckBox.Enabled := True;
+  end
+  else
+  begin
+    PublicDesktopRunAsCheckBox.Enabled := False;
+  end;
+
+  if FileExists(PublicStartMenuGroupBox.Hint) then
+    PublicStartMenuRunAsCheckBox.Checked := GetRunAsSetting(PublicStartMenuGroupBox.Hint);
+  if FileExists(PublicStartMenuGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  begin
+    PublicStartMenuRunAsCheckBox.Enabled := True;
+  end
+  else
+  begin
+    PublicStartMenuRunAsCheckBox.Enabled := False;
+  end;
+
+  UserTaskbarGroupBox.Hint := GetAppdataFolder + '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\APS.lnk';
+  if FileExists(UserTaskbarGroupBox.Hint) then
+    UserTaskbarRunAsCheckBox.Checked := GetRunAsSetting(UserTaskbarGroupBox.Hint);
+  if FileExists(UserTaskbarGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  begin
+    UserTaskbarRunAsCheckBox.Enabled := True;
+  end
+  else
+  begin
+    UserTaskbarRunAsCheckBox.Enabled := False;
+  end;
+
+  UserDesktopGroupBox.Hint := GetDesktopDirectoryFolder + '\APS.lnk';
+  if FileExists(UserDesktopGroupBox.Hint) then
+    UserDesktopRunAsCheckBox.Checked := GetRunAsSetting(UserDesktopGroupBox.Hint);
+  if FileExists(UserDesktopGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  begin
+    UserDesktopRunAsCheckBox.Enabled := True;
+  end
+  else
+  begin
+    UserDesktopRunAsCheckBox.Enabled := False;
+  end;
+end;
+
+procedure TSettingsForm.RunAsAdminCheckBoxClick(Sender: TObject);
+begin
+  SetRunAsSetting(((Sender as TCheckBox).Parent as TGroupBox).Hint, (Sender as TCheckBox).Checked);
+end;
+
+procedure TSettingsForm.AdminBtnClick(Sender: TObject);
+begin
+  JvPageList.ActivePageIndex := 0;
+end;
+
+procedure TSettingsForm.DirBtnClick(Sender: TObject);
+begin
+  JvPageList.ActivePageIndex := 1;
+end;
+
+procedure TSettingsForm.FormBtnClick(Sender: TObject);
+begin
+  JvPageList.ActivePageIndex := 2;
+end;
+
+procedure TSettingsForm.StylesBtnClick(Sender: TObject);
+begin
+  JvPageList.ActivePageIndex := 3;
 end;
 
 procedure TSettingsForm.DeleteListBoxItemBtnClick(Sender: TObject);

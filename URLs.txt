@@ -1,0 +1,10 @@
+https://superuser.com/questions/240362/save-window-locations-of-applications
+
+High DPI
+https://www.google.com/search?q=delphi+height+of+control+changes+based+on+dpi&rlz=1C1SQJL_enUS862US862&oq=delphi+height+of+control+changes+based+on+dpi&aqs=chrome..69i57j33i160.24044j0j15&sourceid=chrome&ie=UTF-8
+
+https://stackoverflow.com/questions/57755030/delphi-and-high-dpi-controls-created-on-runtime-obtain-wrong-position
+
+https://zarko-gajic.iz.hr/delphi-high-dpi-road-ensuring-your-ui-looks-correctly/
+
+http://zarko-gajic.iz.hr/resizing-delphis-timagelist-bitmaps-to-fit-high-dpi-scaling-size-for-menus-toolbars-trees-etc/

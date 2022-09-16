@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{9A88D1B1-2295-43A8-934A-3CADBB756DE7}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="APS.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="APSLoader.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="APS">
+        <MSBuild Projects="APS.dproj"/>
+    </Target>
+    <Target Name="APS:Clean">
+        <MSBuild Projects="APS.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="APS:Make">
+        <MSBuild Projects="APS.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="APSLoader">
+        <MSBuild Projects="APSLoader.dproj"/>
+    </Target>
+    <Target Name="APSLoader:Clean">
+        <MSBuild Projects="APSLoader.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="APSLoader:Make">
+        <MSBuild Projects="APSLoader.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="APS;APSLoader"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="APS:Clean;APSLoader:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="APS:Make;APSLoader:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -10,7 +10,10 @@ uses
   ScrPosF in 'ScrPosF.pas' {ScrPosFrame: TFrame},
   SetUnit in 'SetUnit.pas' {SettingsForm},
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  InitAppUnit in 'InitAppUnit.pas' {Form1},
+  ABFrameUnit in 'ABFrameUnit.pas' {ApplicationBoundsFrame: TFrame},
+  GSFrameUnit in 'GSFrameUnit.pas' {GetSetFrame: TFrame};
 
 {$R *.res}
 
