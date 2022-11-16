@@ -8,7 +8,7 @@ object GetSetFrame: TGetSetFrame
     Left = 233
     Top = 0
     Width = 50
-    Height = 22
+    Height = 24
     Hint = 'Height'
     MaxValue = 0
     MinValue = 0
@@ -21,7 +21,7 @@ object GetSetFrame: TGetSetFrame
     Left = 77
     Top = 0
     Width = 50
-    Height = 22
+    Height = 24
     Hint = 'Left'
     MaxValue = 0
     MinValue = 0
@@ -34,7 +34,7 @@ object GetSetFrame: TGetSetFrame
     Left = 129
     Top = 0
     Width = 50
-    Height = 22
+    Height = 24
     Hint = 'Top'
     MaxValue = 0
     MinValue = 0
@@ -47,7 +47,7 @@ object GetSetFrame: TGetSetFrame
     Left = 181
     Top = 0
     Width = 50
-    Height = 22
+    Height = 24
     Hint = 'Width'
     MaxValue = 0
     MinValue = 0
@@ -60,7 +60,7 @@ object GetSetFrame: TGetSetFrame
     Left = 77
     Top = 24
     Width = 205
-    Height = 21
+    Height = 23
     TabOrder = 4
   end
   object GSGetPanel: TPanel

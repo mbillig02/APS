@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, JvExControls, JvPageList, Vcl.ComCtrls,
   JvExComCtrls, JvPageListTreeView, Vcl.StdCtrls, ScrPosF, JvComponentBase,
-  JvBalloonHint, Vcl.ExtCtrls;
+  JvBalloonHint, Vcl.ExtCtrls, RunAsFrameUnit;
 
 type
   TSettingsForm = class(TForm)
@@ -61,6 +61,21 @@ type
     UserDesktopRunAsCheckBox: TCheckBox;
     SetDefaultPosBtn: TButton;
     SetDefaultSizeBtn: TButton;
+    SetAdmBtmPanel: TPanel;
+    SetAdmBtmRPanel: TPanel;
+    RunAsFrame: TRunAsFrame;
+    CreateIniBtn: TButton;
+    EditIniBtn: TButton;
+    LoadAndCheckBtn: TButton;
+    ShowMissingLinksCheckBox: TCheckBox;
+    JvStandardPageHotKeys: TJvStandardPage;
+    AltCheckBox: TCheckBox;
+    CtrlCheckBox: TCheckBox;
+    ShftCheckBox: TCheckBox;
+    KeyComboBox: TComboBox;
+    HotKeysBtn: TButton;
+    AppHideShowGroupBox: TGroupBox;
+    SetHotKeyBtn: TButton;
     procedure SetDefaultScreenBtnClick(Sender: TObject);
     procedure SetAlomstFullScreenBtnClick(Sender: TObject);
     procedure SavFrmSizChkBoxClick(Sender: TObject);
@@ -93,11 +108,21 @@ type
     procedure LstDirCopyToClpBrdBtnClick(Sender: TObject);
     procedure SetDefaultPosBtnClick(Sender: TObject);
     procedure SetDefaultSizeBtnClick(Sender: TObject);
+    procedure CreateIniBtnClick(Sender: TObject);
+    procedure EditIniBtnClick(Sender: TObject);
+    procedure LoadAndCheckBtnClick(Sender: TObject);
+    procedure LoadAndCheck(IniFileName: String);
+    procedure FormShow(Sender: TObject);
+    procedure JvStandardPageAdminShow(Sender: TObject);
+    procedure ShowMissingLinksCheckBoxClick(Sender: TObject);
+    procedure HotKeysBtnClick(Sender: TObject);
+    procedure SetHotKeyBtnClick(Sender: TObject);
   private
     procedure OpenDirectory(DirectoryName: String);
     procedure ListToForm(PositionB, SizeB: Boolean);
     function GetRunAsSetting(LnkPath: String): Boolean;
     procedure SetRunAsSetting(LnkPath: String; RunAsAdmin: Boolean);
+    procedure CreateIniFile(IniFileName: String);
     { Private declarations }
   public
     { Public declarations }
@@ -111,35 +136,61 @@ implementation
 {$R *.dfm}
 
 uses
-  MFUnit, ClipBrd, ShellApi, Themes, PerlRegex, ActiveX, ComObj, ShlObj, JclSysInfo;
+  MFUnit, ClipBrd, ShellApi, Themes, PerlRegex, ActiveX, ComObj, ShlObj, JclSysInfo, IniFiles;
+
+var
+  IniFileName: String;
+
+procedure OpenAsTextFile(const FileName: String);
+var
+  sei: TShellExecuteInfo;
+begin
+  ZeroMemory(@sei, SizeOf(sei));
+  sei.cbSize := SizeOf(sei);
+  sei.fMask := SEE_MASK_CLASSNAME;
+  sei.lpFile := PChar(FileName);
+  sei.lpClass := '.txt';
+  sei.nShow := SW_SHOWNORMAL;
+  ShellExecuteEx(@sei);
+end;
 
 procedure TSettingsForm.SetDefaultPosBtnClick(Sender: TObject);
 begin
-  MainForm.Top := MainFormDefaultRect.Top;
-  MainForm.Left := MainFormDefaultRect.Left;
-  MainForm.UpdateScrPosEdits;
+  APSMainForm.Top := MainFormDefaultRect.Top;
+  APSMainForm.Left := MainFormDefaultRect.Left;
+  APSMainForm.UpdateScrPosEdits;
 end;
 
 procedure TSettingsForm.SetDefaultScreenBtnClick(Sender: TObject);
 begin
-  MainForm.Top := MainFormDefaultRect.Top;
-  MainForm.Left := MainFormDefaultRect.Left;
-  MainForm.Height := MainFormDefaultRect.Height;
-  MainForm.Width := MainFormDefaultRect.Width;
-  MainForm.UpdateScrPosEdits;
+  APSMainForm.Top := MainFormDefaultRect.Top;
+  APSMainForm.Left := MainFormDefaultRect.Left;
+  APSMainForm.Height := MainFormDefaultRect.Height;
+  APSMainForm.Width := MainFormDefaultRect.Width;
+  APSMainForm.UpdateScrPosEdits;
 end;
 
 procedure TSettingsForm.SetDefaultSizeBtnClick(Sender: TObject);
 begin
-  MainForm.Height := MainFormDefaultRect.Height;
-  MainForm.Width := MainFormDefaultRect.Width;
-  MainForm.UpdateScrPosEdits;
+  APSMainForm.Height := MainFormDefaultRect.Height;
+  APSMainForm.Width := MainFormDefaultRect.Width;
+  APSMainForm.UpdateScrPosEdits;
+end;
+
+procedure TSettingsForm.SetHotKeyBtnClick(Sender: TObject);
+begin
+  APSMainForm.UnsetHotKey;
+  HotKey1AltB := AltCheckBox.Checked;
+  HotKey1CtrlB := CtrlCheckBox.Checked;
+  HotKey1ShftB := ShftCheckBox.Checked;
+  HotKey1Key := KeyComboBox.Text;
+  APSMainForm.SetHotKey;
 end;
 
 procedure TSettingsForm.StayOnTopCheckBoxClick(Sender: TObject);
 begin
   StayOnTopB := StayOnTopCheckBox.Checked;
-  MainForm.SetStayOnTopStatus;
+  APSMainForm.SetStayOnTopStatus;
 end;
 
 procedure TSettingsForm.StylesListBoxClick(Sender: TObject);
@@ -151,24 +202,24 @@ end;
 procedure TSettingsForm.StylesMMCheckBoxClick(Sender: TObject);
 begin
   StylesMM := StylesMMCheckBox.Checked;
-  MainForm.mmiStyles.Visible := StylesMM;
-  MainForm.RightMenu(MainForm.mmiVersionAbout);
+  APSMainForm.mmiStyles.Visible := StylesMM;
+  APSMainForm.RightMenu(APSMainForm.mmiVersionAbout);
 end;
 
 procedure TSettingsForm.SetAlomstFullScreenBtnClick(Sender: TObject);
 begin
-  MainForm.Top := 30;
-  MainForm.Left := 30;
-  MainForm.Height := Screen.WorkAreaHeight - 60;
-  MainForm.Width := Screen.WorkAreaWidth - 60;
-  MainForm.UpdateScrPosEdits;
+  APSMainForm.Top := 30;
+  APSMainForm.Left := 30;
+  APSMainForm.Height := Screen.WorkAreaHeight - 60;
+  APSMainForm.Width := Screen.WorkAreaWidth - 60;
+  APSMainForm.UpdateScrPosEdits;
 end;
 
 procedure TSettingsForm.TmpDirCopyToClpBrdBtnClick(Sender: TObject);
 begin
   TmpDirCopyToClpBrdBtn.Hint := '';
-  Clipboard.AsText := MainForm.GetTmpDir;
-  TmpDirJvBalloonHint.ActivateHint(TmpDirCopyToClpBrdBtn, '(Copied to clipboard)', MainForm.GetTmpDir, 4000);
+  Clipboard.AsText := APSMainForm.GetTmpDir;
+  TmpDirJvBalloonHint.ActivateHint(TmpDirCopyToClpBrdBtn, '(Copied to clipboard)', APSMainForm.GetTmpDir, 4000);
 end;
 
 procedure TSettingsForm.MainFormSettingsToListBoxBtnClick(Sender: TObject);
@@ -218,13 +269,13 @@ end;
 procedure TSettingsForm.LstDirCopyToClpBrdBtnClick(Sender: TObject);
 begin
   LstDirCopyToClpBrdBtn.Hint := '';
-  Clipboard.AsText := MainForm.GetLstDir;
-  LstDirJvBalloonHint.ActivateHint(LstDirCopyToClpBrdBtn, '(Copied to clipboard)', MainForm.GetLstDir, 4000);
+  Clipboard.AsText := APSMainForm.GetLstDir;
+  LstDirJvBalloonHint.ActivateHint(LstDirCopyToClpBrdBtn, '(Copied to clipboard)', APSMainForm.GetLstDir, 4000);
 end;
 
 procedure TSettingsForm.LstDirOpenInExplorerBtnClick(Sender: TObject);
 begin
-  OpenDirectory(MainForm.GetLstDir);
+  OpenDirectory(APSMainForm.GetLstDir);
 end;
 
 procedure TSettingsForm.MainFormSizeSettingsToFormBtnClick(Sender: TObject);
@@ -262,6 +313,16 @@ begin
   end;
 end;
 
+procedure TSettingsForm.HotKeysBtnClick(Sender: TObject);
+begin
+  JvPageList.ActivePageIndex := 4;
+end;
+
+procedure TSettingsForm.JvStandardPageAdminShow(Sender: TObject);
+begin
+  if RunAsFrame.RunAsCheckListBox.Enabled then RunAsFrame.RunAsCheckListBox.SetFocus;
+end;
+
 procedure TSettingsForm.SetRunAsSetting(LnkPath: String; RunAsAdmin: Boolean);
 var
   MyObject: IUnknown;
@@ -292,11 +353,68 @@ begin
   end;
 end;
 
+procedure TSettingsForm.ShowMissingLinksCheckBoxClick(Sender: TObject);
+begin
+  ShowMissingLinks := ShowMissingLinksCheckBox.Checked;
+end;
+
+procedure TSettingsForm.CreateIniFile(IniFileName: String);
+var
+  RegIniFile: TIniFile;
+begin
+  RegIniFile := TIniFile.Create(IniFileName);
+  try
+    RegIniFile.WriteString('APS', 'PublicDesktop', 'C:\Users\Public\Desktop\APS.lnk');
+    RegIniFile.WriteString('APS', 'PublicStartMenu', 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\APS\APS.lnk');
+    RegIniFile.WriteString('APS', 'UserDesktop', '\APS.lnk');
+    RegIniFile.WriteString('APS', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\APS.lnk');
+    RegIniFile.WriteString('APS', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\APS.lnk');
+    // Home: Console Emulator (x86).lnk
+    //    RegIniFile.WriteString('CONEMU', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Console Emulator (x86).lnk');
+    //    RegIniFile.WriteString('CONEMU', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\Console Emulator (x86).lnk');
+    // Work: CONEMU
+    RegIniFile.WriteString('CONEMU', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\CONEMU.lnk');
+    RegIniFile.WriteString('CONEMU', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\CONEMU.lnk');
+    RegIniFile.WriteString('DCM', 'PublicDesktop', 'C:\Users\Public\Desktop\DCM.lnk');
+    RegIniFile.WriteString('DCM', 'PublicStartMenu', 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\DCM\DCM.lnk');
+    RegIniFile.WriteString('DCM', 'UserDesktop', '\DCM.lnk');
+    RegIniFile.WriteString('DCM', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\DCM.lnk');
+    RegIniFile.WriteString('DCM', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\DCM.lnk');
+    RegIniFile.WriteString('DSM', 'PublicDesktop', 'C:\Users\Public\Desktop\DSM.lnk');
+    RegIniFile.WriteString('DSM', 'PublicStartMenu', 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\DSM\DSM.lnk');
+    RegIniFile.WriteString('DSM', 'UserDesktop', '\DSM.lnk');
+    RegIniFile.WriteString('DSM', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\DSM.lnk');
+    RegIniFile.WriteString('DSM', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\DSM.lnk');
+    RegIniFile.WriteString('ProxyEnable', 'PublicDesktop', 'C:\Users\Public\Desktop\ProxyEnable.lnk');
+    RegIniFile.WriteString('ProxyEnable', 'PublicStartMenu', 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\ProxyEnable\ProxyEnable.lnk');
+    RegIniFile.WriteString('ProxyEnable', 'UserDesktop', '\ProxyEnable.lnk');
+    RegIniFile.WriteString('ProxyEnable', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\ProxyEnable.lnk');
+    RegIniFile.WriteString('ProxyEnable', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\ProxyEnable.lnk');
+    RegIniFile.WriteString('TotalCmd', 'PublicDesktop', 'C:\Users\Public\Desktop\TotalCmd.lnk');
+    RegIniFile.WriteString('TotalCmd', 'PublicStartMenu', 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\ProxyEnable\TotalCmd.lnk');
+    RegIniFile.WriteString('TotalCmd', 'UserDesktop', '\TotalCmd.lnk');
+    RegIniFile.WriteString('TotalCmd', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\TotalCmd.lnk');
+    RegIniFile.WriteString('TotalCmd', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\TotalCmd.lnk');
+  finally
+    RegIniFile.Free;
+  end;
+end;
+
+procedure TSettingsForm.LoadAndCheck(IniFileName: String);
+begin
+  if not FileExists(IniFileName) then CreateIniFile(IniFileName);
+  if FileExists(IniFileName) then
+  begin
+    RunAsFrame.LoadRunAsInfo(IniFileName);
+    RunAsFrame.CheckExist;
+  end;
+end;
+
 procedure TSettingsForm.UpdateSettingsAdminStatus;
 begin
   if FileExists(PublicDesktopGroupBox.Hint) then
     PublicDesktopRunAsCheckBox.Checked := GetRunAsSetting(PublicDesktopGroupBox.Hint);
-  if FileExists(PublicDesktopGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  if FileExists(PublicDesktopGroupBox.Hint) and (not APSMainForm.aRestartElevated.Enabled) then
   begin
     PublicDesktopRunAsCheckBox.Enabled := True;
   end
@@ -307,7 +425,7 @@ begin
 
   if FileExists(PublicStartMenuGroupBox.Hint) then
     PublicStartMenuRunAsCheckBox.Checked := GetRunAsSetting(PublicStartMenuGroupBox.Hint);
-  if FileExists(PublicStartMenuGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  if FileExists(PublicStartMenuGroupBox.Hint) and (not APSMainForm.aRestartElevated.Enabled) then
   begin
     PublicStartMenuRunAsCheckBox.Enabled := True;
   end
@@ -319,7 +437,7 @@ begin
   UserTaskbarGroupBox.Hint := GetAppdataFolder + '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\APS.lnk';
   if FileExists(UserTaskbarGroupBox.Hint) then
     UserTaskbarRunAsCheckBox.Checked := GetRunAsSetting(UserTaskbarGroupBox.Hint);
-  if FileExists(UserTaskbarGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  if FileExists(UserTaskbarGroupBox.Hint) and (not APSMainForm.aRestartElevated.Enabled) then
   begin
     UserTaskbarRunAsCheckBox.Enabled := True;
   end
@@ -331,7 +449,7 @@ begin
   UserDesktopGroupBox.Hint := GetDesktopDirectoryFolder + '\APS.lnk';
   if FileExists(UserDesktopGroupBox.Hint) then
     UserDesktopRunAsCheckBox.Checked := GetRunAsSetting(UserDesktopGroupBox.Hint);
-  if FileExists(UserDesktopGroupBox.Hint) and (not MainForm.aRestartElevated.Enabled) then
+  if FileExists(UserDesktopGroupBox.Hint) and (not APSMainForm.aRestartElevated.Enabled) then
   begin
     UserDesktopRunAsCheckBox.Enabled := True;
   end
@@ -361,9 +479,24 @@ begin
   JvPageList.ActivePageIndex := 2;
 end;
 
+procedure TSettingsForm.FormShow(Sender: TObject);
+begin
+  LoadAndCheck(APSMainForm.GetDtaDir + 'RunAsLst.ini');
+end;
+
 procedure TSettingsForm.StylesBtnClick(Sender: TObject);
 begin
   JvPageList.ActivePageIndex := 3;
+end;
+
+procedure TSettingsForm.LoadAndCheckBtnClick(Sender: TObject);
+begin
+  LoadAndCheck(APSMainForm.GetDtaDir + 'RunAsLst.ini');
+end;
+
+procedure TSettingsForm.CreateIniBtnClick(Sender: TObject);
+begin
+  CreateIniFile(APSMainForm.GetDtaDir + 'RunAsLst.ini');
 end;
 
 procedure TSettingsForm.DeleteListBoxItemBtnClick(Sender: TObject);
@@ -397,7 +530,13 @@ end;
 
 procedure TSettingsForm.DtaDirOpenInExplorerBtnClick(Sender: TObject);
 begin
-  OpenDirectory(MainForm.GetDtaDir);
+  OpenDirectory(APSMainForm.GetDtaDir);
+end;
+
+procedure TSettingsForm.EditIniBtnClick(Sender: TObject);
+begin
+  IniFileName := APSMainForm.GetDtaDir + 'RunAsLst.ini';
+  OpenAsTextFile(IniFileName);
 end;
 
 procedure TSettingsForm.EnableStylesSettingsCheckBoxClick(Sender: TObject);
@@ -408,22 +547,22 @@ end;
 
 procedure TSettingsForm.TmpDirOpenInExplorerBtnClick(Sender: TObject);
 begin
-  OpenDirectory(MainForm.GetTmpDir);
+  OpenDirectory(APSMainForm.GetTmpDir);
 end;
 
 procedure TSettingsForm.DtaDirCopyToClpBrdBtnClick(Sender: TObject);
 begin
   DtaDirCopyToClpBrdBtn.Hint := '';
-  Clipboard.AsText := MainForm.GetDtaDir;
-  DtaDirJvBalloonHint.ActivateHint(DtaDirCopyToClpBrdBtn, '(Copied to clipboard)', MainForm.GetDtaDir, 4000);
+  Clipboard.AsText := APSMainForm.GetDtaDir;
+  DtaDirJvBalloonHint.ActivateHint(DtaDirCopyToClpBrdBtn, '(Copied to clipboard)', APSMainForm.GetDtaDir, 4000);
 end;
 
 procedure TSettingsForm.FormActivate(Sender: TObject);
 begin
-  TScrPosFrame.SpinEditTop.Value := MainForm.Top;
-  TScrPosFrame.SpinEditLeft.Value := MainForm.Left;
-  TScrPosFrame.SpinEditHeight.Value := MainForm.Height;
-  TScrPosFrame.SpinEditWidth.Value := MainForm.Width;
+  TScrPosFrame.SpinEditTop.Value := APSMainForm.Top;
+  TScrPosFrame.SpinEditLeft.Value := APSMainForm.Left;
+  TScrPosFrame.SpinEditHeight.Value := APSMainForm.Height;
+  TScrPosFrame.SpinEditWidth.Value := APSMainForm.Width;
 end;
 
 procedure TSettingsForm.OpenDirectory(DirectoryName: String);
@@ -449,22 +588,22 @@ end;
 
 procedure TSettingsForm.TScrPosFrameSpinEditHeightChange(Sender: TObject);
 begin
-  MainForm.Height := TScrPosFrame.SpinEditHeight.Value;
+  APSMainForm.Height := TScrPosFrame.SpinEditHeight.Value;
 end;
 
 procedure TSettingsForm.TScrPosFrameSpinEditLeftChange(Sender: TObject);
 begin
-  MainForm.Left := TScrPosFrame.SpinEditLeft.Value;
+  APSMainForm.Left := TScrPosFrame.SpinEditLeft.Value;
 end;
 
 procedure TSettingsForm.TScrPosFrameSpinEditTopChange(Sender: TObject);
 begin
-  MainForm.Top := TScrPosFrame.SpinEditTop.Value;
+  APSMainForm.Top := TScrPosFrame.SpinEditTop.Value;
 end;
 
 procedure TSettingsForm.TScrPosFrameSpinEditWidthChange(Sender: TObject);
 begin
-  MainForm.Width := TScrPosFrame.SpinEditWidth.Value;
+  APSMainForm.Width := TScrPosFrame.SpinEditWidth.Value;
 end;
 
 end.

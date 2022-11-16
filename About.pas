@@ -364,7 +364,7 @@ begin
   RegIniFile := TIniFile.Create(IniFileName);
   try
     RegIniFile.WriteString('SectionFormClose', 'AboutCap', Caption);
-    RegIniFile.WriteString('SectionFormClose', 'MainCap', MainForm.Caption);
+    RegIniFile.WriteString('SectionFormClose', 'MainCap', APSMainForm.Caption);
     RegIniFile.WriteString('SectionPgmUpdater', 'PgmUpdDir', lclPgmUpdDir);
     RegIniFile.WriteString('SectionPgmUpdater', 'Installer', UpdateStr);
   finally

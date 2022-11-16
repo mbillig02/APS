@@ -14,7 +14,7 @@ Use APS to "GET" or "SET" applications position and size. Click and drag the tar
 
 ## Built with
 
-Delphi 10.4.2
+Delphi 11.2
 
 ## Required to compile
 
@@ -27,6 +27,11 @@ Delphi 10.4.2
 [Main Screen]
 <p align="center">
   <img src="https://github.com/mbillig02/APS/blob/master/ScreenShots/MainScreen.PNG">
+</p>
+
+[Page-3]
+<p align="center">
+  <img src="https://github.com/mbillig02/APS/blob/master/ScreenShots/APS-v22.9.16.0.PNG">
 </p>
 
 ## License

@@ -8,7 +8,7 @@ uses
   JvComponentBase, JvBalloonHint, UtlUnit, Menus, About, ActnList,
   System.Actions, System.UITypes, Themes, MruUnit, comp.reticle,
   Vcl.Samples.Spin, Data.DB, Vcl.Grids, Vcl.DBGrids, JvDataSource, JvCsvData,
-  Vcl.DBCtrls, JvPageList, JvExControls, InitAppUnit, ABFrameUnit, GSFrameUnit;
+  Vcl.DBCtrls, JvPageList, JvExControls, InitAppUnit, ABFrameUnit, GSFrameUnit, JclAppInst;
 
 type
   TTopLeftHeightWidth = record
@@ -26,7 +26,7 @@ type
     FHeight: Integer;
     AppHandle: UINT_PTR;
   end;
-  TMainForm = class(TForm)
+  TAPSMainForm = class(TForm)
     aCopyDtaDirPathToClipboard: TAction;
     aCopyTmpDirPathToClipboard: TAction;
     ActionList: TActionList;
@@ -148,8 +148,6 @@ type
     aPage3: TAction;
     mmiPage3: TMenuItem;
     FrameScrollBox: TScrollBox;
-    aLoadFrameList: TAction;
-    aSaveFrameList: TAction;
     aClearGetSetFrames: TAction;
     aAddFrame: TAction;
     GSFramePopupMenu: TPopupMenu;
@@ -163,21 +161,23 @@ type
     N8: TMenuItem;
     mmiSaveAsFrameList: TMenuItem;
     mmiSelectFrameListFile: TMenuItem;
-    N9: TMenuItem;
-    mmiSaveFrames: TMenuItem;
-    mmiLoadFrames: TMenuItem;
     ConfirmSetGroupBox: TGroupBox;
     BeforeCheckBox: TCheckBox;
     AfterCheckBox: TCheckBox;
-    FrameScrollPopupMenu: TPopupMenu;
-    pmiFSAddFrame: TMenuItem;
     pmiGSAddFrame: TMenuItem;
-    pmiFSClearFrames: TMenuItem;
-    pmiFSSelectFile: TMenuItem;
-    pmiFSSaveAsFrameList: TMenuItem;
-    N10: TMenuItem;
     N11: TMenuItem;
     Panel1: TPanel;
+    FrameScrollPopupMenu: TPopupMenu;
+    TrayIcon: TTrayIcon;
+    TrayIconPopupMenu: TPopupMenu;
+    pmiQuit: TMenuItem;
+    pmiRestore: TMenuItem;
+    aMoveToSystemTray: TAction;
+    mmiMoveToSystemTray: TMenuItem;
+    N9: TMenuItem;
+    pmiAbout: TMenuItem;
+    N12: TMenuItem;
+    N13: TMenuItem;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -204,7 +204,6 @@ type
     procedure UpdateScrPosEdits;
     procedure WindowReticleWindowChange(Sender: TObject);
     procedure SetStayOnTopStatus;
-    procedure FromDBBtnClick(Sender: TObject);
     procedure aGetAppPosAndSizeExecute(Sender: TObject);
     procedure aSetAppPosAndSizeExecute(Sender: TObject);
     procedure aOpenDBExecute(Sender: TObject);
@@ -233,8 +232,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure pmiGetClick(Sender: TObject);
     procedure aPage3Execute(Sender: TObject);
-    procedure aLoadFrameListExecute(Sender: TObject);
-    procedure aSaveFrameListExecute(Sender: TObject);
     procedure aClearGetSetFramesExecute(Sender: TObject);
     procedure aAddFrameExecute(Sender: TObject);
     procedure pmiGSRemoveFrameClick(Sender: TObject);
@@ -242,7 +239,20 @@ type
     procedure aSelectFrameListExecute(Sender: TObject);
     procedure AfterCheckBoxClick(Sender: TObject);
     procedure BeforeCheckBoxClick(Sender: TObject);
+    procedure JvStandardPage1Hide(Sender: TObject);
+    procedure JvStandardPage1Show(Sender: TObject);
+    procedure JvStandardPage3Show(Sender: TObject);
+    procedure JvStandardPage3Hide(Sender: TObject);
+    procedure pmiQuitClick(Sender: TObject);
+    procedure pmiRestoreClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure SetHotKey;
+    procedure UnsetHotKey;
+    procedure TrayIconDblClick(Sender: TObject);
+    procedure aMoveToSystemTrayExecute(Sender: TObject);
+    procedure pmiAboutClick(Sender: TObject);
   private
+    HotKey1: NativeUInt;
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
     function MatchingFileName(ListOfEditsText: String): String;
     procedure AddStylesToListBox;
@@ -267,16 +277,23 @@ type
     procedure LoadFrameList(TempFileName: String);
     procedure SaveFramesToFile(TempFileName: string);
     procedure AddGetSetFrame;
+    procedure HideForm;
+    procedure RestoreForm;
+    procedure WMHotKey(var Msg: TWMHotKey); message WM_HOTKEY;
+    procedure OpenAboutBox;
     { Private declarations }
   public
+    procedure WndProc(var Message: TMessage); override;
     { Public declarations }
   end;
 
 var
-  MainForm: TMainForm;
+  APSMainForm: TAPSMainForm;
   ExeDir, TmpDir, LstDir, PgmUpdDir, StyleStr: String;
   MainFormDefaultRect, MainFormRect: TTopLeftHeightWidth;
   SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB: Boolean;
+  HotKey1AltB, HotKey1CtrlB,HotKey1ShftB: Boolean;
+  HotKey1Key: String;
 
 implementation
 
@@ -294,51 +311,72 @@ var
 {$R *.dfm}
 //{$R administrator.res}
 
-procedure TMainForm.mmiVersionAboutClick(Sender: TObject);
-var
-  TmpBool: Boolean;
+procedure TAPSMainForm.WMHotKey(var Msg: TWMHotKey);
 begin
-  TmpBool := SettingsForm.StayOnTopCheckBox.Checked;
-  SettingsForm.StayOnTopCheckBox.Checked := False;
-  SetStayOnTopStatus;
-  TAboutBox.Execute;
-  SettingsForm.StayOnTopCheckBox.Checked := TmpBool;
-  SetStayOnTopStatus;
+  // This procedure is called when a window message WM_HOTKEY
+  inherited;  // We give the form to process the message,
+              // if she already has its handler
+  if Msg.HotKey = HotKey1 then
+  begin
+    if TrayIcon.Visible then RestoreForm else HideForm;
+  end;
 end;
 
-procedure TMainForm.MostRecentFilesMenuClick(Sender: TObject;
+procedure TAPSMainForm.UnsetHotKey;
+begin
+  UnRegisterHotKey(Handle, HotKey1);
+end;
+
+procedure TAPSMainForm.SetHotKey;
+var
+  TmpCrd: Cardinal;
+begin
+  HotKey1 := GlobalAddAtom('HotKey1');
+  TmpCrd := 0;
+  if HotKey1AltB then TmpCrd := TmpCrd + 1;
+  if HotKey1CtrlB then TmpCrd := TmpCrd + 2;
+  if HotKey1ShftB then TmpCrd := TmpCrd + 4;
+  RegisterHotKey(Handle, HotKey1, TmpCrd, Ord(HotKey1Key[1]));
+end;
+
+procedure TAPSMainForm.mmiVersionAboutClick(Sender: TObject);
+begin
+  OpenAboutBox;
+end;
+
+procedure TAPSMainForm.MostRecentFilesMenuClick(Sender: TObject;
   const Filename: String);
 begin
   if ExtractFileExt(Filename) = '.csv' then FileNameEdit.Text := ExtractFileName(FileName);
   if ExtractFileExt(Filename) = '.txt' then LoadFrameList(FileName);
 end;
 
-function TMainForm.GetServiceListFileName: String;
+function TAPSMainForm.GetServiceListFileName: String;
 begin
   Result := FServiceListFileName;
 end;
 
-procedure TMainForm.SetServiceListFileName(ServiceListFileName: String);
+procedure TAPSMainForm.SetServiceListFileName(ServiceListFileName: String);
 begin
   FServiceListFileName := ServiceListFileName;
 end;
 
-function TMainForm.GetDtaDir: String;
+function TAPSMainForm.GetDtaDir: String;
 begin
   Result := DtaDir;
 end;
 
-function TMainForm.GetLstDir: String;
+function TAPSMainForm.GetLstDir: String;
 begin
   Result := LstDir;
 end;
 
-function TMainForm.GetTmpDir: String;
+function TAPSMainForm.GetTmpDir: String;
 begin
   Result := TmpDir;
 end;
 
-procedure TMainForm.InfoMemoKeyPress(Sender: TObject; var Key: Char);
+procedure TAPSMainForm.InfoMemoKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = ^A then
   begin
@@ -347,7 +385,31 @@ begin
   end;
 end;
 
-procedure TMainForm.a1of4Execute(Sender: TObject);
+procedure TAPSMainForm.JvStandardPage1Hide(Sender: TObject);
+begin
+  mmiBounds.Visible := False;
+  RightMenu(mmiVersionAbout); // Run after change to MainMenu
+end;
+
+procedure TAPSMainForm.JvStandardPage1Show(Sender: TObject);
+begin
+  mmiBounds.Visible := True;
+  RightMenu(mmiVersionAbout); // Run after change to MainMenu
+end;
+
+procedure TAPSMainForm.JvStandardPage3Hide(Sender: TObject);
+begin
+  mmiFrames.Visible := False;
+  RightMenu(mmiVersionAbout); // Run after change to MainMenu
+end;
+
+procedure TAPSMainForm.JvStandardPage3Show(Sender: TObject);
+begin
+  mmiFrames.Visible := True;
+  RightMenu(mmiVersionAbout); // Run after change to MainMenu
+end;
+
+procedure TAPSMainForm.a1of4Execute(Sender: TObject);
 begin
   LeftSpinEdit.Value := 0;
   TopSpinEdit.Value := 0;
@@ -355,7 +417,7 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight div 2;
 end;
 
-procedure TMainForm.a2of4Execute(Sender: TObject);
+procedure TAPSMainForm.a2of4Execute(Sender: TObject);
 begin
   LeftSpinEdit.Value := (Screen.WorkAreaWidth div 2) + 1;
   TopSpinEdit.Value := 0;
@@ -363,7 +425,7 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight div 2;
 end;
 
-procedure TMainForm.a3of4Execute(Sender: TObject);
+procedure TAPSMainForm.a3of4Execute(Sender: TObject);
 begin
   LeftSpinEdit.Value := 0;
   TopSpinEdit.Value := (Screen.WorkAreaHeight div 2) + 1;
@@ -371,7 +433,7 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight div 2;
 end;
 
-procedure TMainForm.a4of4Execute(Sender: TObject);
+procedure TAPSMainForm.a4of4Execute(Sender: TObject);
 begin
   LeftSpinEdit.Value := (Screen.WorkAreaWidth div 2) + 1;
   TopSpinEdit.Value := (Screen.WorkAreaHeight div 2) + 1;
@@ -379,7 +441,7 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight div 2;
 end;
 
-procedure TMainForm.a75PercentExecute(Sender: TObject);
+procedure TAPSMainForm.a75PercentExecute(Sender: TObject);
 begin
   LeftSpinEdit.Value := Screen.WorkAreaWidth div 8;
   TopSpinEdit.Value := Screen.WorkAreaHeight div 8;
@@ -387,7 +449,7 @@ begin
   HeightSpinEdit.Value := (Screen.WorkAreaHeight div 4) * 3;
 end;
 
-procedure TMainForm.a90PercentExecute(Sender: TObject);
+procedure TAPSMainForm.a90PercentExecute(Sender: TObject);
 begin
   LeftSpinEdit.Value := Screen.WorkAreaWidth div 20;
   TopSpinEdit.Value := Screen.WorkAreaHeight div 20;
@@ -395,7 +457,7 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight - (Screen.WorkAreaHeight div 10);
 end;
 
-procedure TMainForm.a95PercentExecute(Sender: TObject);
+procedure TAPSMainForm.a95PercentExecute(Sender: TObject);
 begin
   LeftSpinEdit.Value := Screen.WorkAreaWidth div 40;
   TopSpinEdit.Value := Screen.WorkAreaHeight div 40;
@@ -490,12 +552,12 @@ begin
   end;
 end;
 
-procedure TMainForm.aAddFrameExecute(Sender: TObject);
+procedure TAPSMainForm.aAddFrameExecute(Sender: TObject);
 begin
   AddGetSetFrame;
 end;
 
-procedure TMainForm.aAllAppsToCSVExecute(Sender: TObject);
+procedure TAPSMainForm.aAllAppsToCSVExecute(Sender: TObject);
 begin
   AppLst := TStringList.Create;
   AppLst.Clear;
@@ -505,7 +567,7 @@ begin
   AppLst.Free;
 end;
 
-procedure TMainForm.aCenterInScreenExecute(Sender: TObject);
+procedure TAPSMainForm.aCenterInScreenExecute(Sender: TObject);
 var
   SelectedAppHandle: hwnd;
   WindowRect: TRect;
@@ -521,12 +583,12 @@ begin
   end;
 end;
 
-procedure TMainForm.aClearGetSetFramesExecute(Sender: TObject);
+procedure TAPSMainForm.aClearGetSetFramesExecute(Sender: TObject);
 begin
   ClearGetSetFrames;
 end;
 
-procedure TMainForm.aCloseDBExecute(Sender: TObject);
+procedure TAPSMainForm.aCloseDBExecute(Sender: TObject);
 begin
   JvCsvDataSet.Close;
   aOpenDB.Enabled := True;
@@ -535,27 +597,27 @@ begin
   aFromDB.Enabled := False;
 end;
 
-procedure TMainForm.aCopyDtaDirPathToClipboardExecute(Sender: TObject);
+procedure TAPSMainForm.aCopyDtaDirPathToClipboardExecute(Sender: TObject);
 begin
   Clipboard.AsText := DtaDir;
 end;
 
-procedure TMainForm.aCopyLstDirPathToClipboardExecute(Sender: TObject);
+procedure TAPSMainForm.aCopyLstDirPathToClipboardExecute(Sender: TObject);
 begin
   Clipboard.AsText := LstDir;
 end;
 
-procedure TMainForm.aCopyTmpDirPathToClipboardExecute(Sender: TObject);
+procedure TAPSMainForm.aCopyTmpDirPathToClipboardExecute(Sender: TObject);
 begin
   Clipboard.AsText := TmpDir;
 end;
 
-procedure TMainForm.aExitExecute(Sender: TObject);
+procedure TAPSMainForm.aExitExecute(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TMainForm.aFromDBExecute(Sender: TObject);
+procedure TAPSMainForm.aFromDBExecute(Sender: TObject);
 begin
   WindowNameEdit.Text := JvCsvDataSet.FieldByName('WindowName').AsString;
   LeftSpinEdit.Value := JvCsvDataSet.FieldByName('Left').AsInteger;
@@ -564,13 +626,13 @@ begin
   HeightSpinEdit.Value := JvCsvDataSet.FieldByName('Height').AsInteger;
 end;
 
-procedure TMainForm.AfterCheckBoxClick(Sender: TObject);
+procedure TAPSMainForm.AfterCheckBoxClick(Sender: TObject);
 begin
   ABConfirmAfter := AfterCheckBox.Checked;
-  ConfirmAfter := AfterCheckBox.Checked;
+  GSConfirmAfter := AfterCheckBox.Checked;
 end;
 
-procedure TMainForm.aFullMinus5Execute(Sender: TObject);
+procedure TAPSMainForm.aFullMinus5Execute(Sender: TObject);
 begin
   LeftSpinEdit.Value := Screen.WorkAreaLeft + 5;
   TopSpinEdit.Value := Screen.WorkAreaTop + 5;
@@ -578,7 +640,7 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight - 10;
 end;
 
-procedure TMainForm.aFullScreenExecute(Sender: TObject);
+procedure TAPSMainForm.aFullScreenExecute(Sender: TObject);
 begin
   LeftSpinEdit.Value := Screen.WorkAreaLeft;
   TopSpinEdit.Value := Screen.WorkAreaTop;
@@ -586,7 +648,7 @@ begin
   HeightSpinEdit.Value := Screen.WorkAreaHeight;
 end;
 
-procedure TMainForm.aGetAppPosAndSizeExecute(Sender: TObject);
+procedure TAPSMainForm.aGetAppPosAndSizeExecute(Sender: TObject);
 var
   SelectedAppHandle: hwnd;
   WindowRect: TRect;
@@ -602,7 +664,7 @@ begin
   end;
 end;
 
-procedure TMainForm.aOpenDBExecute(Sender: TObject);
+procedure TAPSMainForm.aOpenDBExecute(Sender: TObject);
 var
   TmpStrLst: TStringList;
   TempFileName, TmpFileExt: String;
@@ -626,43 +688,43 @@ begin
   aFromDB.Enabled := True;
 end;
 
-procedure TMainForm.aOpenDtaDirInExplorerExecute(Sender: TObject);
+procedure TAPSMainForm.aOpenDtaDirInExplorerExecute(Sender: TObject);
 begin
   OpenDirectory(DtaDir);
 end;
 
-procedure TMainForm.aOpenLstDirInExplorerExecute(Sender: TObject);
+procedure TAPSMainForm.aOpenLstDirInExplorerExecute(Sender: TObject);
 begin
   OpenDirectory(LstDir);
 end;
 
-procedure TMainForm.aOpenTmpDirInExplorerExecute(Sender: TObject);
+procedure TAPSMainForm.aOpenTmpDirInExplorerExecute(Sender: TObject);
 begin
   OpenDirectory(TmpDir);
 end;
 
-procedure TMainForm.aPage1Execute(Sender: TObject);
+procedure TAPSMainForm.aPage1Execute(Sender: TObject);
 begin
   JvPageList.ActivePage := JvStandardPage1;
 end;
 
-procedure TMainForm.aPage2Execute(Sender: TObject);
+procedure TAPSMainForm.aPage2Execute(Sender: TObject);
 begin
   JvPageList.ActivePage := JvStandardPage2;
 end;
 
-procedure TMainForm.aPage3Execute(Sender: TObject);
+procedure TAPSMainForm.aPage3Execute(Sender: TObject);
 begin
   JvPageList.ActivePage := JvStandardPage3;
 end;
 
-procedure TMainForm.aRestartElevatedExecute(Sender: TObject);
+procedure TAPSMainForm.aRestartElevatedExecute(Sender: TObject);
 begin
   ShellExecute(Handle, 'runas', PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
   Close;
 end;
 
-function TMainForm.MatchingFileName(ListOfEditsText: String): String;
+function TAPSMainForm.MatchingFileName(ListOfEditsText: String): String;
 var
   SR: TSearchRec;
   StrLst: TStringList;
@@ -681,7 +743,7 @@ begin
   FindClose(SR);
 end;
 
-function TMainForm.ExtractValue(SearchString, SubjectString: String): String;
+function TAPSMainForm.ExtractValue(SearchString, SubjectString: String): String;
 var
   UsMatch: TMatch;
   RegExPattern: String;
@@ -707,7 +769,7 @@ begin
   end;
 end;
 
-procedure TMainForm.LoadFrameList(TempFileName: String);
+procedure TAPSMainForm.LoadFrameList(TempFileName: String);
 var
   FrmStrLst: TStringList;
   i: Integer;
@@ -730,7 +792,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveFramesToFile(TempFileName: String);
+procedure TAPSMainForm.SaveFramesToFile(TempFileName: String);
 var
   FrmStrLst: TStringList;
   i: Integer;
@@ -746,7 +808,7 @@ begin
   FrmStrLst.Free;
 end;
 
-procedure TMainForm.AddGetSetFrame;
+procedure TAPSMainForm.AddGetSetFrame;
 var
   TmpDPI: Integer;
 begin
@@ -786,7 +848,7 @@ begin
   end;
 end;
 
-procedure TMainForm.LoadListFile(FileName: String);
+procedure TAPSMainForm.LoadListFile(FileName: String);
 begin
   if FileExists(FileName) then
   begin
@@ -795,7 +857,7 @@ begin
   end;
 end;
 
-procedure TMainForm.aSelectFrameListExecute(Sender: TObject);
+procedure TAPSMainForm.aSelectFrameListExecute(Sender: TObject);
 var
   TmpStr: String;
   TmpBool: Boolean;
@@ -824,7 +886,7 @@ begin
   SetStayOnTopStatus;
 end;
 
-procedure TMainForm.aSelectListFileExecute(Sender: TObject);
+procedure TAPSMainForm.aSelectListFileExecute(Sender: TObject);
 var
   TmpStr: String;
   TmpBool: Boolean;
@@ -853,7 +915,7 @@ begin
   SetStayOnTopStatus;
 end;
 
-procedure TMainForm.aListProcsExecute(Sender: TObject);
+procedure TAPSMainForm.aListProcsExecute(Sender: TObject);
 begin
   AppLst2 := TStringList.Create;
   AppLst2.Clear;
@@ -862,19 +924,19 @@ begin
   AppLst2.Free;
 end;
 
-procedure TMainForm.aLoadFrameListExecute(Sender: TObject);
-begin
-  LoadFrameList(LstDir + 'FrameList.txt');
-end;
-
-procedure TMainForm.aLoadListFileExecute(Sender: TObject);
+procedure TAPSMainForm.aLoadListFileExecute(Sender: TObject);
 begin
   OpenDialog.InitialDir := LstDir;
   OpenDialog.Filter := 'CSV Files (*.CSV)|*.CSV|All Files (*.*)|*.*';
   if OpenDialog.Execute then FileNameEdit.Text := ExtractFileName(OpenDialog.FileName);
 end;
 
-procedure TMainForm.aSaveAsFrameListExecute(Sender: TObject);
+procedure TAPSMainForm.aMoveToSystemTrayExecute(Sender: TObject);
+begin
+  HideForm;
+end;
+
+procedure TAPSMainForm.aSaveAsFrameListExecute(Sender: TObject);
 var
   TempFileName: String;
   OkToSave: Boolean;
@@ -897,12 +959,7 @@ begin
   end;
 end;
 
-procedure TMainForm.aSaveFrameListExecute(Sender: TObject);
-begin
-  SaveFramesToFile(LstDir + 'FrameList.txt');
-end;
-
-procedure TMainForm.aSaveListFileExecute(Sender: TObject);
+procedure TAPSMainForm.aSaveListFileExecute(Sender: TObject);
 var
   TempFileName: String;
 begin
@@ -916,7 +973,7 @@ begin
   end;
 end;
 
-procedure TMainForm.aSetAppPosAndSizeExecute(Sender: TObject);
+procedure TAPSMainForm.aSetAppPosAndSizeExecute(Sender: TObject);
 var
   SelectedAppHandle: hwnd;
 begin
@@ -934,7 +991,7 @@ begin
   end;
 end;
 
-procedure TMainForm.aSettingsExecute(Sender: TObject);
+procedure TAPSMainForm.aSettingsExecute(Sender: TObject);
 begin
   SettingsForm.SavFrmSizChkBox.Checked := SaveFormSize;
   SettingsForm.SavFrmPosChkBox.Checked := SaveFormPosition;
@@ -942,14 +999,18 @@ begin
   SettingsForm.StylesListBox.Enabled := StylesEnabled;
   SettingsForm.StayOnTopCheckBox.Checked := StayOnTopB;
   SettingsForm.StylesMMCheckBox.Checked := StylesMM;
-  SettingsForm.Top := MainForm.Top; SettingsForm.Left := MainForm.Left + MainForm.Width;
+  SettingsForm.Top := APSMainForm.Top; SettingsForm.Left := APSMainForm.Left + APSMainForm.Width;
   if SettingsForm.MainFormSettingsListBox.Count > 0 then
     SettingsForm.MainFormSettingsListBox.ItemIndex := 0;
   SettingsForm.UpdateSettingsAdminStatus;
+  SettingsForm.AltCheckBox.Checked := HotKey1AltB;
+  SettingsForm.CtrlCheckBox.Checked := HotKey1CtrlB;
+  SettingsForm.ShftCheckBox.Checked := HotKey1ShftB;
+  SettingsForm.KeyComboBox.Text := HotKey1Key;
   SettingsForm.Show;
 end;
 
-function TMainForm.StrLstToTreeData(lclAppStr: String): TTreeData;
+function TAPSMainForm.StrLstToTreeData(lclAppStr: String): TTreeData;
 var
   Words: TStringList;
 begin
@@ -973,7 +1034,12 @@ begin
   Words.Free;
 end;
 
-procedure TMainForm.LoadVST(lclAppLst: TStringList);
+procedure TAPSMainForm.TrayIconDblClick(Sender: TObject);
+begin
+  RestoreForm;
+end;
+
+procedure TAPSMainForm.LoadVST(lclAppLst: TStringList);
 var
   Data: PTreeData;
   Node: PVirtualNode;
@@ -993,7 +1059,7 @@ begin
   VST.EndUpdate;
 end;
 
-procedure TMainForm.aTestExecute(Sender: TObject);
+procedure TAPSMainForm.aTestExecute(Sender: TObject);
 var
   Filename: String;
   FileVersionInfo: TJclFileVersionInfo;
@@ -1018,7 +1084,7 @@ begin
 
 end;
 
-procedure TMainForm.aToDBExecute(Sender: TObject);
+procedure TAPSMainForm.aToDBExecute(Sender: TObject);
 begin
   JvCsvDataSet.Append;
   JvCsvDataSet.FieldByName('WindowName').AsString := WindowNameEdit.Text;
@@ -1030,13 +1096,13 @@ begin
   JvCsvDataSet.Post;
 end;
 
-procedure TMainForm.BeforeCheckBoxClick(Sender: TObject);
+procedure TAPSMainForm.BeforeCheckBoxClick(Sender: TObject);
 begin
   ABConfirmBefore := BeforeCheckBox.Checked;
-  ConfirmBefore := BeforeCheckBox.Checked;
+  GSConfirmBefore := BeforeCheckBox.Checked;
 end;
 
-procedure TMainForm.OpenDirectory(DirectoryName: String);
+procedure TAPSMainForm.OpenDirectory(DirectoryName: String);
 begin
   ShellExecute(Application.Handle,
     nil,
@@ -1047,7 +1113,12 @@ begin
     );
 end;
 
-procedure TMainForm.pmiGetClick(Sender: TObject);
+procedure TAPSMainForm.pmiAboutClick(Sender: TObject);
+begin
+  OpenAboutBox;
+end;
+
+procedure TAPSMainForm.pmiGetClick(Sender: TObject);
 var
   SelectedNode: PVirtualNode;
   NodeData: PTreeData;
@@ -1074,7 +1145,7 @@ begin
   end;
 end;
 
-procedure TMainForm.pmiGSRemoveFrameClick(Sender: TObject);
+procedure TAPSMainForm.pmiGSRemoveFrameClick(Sender: TObject);
 var
   Caller: TObject;
   i, SelectedFrame, TopFrame: Integer;
@@ -1104,8 +1175,78 @@ begin
   end;
 end;
 
+procedure TAPSMainForm.RestoreForm;
+begin
+  { Hide the tray icon and show the window,
+  setting its state property to wsNormal. }
+  TrayIcon.Visible := False;
+  Show;
+  WindowState := wsNormal;
+  Application.BringToFront;
+end;
+
+procedure TAPSMainForm.HideForm;
+begin
+  { Hide the window and set its state variable to wsMinimized. }
+  SettingsForm.Close;
+  Hide;
+  WindowState := wsMinimized;
+  { Show the animated tray icon and also a hint balloon. }
+  TrayIcon.Visible := True;
+end;
+
+procedure TAPSMainForm.pmiQuitClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TAPSMainForm.pmiRestoreClick(Sender: TObject);
+begin
+  RestoreForm;
+end;
+
+procedure TAPSMainForm.WndProc(var Message: TMessage);
+var
+  S: String;
+begin
+  // Interprocess communication handler.
+  // First check whether we can safely read TForm.Handle property ...
+  if HandleAllocated and not (csDestroying in ComponentState) then
+  begin
+    // ... then whether it is our message. The last paramter tells to ignore the
+    // message sent from window of this instance
+    case ReadMessageCheck(Message, Handle) of
+      1: // It is our data
+      begin
+        try
+          // Read TStrings from the message
+          ReadMessageString(Message, S);
+          if S = 'RestoreForm' then RestoreForm;
+        finally
+        end;
+      end;
+    else
+      inherited;
+    end;
+  end
+  else
+    inherited;
+end;
+
+procedure TAPSMainForm.OpenAboutBox;
+var
+  TmpBool: Boolean;
+begin
+  TmpBool := SettingsForm.StayOnTopCheckBox.Checked;
+  SettingsForm.StayOnTopCheckBox.Checked := False;
+  SetStayOnTopStatus;
+  TAboutBox.Execute;
+  SettingsForm.StayOnTopCheckBox.Checked := TmpBool;
+  SetStayOnTopStatus;
+end;
+
 // https://stackoverflow.com/questions/11594084/shift-in-the-right-of-last-item-of-the-menu
-Procedure TMainForm.RightMenu(mmiMoveRight: TMenuItem); // Shift in the right of last item of the menu
+Procedure TAPSMainForm.RightMenu(mmiMoveRight: TMenuItem); // Shift in the right of last item of the menu
 var
   mii: TMenuItemInfo;
   MainMenu: hMenu;
@@ -1121,22 +1262,22 @@ begin
   if SetMenuItemInfo(MainMenu, mmiMoveRight.Command, False, mii) then DrawMenuBar(Self.Menu.WindowHandle);
 end;
 
-procedure TMainForm.RestoreMainFormPositionAndSize;
+procedure TAPSMainForm.RestoreMainFormPositionAndSize;
 begin
   //  Position is lost when the Style is changed
   if SaveFormPosition then
   begin
-    MainForm.Left := MainFormRect.Left;
-    MainForm.Top := MainFormRect.Top;
+    APSMainForm.Left := MainFormRect.Left;
+    APSMainForm.Top := MainFormRect.Top;
   end;
   if SaveFormSize then
   begin
-    MainForm.Width := MainFormRect.Width;
-    MainForm.Height := MainFormRect.Height;
+    APSMainForm.Width := MainFormRect.Width;
+    APSMainForm.Height := MainFormRect.Height;
   end;
 end;
 
-procedure TMainForm.FormCreate(Sender: TObject);
+procedure TAPSMainForm.FormCreate(Sender: TObject);
 begin
   InitDtaDir;
   LoadStyleSettings;
@@ -1150,10 +1291,12 @@ begin
   if StylesMM then mmiStyles.Visible := True else mmiStyles.Visible := False;
   LoadSettingsFromFormCreate;
   RestoreMainFormPositionAndSize;
+  SetHotKey;
 end;
 
-procedure TMainForm.FromDBBtnClick(Sender: TObject);
+procedure TAPSMainForm.FormDestroy(Sender: TObject);
 begin
+  UnsetHotKey;
 end;
 
 // https://stackoverflow.com/questions/4618743/how-to-make-messagedlg-centered-on-owner-form
@@ -1177,7 +1320,7 @@ begin
   end;
 end;
 
-procedure TMainForm.CheckStyle(Menu: TMenuItem; StyleStr: String);
+procedure TAPSMainForm.CheckStyle(Menu: TMenuItem; StyleStr: String);
 var
   i: Integer;
 begin
@@ -1188,7 +1331,7 @@ begin
   end;
 end;
 
-procedure TMainForm.UnCheckStyles(Menu: TMenuItem);
+procedure TAPSMainForm.UnCheckStyles(Menu: TMenuItem);
 var
   i: Integer;
 begin
@@ -1198,7 +1341,7 @@ begin
   end;
 end;
 
-procedure TMainForm.mmiStylesClick(Sender: TObject);
+procedure TAPSMainForm.mmiStylesClick(Sender: TObject);
 begin
   SettingsForm.Close; // Access violation if SettingsForm is open
   UnCheckStyles(MainMenu.Items.Find('Styles'));
@@ -1208,7 +1351,7 @@ begin
   SettingsForm.StylesListBox.ItemIndex := SettingsForm.StylesListBox.Items.IndexOf(StyleStr);
 end;
 
-function TMainForm.FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
+function TAPSMainForm.FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
 
   function FindItemInner(Item: TMenuItem; const Hint: String): TMenuItem;
   var
@@ -1235,7 +1378,7 @@ begin
   Result := FindItemInner(AMainMenu.Items, Hint);
 end;
 
-procedure TMainForm.AddStylesToMainMenu(StylesCaption: String);
+procedure TAPSMainForm.AddStylesToMainMenu(StylesCaption: String);
 var
   StyleStr: String;
   RootAccessItem, ItemToFind: TMenuItem;
@@ -1259,7 +1402,7 @@ begin
   StylesStrLst.Free;
 end;
 
-procedure TMainForm.FormActivate(Sender: TObject);
+procedure TAPSMainForm.FormActivate(Sender: TObject);
 var
   VerStr: String;
   Item: TMenuItem;
@@ -1321,30 +1464,52 @@ begin
     SettingsForm.StylesListBox.ItemIndex := SettingsForm.StylesListBox.Items.IndexOf(StyleStr);
 
     if FileExists(LstDir + 'FrameList.txt') then LoadFrameList(LstDir + 'FrameList.txt');
+
+    ABAppRect.Top := APSMainForm.Top;
+    ABAppRect.Left := APSMainForm.Left;
+    ABAppRect.Height := APSMainForm.Height;
+    ABAppRect.Width := APSMainForm.Width;
+
+    GSAppRect.Top := APSMainForm.Top;
+    GSAppRect.Left := APSMainForm.Left;
+    GSAppRect.Height := APSMainForm.Height;
+    GSAppRect.Width := APSMainForm.Width;
+
   end;
 end;
 
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TAPSMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if not AutoElevateDoNotSave then SaveSettings;
   SaveFramesToFile(LstDir + 'FrameList.txt');
 end;
 
-procedure TMainForm.OnMoving(var Msg: TWMMoving);
+procedure TAPSMainForm.OnMoving(var Msg: TWMMoving);
 begin
   inherited;
   UpdateScrPosEdits;
 end;
 
-procedure TMainForm.UpdateScrPosEdits;
+procedure TAPSMainForm.UpdateScrPosEdits;
 begin
-  SettingsForm.TScrPosFrame.SpinEditTop.Value := MainForm.Top;
-  SettingsForm.TScrPosFrame.SpinEditLeft.Value := MainForm.Left;
-  SettingsForm.TScrPosFrame.SpinEditHeight.Value := MainForm.Height;
-  SettingsForm.TScrPosFrame.SpinEditWidth.Value := MainForm.Width;
+  SettingsForm.TScrPosFrame.SpinEditTop.Value := APSMainForm.Top;
+  SettingsForm.TScrPosFrame.SpinEditLeft.Value := APSMainForm.Left;
+  SettingsForm.TScrPosFrame.SpinEditHeight.Value := APSMainForm.Height;
+  SettingsForm.TScrPosFrame.SpinEditWidth.Value := APSMainForm.Width;
+
+  ABAppRect.Top := APSMainForm.Top;
+  ABAppRect.Left := APSMainForm.Left;
+  ABAppRect.Height := APSMainForm.Height;
+  ABAppRect.Width := APSMainForm.Width;
+
+  GSAppRect.Top := APSMainForm.Top;
+  GSAppRect.Left := APSMainForm.Left;
+  GSAppRect.Height := APSMainForm.Height;
+  GSAppRect.Width := APSMainForm.Width;
+
 end;
 
-function TMainForm.GetDataByColumn(Data: TTreeData; Column: Integer): String;
+function TAPSMainForm.GetDataByColumn(Data: TTreeData; Column: Integer): String;
 begin
   case Column of
     0: Result := Data.FFileDescription;
@@ -1357,7 +1522,7 @@ begin
   end;
 end;
 
-procedure TMainForm.ClearGetSetFrames;
+procedure TAPSMainForm.ClearGetSetFrames;
 var
   i: Integer;
 begin
@@ -1369,7 +1534,7 @@ begin
   SetLength(GetSetFrameA, 0);
 end;
 
-procedure TMainForm.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+procedure TAPSMainForm.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 var
   Data: PTreeData;
@@ -1378,13 +1543,13 @@ begin
   CellText := GetDataByColumn(Data^, Column);
 end;
 
-procedure TMainForm.VSTMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TAPSMainForm.VSTMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   VST.Selected[VST.GetNodeAt(Point(X, Y))] := True;
 end;
 
-procedure TMainForm.WindowReticleWindowChange(Sender: TObject);
+procedure TAPSMainForm.WindowReticleWindowChange(Sender: TObject);
 var
   Reticle: TWindowReticle;
 begin
@@ -1399,7 +1564,7 @@ begin
   end;
 end;
 
-procedure TMainForm.LoadSettingsFromFormCreate;
+procedure TAPSMainForm.LoadSettingsFromFormCreate;
 var
   RegIniFile: TIniFile;
 begin
@@ -1429,12 +1594,17 @@ begin
 
     mmiAutoStartElevated.Checked := RegIniFile.ReadBool('Section-Elevated', 'StartElevated', False);
 
+    HotKey1AltB := RegIniFile.ReadBool('Section-HotKey', 'HotKey1Alt', True);
+    HotKey1CtrlB := RegIniFile.ReadBool('Section-HotKey', 'HotKey1Ctrl', False);
+    HotKey1ShftB := RegIniFile.ReadBool('Section-HotKey', 'HotKey1Shft', False);
+    HotKey1Key := RegIniFile.ReadString('Section-HotKey', 'HotKey1Key', 'Z');
+
   finally
     RegIniFile.Free;
   end;
 end;
 
-procedure TMainForm.LoadSettingsFromFormActivate;
+procedure TAPSMainForm.LoadSettingsFromFormActivate;
 var
   RegIniFile: TIniFile;
   i, ItemCount: Integer;
@@ -1462,7 +1632,7 @@ begin
   end;
 end;
 
-procedure TMainForm.LoadSettingsLateFormActivate;
+procedure TAPSMainForm.LoadSettingsLateFormActivate;
 var
   RegIniFile: TIniFile;
 begin
@@ -1474,25 +1644,25 @@ begin
     WidthSpinEdit.Value := RegIniFile.ReadInteger('Section-Bounds', 'Width', 500);
     HeightSpinEdit.Value := RegIniFile.ReadInteger('Section-Bounds', 'Height', 500);
 
-    JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Page', 'CurrentPage', 0);
+    JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Page', 'CurrentPage', 2);
 
     SettingsForm.JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Settings', 'CurrentPage', 0);
 
     AfterCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmAfter', True);
     ABConfirmAfter := AfterCheckBox.Checked;
-    ConfirmAfter := AfterCheckBox.Checked;
+    GSConfirmAfter := AfterCheckBox.Checked;
     BeforeCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmBefore', True);
     ABConfirmBefore := BeforeCheckBox.Checked;
-    ConfirmBefore := BeforeCheckBox.Checked;
+    GSConfirmBefore := BeforeCheckBox.Checked;
 
-    ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-ABPage', 'CurrentPage', 0);
+    ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-ABPage', 'CurrentPage', 3);
 
   finally
     RegIniFile.Free;
   end;
 end;
 
-procedure TMainForm.LoadStyleSettings;
+procedure TAPSMainForm.LoadStyleSettings;
 var
   RegIniFile: TIniFile;
 begin
@@ -1506,7 +1676,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SaveSettings;
+procedure TAPSMainForm.SaveSettings;
 var
   RegIniFile: TIniFile;
   i: Integer;
@@ -1521,10 +1691,10 @@ begin
     RegIniFile.WriteInteger('Section-Window', 'DefaultHeight', MainFormDefaultRect.Height);
     RegIniFile.WriteInteger('Section-Window', 'DefaultWidth', MainFormDefaultRect.Width);
 
-    RegIniFile.WriteInteger('Section-Window', 'Top', MainForm.Top);
-    RegIniFile.WriteInteger('Section-Window', 'Left', MainForm.Left);
-    RegIniFile.WriteInteger('Section-Window', 'Height', MainForm.Height);
-    RegIniFile.WriteInteger('Section-Window', 'Width', MainForm.Width);
+    RegIniFile.WriteInteger('Section-Window', 'Top', APSMainForm.Top);
+    RegIniFile.WriteInteger('Section-Window', 'Left', APSMainForm.Left);
+    RegIniFile.WriteInteger('Section-Window', 'Height', APSMainForm.Height);
+    RegIniFile.WriteInteger('Section-Window', 'Width', APSMainForm.Width);
 
     RegIniFile.WriteString('Section-Update', 'FtpHostName', CFPUHostName);
     RegIniFile.WriteString('Section-Update', 'FtpUserName', CFPUUserName);
@@ -1561,12 +1731,17 @@ begin
 
     RegIniFile.WriteInteger('Section-ABPage', 'CurrentPage', ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex);
 
+    RegIniFile.WriteBool('Section-HotKey', 'HotKey1Alt', HotKey1AltB);
+    RegIniFile.WriteBool('Section-HotKey', 'HotKey1Ctrl', HotKey1CtrlB);
+    RegIniFile.WriteBool('Section-HotKey', 'HotKey1Shft', HotKey1ShftB);
+    RegIniFile.WriteString('Section-HotKey', 'HotKey1Key', HotKey1Key);
+
   finally
     RegIniFile.Free;
   end;
 end;
 
-procedure TMainForm.AddStylesToListBox;
+procedure TAPSMainForm.AddStylesToListBox;
 var
   StyleStr: String;
 begin
@@ -1576,7 +1751,7 @@ begin
   SettingsForm.StylesListBox.Sorted := True;
 end;
 
-procedure TMainForm.SetStayOnTopStatus;
+procedure TAPSMainForm.SetStayOnTopStatus;
 begin
   if SettingsForm.StayOnTopCheckBox.Checked then
   begin

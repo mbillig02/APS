@@ -4,35 +4,34 @@ object AboutBox: TAboutBox
   BorderStyle = bsDialog
   Caption = 'About APS'
   ClientHeight = 151
-  ClientWidth = 254
+  ClientWidth = 294
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  OldCreateOrder = True
   Position = poMainFormCenter
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   DesignSize = (
-    254
+    294
     151)
-  PixelsPerInch = 96
   TextHeight = 13
   object Panel: TPanel
     Left = 8
     Top = 8
-    Width = 238
+    Width = 278
     Height = 105
     Anchors = [akLeft, akTop, akRight]
     BevelInner = bvRaised
     BevelOuter = bvLowered
     ParentColor = True
     TabOrder = 1
+    ExplicitWidth = 274
     DesignSize = (
-      238
+      278
       105)
     object ProgramIcon: TImage
       Left = 8
@@ -212,7 +211,7 @@ object AboutBox: TAboutBox
     object CompilerLbl: TLabel
       Left = 8
       Top = 83
-      Width = 221
+      Width = 261
       Height = 13
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
@@ -234,7 +233,7 @@ object AboutBox: TAboutBox
     OnClick = PgmUpdBtnClick
   end
   object OKBtn: TButton
-    Left = 171
+    Left = 211
     Top = 120
     Width = 75
     Height = 25
@@ -243,6 +242,7 @@ object AboutBox: TAboutBox
     Default = True
     ModalResult = 1
     TabOrder = 0
+    ExplicitLeft = 207
   end
   object PgmUpdDirJvImgBtn: TJvImgBtn
     Left = 25

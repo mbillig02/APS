@@ -2,25 +2,24 @@ object SettingsForm: TSettingsForm
   Left = 0
   Top = 0
   Caption = 'Settings'
-  ClientHeight = 326
-  ClientWidth = 434
+  ClientHeight = 325
+  ClientWidth = 430
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   Position = poDesigned
   OnActivate = FormActivate
-  PixelsPerInch = 96
+  OnShow = FormShow
   TextHeight = 13
   object JvPageList: TJvPageList
     Left = 75
     Top = 0
-    Width = 359
-    Height = 326
-    ActivePage = JvStandardPageAdmin
+    Width = 355
+    Height = 325
+    ActivePage = JvStandardPageHotKeys
     PropagateEnable = False
     Align = alClient
     object JvStandardPageAdmin: TJvStandardPage
@@ -29,6 +28,9 @@ object SettingsForm: TSettingsForm
       Width = 359
       Height = 326
       Caption = 'JvStandardPageAdmin'
+      OnShow = JvStandardPageAdminShow
+      ExplicitWidth = 549
+      ExplicitHeight = 441
       object PublicDesktopGroupBox: TGroupBox
         Left = 0
         Top = 0
@@ -38,6 +40,7 @@ object SettingsForm: TSettingsForm
         Align = alTop
         Caption = 'Public Desktop'
         TabOrder = 0
+        Visible = False
         object PublicDesktopRunAsCheckBox: TCheckBox
           Left = 6
           Top = 15
@@ -57,6 +60,7 @@ object SettingsForm: TSettingsForm
         Align = alTop
         Caption = 'Public Start Menu'
         TabOrder = 1
+        Visible = False
         object PublicStartMenuRunAsCheckBox: TCheckBox
           Left = 6
           Top = 15
@@ -78,6 +82,7 @@ object SettingsForm: TSettingsForm
         Align = alTop
         Caption = 'User Taskbar'
         TabOrder = 2
+        Visible = False
         object UserTaskbarRunAsCheckBox: TCheckBox
           Left = 6
           Top = 15
@@ -99,6 +104,7 @@ object SettingsForm: TSettingsForm
         Align = alTop
         Caption = 'User Desktop'
         TabOrder = 3
+        Visible = False
         object UserDesktopRunAsCheckBox: TCheckBox
           Left = 6
           Top = 15
@@ -109,13 +115,102 @@ object SettingsForm: TSettingsForm
           OnClick = RunAsAdminCheckBoxClick
         end
       end
+      object SetAdmBtmPanel: TPanel
+        Left = 0
+        Top = 140
+        Width = 359
+        Height = 186
+        Align = alClient
+        TabOrder = 4
+        ExplicitWidth = 549
+        ExplicitHeight = 301
+        object SetAdmBtmRPanel: TPanel
+          Left = 282
+          Top = 1
+          Width = 76
+          Height = 184
+          Align = alRight
+          TabOrder = 0
+          object CreateIniBtn: TButton
+            Left = 0
+            Top = 0
+            Width = 75
+            Height = 25
+            Caption = 'Create Ini'
+            TabOrder = 0
+            OnClick = CreateIniBtnClick
+          end
+          object EditIniBtn: TButton
+            Left = 0
+            Top = 25
+            Width = 75
+            Height = 25
+            Caption = 'Edit Ini'
+            TabOrder = 1
+            OnClick = EditIniBtnClick
+          end
+          object LoadAndCheckBtn: TButton
+            Left = 0
+            Top = 50
+            Width = 75
+            Height = 25
+            Caption = 'Load && Check'
+            TabOrder = 2
+            OnClick = LoadAndCheckBtnClick
+          end
+          object ShowMissingLinksCheckBox: TCheckBox
+            Left = 8
+            Top = 81
+            Width = 57
+            Height = 41
+            Caption = 'Show Missing Links'
+            TabOrder = 3
+            WordWrap = True
+            OnClick = ShowMissingLinksCheckBoxClick
+          end
+        end
+        inline RunAsFrame: TRunAsFrame
+          Left = 1
+          Top = 1
+          Width = 281
+          Height = 184
+          Margins.Left = 5
+          Margins.Top = 5
+          Margins.Right = 5
+          Margins.Bottom = 5
+          Align = alClient
+          TabOrder = 1
+          ExplicitLeft = 1
+          ExplicitTop = 1
+          ExplicitWidth = 471
+          ExplicitHeight = 299
+          inherited RunAsListBox: TListBox
+            Top = 88
+            Width = 281
+            Height = 96
+            ItemHeight = 13
+            ExplicitTop = 87
+            ExplicitWidth = 277
+            ExplicitHeight = 96
+          end
+          inherited RunAsCheckListBox: TCheckListBox
+            Width = 277
+            Height = 87
+            ItemHeight = 17
+            ExplicitWidth = 277
+            ExplicitHeight = 87
+          end
+        end
+      end
     end
     object JvStandardPageDirectories: TJvStandardPage
       Left = 0
       Top = 0
-      Width = 359
-      Height = 326
+      Width = 355
+      Height = 325
       Caption = 'JvStandardPageDirectories'
+      ExplicitWidth = 359
+      ExplicitHeight = 326
       object DtaDirGrpBox: TGroupBox
         Left = 0
         Top = 0
@@ -222,9 +317,11 @@ object SettingsForm: TSettingsForm
     object JvStandardPageForm: TJvStandardPage
       Left = 0
       Top = 0
-      Width = 359
-      Height = 326
+      Width = 355
+      Height = 325
       Caption = ' '
+      ExplicitWidth = 359
+      ExplicitHeight = 326
       object SetDefaultScreenBtn: TButton
         Left = 17
         Top = 17
@@ -269,6 +366,30 @@ object SettingsForm: TSettingsForm
         TabOrder = 4
         ExplicitLeft = 9
         ExplicitTop = 157
+        inherited LeftLbl: TLabel
+          Width = 19
+          Height = 13
+          ExplicitWidth = 19
+          ExplicitHeight = 13
+        end
+        inherited TopLbl: TLabel
+          Width = 18
+          Height = 13
+          ExplicitWidth = 18
+          ExplicitHeight = 13
+        end
+        inherited HeightLbl: TLabel
+          Width = 31
+          Height = 13
+          ExplicitWidth = 31
+          ExplicitHeight = 13
+        end
+        inherited WidthLbl: TLabel
+          Width = 28
+          Height = 13
+          ExplicitWidth = 28
+          ExplicitHeight = 13
+        end
         inherited SpinEditLeft: TSpinEdit
           OnChange = TScrPosFrameSpinEditLeftChange
         end
@@ -374,9 +495,11 @@ object SettingsForm: TSettingsForm
     object JvStandardPageStyles: TJvStandardPage
       Left = 0
       Top = 0
-      Width = 359
-      Height = 326
+      Width = 355
+      Height = 325
       Caption = ' '
+      ExplicitWidth = 359
+      ExplicitHeight = 326
       object StylesListBox: TListBox
         Left = 24
         Top = 24
@@ -406,12 +529,105 @@ object SettingsForm: TSettingsForm
         OnClick = EnableStylesSettingsCheckBoxClick
       end
     end
+    object JvStandardPageHotKeys: TJvStandardPage
+      Left = 0
+      Top = 0
+      Width = 355
+      Height = 325
+      Caption = 'JvStandardPageHotKeys'
+      object AppHideShowGroupBox: TGroupBox
+        Left = 16
+        Top = 16
+        Width = 277
+        Height = 49
+        Caption = 'Application Hide Show'
+        TabOrder = 0
+        object AltCheckBox: TCheckBox
+          Left = 11
+          Top = 19
+          Width = 45
+          Height = 17
+          Caption = 'Alt'
+          TabOrder = 0
+        end
+        object CtrlCheckBox: TCheckBox
+          Left = 51
+          Top = 19
+          Width = 45
+          Height = 17
+          Caption = 'Ctrl'
+          TabOrder = 1
+        end
+        object KeyComboBox: TComboBox
+          Left = 137
+          Top = 17
+          Width = 45
+          Height = 21
+          TabOrder = 2
+          Text = 'F10'
+          Items.Strings = (
+            '1'
+            '2'
+            '3'
+            '4'
+            '5'
+            '6'
+            '7'
+            '8'
+            '9'
+            '0'
+            'A'
+            'B'
+            'C'
+            'D'
+            'E'
+            'F'
+            'G'
+            'H'
+            'I'
+            'J'
+            'K'
+            'L'
+            'M'
+            'N'
+            'O'
+            'P'
+            'Q'
+            'R'
+            'S'
+            'T'
+            'U'
+            'V'
+            'W'
+            'X'
+            'Y'
+            'Z')
+        end
+        object ShftCheckBox: TCheckBox
+          Left = 91
+          Top = 19
+          Width = 45
+          Height = 17
+          Caption = 'Shft'
+          TabOrder = 3
+        end
+        object SetHotKeyBtn: TButton
+          Left = 191
+          Top = 15
+          Width = 75
+          Height = 25
+          Caption = 'Set HotKey'
+          TabOrder = 4
+          OnClick = SetHotKeyBtnClick
+        end
+      end
+    end
   end
   object SetLeftPanel: TPanel
     Left = 0
     Top = 0
     Width = 75
-    Height = 326
+    Height = 325
     Align = alLeft
     TabOrder = 1
     object AdminBtn: TButton
@@ -453,6 +669,16 @@ object SettingsForm: TSettingsForm
       Caption = 'Styles'
       TabOrder = 3
       OnClick = StylesBtnClick
+    end
+    object HotKeysBtn: TButton
+      Left = 1
+      Top = 101
+      Width = 73
+      Height = 25
+      Align = alTop
+      Caption = 'HotKeys'
+      TabOrder = 4
+      OnClick = HotKeysBtnClick
     end
   end
   object DtaDirJvBalloonHint: TJvBalloonHint

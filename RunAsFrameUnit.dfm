@@ -1,0 +1,40 @@
+object RunAsFrame: TRunAsFrame
+  Left = 0
+  Top = 0
+  Width = 307
+  Height = 290
+  Margins.Left = 5
+  Margins.Top = 5
+  Margins.Right = 5
+  Margins.Bottom = 5
+  TabOrder = 0
+  object RunAsListBox: TListBox
+    Left = 0
+    Top = 144
+    Width = 307
+    Height = 146
+    Margins.Left = 5
+    Margins.Top = 5
+    Margins.Right = 5
+    Margins.Bottom = 5
+    Align = alBottom
+    ItemHeight = 13
+    TabOrder = 1
+    Visible = False
+  end
+  object RunAsCheckListBox: TCheckListBox
+    Left = 0
+    Top = 0
+    Width = 307
+    Height = 144
+    Margins.Left = 5
+    Margins.Top = 5
+    Margins.Right = 5
+    Margins.Bottom = 5
+    OnClickCheck = RunAsCheckListBoxClickCheck
+    Align = alClient
+    Color = clActiveCaption
+    ItemHeight = 13
+    TabOrder = 0
+  end
+end

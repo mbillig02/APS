@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, comp.reticle, System.UITypes,
   Vcl.ExtCtrls, Vcl.StdCtrls, JvExControls, JvPageList, Vcl.Samples.Spin,
   System.Actions, Vcl.ActnList, Vcl.ComCtrls, Vcl.ToolWin, JvExComCtrls,
-  JvToolBar;
+  JvToolBar, JvSpin, System.ImageList, Vcl.ImgList, Vcl.Buttons, Vcl.Mask;
 
 type
   TApplicationBoundsFrame = class(TFrame)
@@ -45,22 +45,50 @@ type
     HeightLabeledEdit: TLabeledEdit;
     CenterPanel: TPanel;
     CenterWindowReticle: TWindowReticle;
-    JvToolBar: TJvToolBar;
-    CenterToolButton: TToolButton;
     ABFActionList: TActionList;
     aCenterPage: TAction;
     aCornersPage: TAction;
-    CornersToolButton: TToolButton;
     aSidesPage: TAction;
-    SidesToolButton: TToolButton;
     aGetSetPage: TAction;
-    GetSetToolButton: TToolButton;
+    LeftJvSpinButton: TJvSpinButton;
+    TopJvSpinButton: TJvSpinButton;
+    WidthJvSpinButton: TJvSpinButton;
+    HeightJvSpinButton: TJvSpinButton;
+    MoveJvStandardPage: TJvStandardPage;
+    aMovePage: TAction;
+    WindowReticleMTL: TWindowReticle;
+    WindowReticleMTC: TWindowReticle;
+    WindowReticleMTR: TWindowReticle;
+    WindowReticleMCL: TWindowReticle;
+    WindowReticleMBL: TWindowReticle;
+    WindowReticleMCC: TWindowReticle;
+    WindowReticleMCR: TWindowReticle;
+    WindowReticleMBC: TWindowReticle;
+    WindowReticleMBR: TWindowReticle;
+    MoveGroupBox: TGroupBox;
+    ButtonPanel: TPanel;
+    CornersSpeedButton: TSpeedButton;
+    ImageList24: TImageList;
+    CenterSpeedButton: TSpeedButton;
+    SidesSpeedButton: TSpeedButton;
+    MoveSpeedButton: TSpeedButton;
+    GetSetSpeedButton: TSpeedButton;
     procedure GSGetWindowReticleDropSelect(Sender: TObject);
-    procedure WindowReticleDropSelect(Sender: TObject);
+    procedure DropSelect(Sender: TObject);
+    procedure WindowReticleDropSelectMove(Sender: TObject);
     procedure aCenterPageExecute(Sender: TObject);
     procedure aCornersPageExecute(Sender: TObject);
     procedure aSidesPageExecute(Sender: TObject);
     procedure aGetSetPageExecute(Sender: TObject);
+    procedure LeftJvSpinButtonTopClick(Sender: TObject);
+    procedure LeftJvSpinButtonBottomClick(Sender: TObject);
+    procedure TopJvSpinButtonBottomClick(Sender: TObject);
+    procedure TopJvSpinButtonTopClick(Sender: TObject);
+    procedure WidthJvSpinButtonBottomClick(Sender: TObject);
+    procedure WidthJvSpinButtonTopClick(Sender: TObject);
+    procedure HeightJvSpinButtonBottomClick(Sender: TObject);
+    procedure HeightJvSpinButtonTopClick(Sender: TObject);
+    procedure aMovePageExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -70,37 +98,41 @@ type
 var
   ABConfirmBefore: Boolean = True;
   ABConfirmAfter: Boolean = True;
+  ABAppRect: TRect;
 
 implementation
 
 {$R *.dfm}
 
-function MyMessageDlg(CONST Msg: string; DlgTypt: TmsgDlgType; button: TMsgDlgButtons;
-  Caption: ARRAY OF string; dlgcaption: string; DefaultButton: TMsgDlgBtn): Integer;
+function MyMessageDlg(const Msg: String; DlgType: TMsgDlgType; Button: TMsgDlgButtons;
+  Caption: array of String; DlgCaption: String; DefaultButton: TMsgDlgBtn;
+  const AppRect: TRect): Integer;
 var
-  aMsgdlg: TForm;
+  aMsgDlg: TForm;
   i: Integer;
-  Dlgbutton: Tbutton;
-  Captionindex: Integer;
+  DlgButton: TButton;
+  CaptionIndex: Integer;
 begin
-  aMsgdlg := createMessageDialog(Msg, DlgTypt, button, DefaultButton);
-  aMsgdlg.Caption := dlgcaption;
-  aMsgdlg.BiDiMode := bdRightToLeft;
+  aMsgdlg := CreateMessageDialog(Msg, DlgType, Button, DefaultButton);
+  aMsgdlg.Caption := DlgCaption;
   aMsgdlg.BorderIcons := aMsgdlg.BorderIcons - [biSystemMenu];
   aMsgdlg.BorderStyle := bsSingle;
 
-  Captionindex := 0;
-  for i := 0 to aMsgdlg.componentcount - 1 Do
+  aMsgdlg.Left := AppRect.Left + (AppRect.Width - aMsgdlg.Width) div 2;
+  aMsgdlg.Top := AppRect.Top + (AppRect.Height - aMsgdlg.Height) div 2;
+
+  CaptionIndex := 0;
+  for i := 0 to aMsgDlg.ComponentCount - 1 Do
   begin
-    if (aMsgdlg.components[i] is Tbutton) then
-    Begin
-      Dlgbutton := Tbutton(aMsgdlg.components[i]);
-      if Captionindex <= High(Caption) then
-        Dlgbutton.Caption := Caption[Captionindex];
-      inc(Captionindex);
+    if (aMsgDlg.Components[i] is TButton) then
+    begin
+      DlgButton := TButton(aMsgDlg.Components[i]);
+      if CaptionIndex <= High(Caption) then
+        DlgButton.Caption := Caption[CaptionIndex];
+      inc(CaptionIndex);
     end;
   end;
-  Result := aMsgdlg.Showmodal;
+  Result := aMsgdlg.ShowModal;
 end;
 
 procedure TApplicationBoundsFrame.aCenterPageExecute(Sender: TObject);
@@ -108,8 +140,21 @@ begin
   ApplicationBounsJvPageList.ActivePageIndex := 0;
 end;
 
-procedure TApplicationBoundsFrame.WindowReticleDropSelect(
-  Sender: TObject);
+procedure TApplicationBoundsFrame.WidthJvSpinButtonBottomClick(Sender: TObject);
+begin
+  WidthLabeledEdit.Text := IntToStr(StrToInt(WidthLabeledEdit.Text) - 1);
+  WidthLabeledEdit.SetFocus;
+  WidthLabeledEdit.SelStart := Length(WidthLabeledEdit.Text)
+end;
+
+procedure TApplicationBoundsFrame.WidthJvSpinButtonTopClick(Sender: TObject);
+begin
+  WidthLabeledEdit.Text := IntToStr(StrToInt(WidthLabeledEdit.Text) + 1);
+  WidthLabeledEdit.SetFocus;
+  WidthLabeledEdit.SelStart := Length(WidthLabeledEdit.Text)
+end;
+
+procedure TApplicationBoundsFrame.DropSelect(Sender: TObject);
 var
   Reticle: TWindowReticle;
   SelectedAppHandle: hwnd;
@@ -129,7 +174,7 @@ begin
 
   if ABConfirmBefore then
   begin
-    OkToChg := (MessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes,mbNo], 0, mbNo) = mrYes);
+    OkToChg := (MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect) = 6);
   end
   else
   begin
@@ -243,7 +288,162 @@ begin
 
       if ABConfirmBefore then
       begin
-        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo) = 7 then
+        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect) = 7 then
+        begin
+          SetWindowPos(SelectedAppHandle, HWND_TOP,
+            PreviousWindowRect.Left,
+            PreviousWindowRect.Top,
+            PreviousWindowRect.Width,
+            PreviousWindowRect.Height, 0);
+            // Put APS back on top
+            SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        end;
+      end;
+    end;
+  end;
+end;
+
+procedure TApplicationBoundsFrame.WindowReticleDropSelectMove(Sender: TObject);
+var
+  Reticle: TWindowReticle;
+  SelectedAppHandle: hwnd;
+  WindowRect, PreviousWindowRect: TRect;
+  WindowNameStr: String;
+  OkToChg, ChangePending: Boolean;
+begin
+  Reticle := TWindowReticle(Sender);
+  if Reticle.AncestorCaption = '' then
+  begin
+    WindowNameStr := Reticle.WindowCaption;
+  end
+  else
+  begin
+    WindowNameStr := Reticle.AncestorCaption;
+  end;
+
+  if ABConfirmBefore then
+  begin
+    OkToChg := (MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect) = 6);
+  end
+  else
+  begin
+    OkToChg := True;
+  end;
+
+  if OkToChg then
+  begin
+    SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
+    if SelectedAppHandle <> 0 then
+    begin
+      GetWindowRect(SelectedAppHandle, PreviousWindowRect);
+      ChangePending := False;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMTL' then
+      begin
+        // Move Top Left
+        WindowRect.Left := 0;
+        WindowRect.Top := 0;
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMTC' then
+      begin
+        // Move Top Center
+        WindowRect.Left := (Screen.WorkAreaWidth div 2) - (PreviousWindowRect.Width div 2);
+        WindowRect.Top := 0;
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMTR' then
+      begin
+        // Move Top Right
+        WindowRect.Left := Screen.WorkAreaWidth - PreviousWindowRect.Width;
+        WindowRect.Top := 0;
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMCL' then
+      begin
+        // Move Center Left
+        WindowRect.Left := 0;
+        WindowRect.Top := (Screen.WorkAreaHeight div 2) - (PreviousWindowRect.Height div 2);
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMCC' then
+      begin
+        // Move Center Center
+        WindowRect.Left := (Screen.WorkAreaWidth div 2) - (PreviousWindowRect.Width div 2);
+        WindowRect.Top := (Screen.WorkAreaHeight div 2) - (PreviousWindowRect.Height div 2);
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMCR' then
+      begin
+        // Move Center Right
+        WindowRect.Left := Screen.WorkAreaWidth - PreviousWindowRect.Width;
+        WindowRect.Top := (Screen.WorkAreaHeight div 2) - (PreviousWindowRect.Height div 2);
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMBL' then
+      begin
+        // Move Bottom Left
+        WindowRect.Left := 0;
+        WindowRect.Top := Screen.WorkAreaHeight - PreviousWindowRect.Height;
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMBC' then
+      begin
+        // Move Bottom Center
+        WindowRect.Left := (Screen.WorkAreaWidth div 2) - (PreviousWindowRect.Width div 2);
+        WindowRect.Top := Screen.WorkAreaHeight - PreviousWindowRect.Height;
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if (Sender as TWindowReticle).Name = 'WindowReticleMBR' then
+      begin
+        // Move Bottom Right
+        WindowRect.Left := Screen.WorkAreaWidth - PreviousWindowRect.Width;
+        WindowRect.Top := Screen.WorkAreaHeight - PreviousWindowRect.Height;
+        WindowRect.Width := 0;
+        WindowRect.Height := 0;
+        ChangePending := True;
+      end;
+
+      if ChangePending then
+      begin
+        SetWindowPos(SelectedAppHandle, HWND_TOP,
+          WindowRect.Left,
+          WindowRect.Top,
+          0,
+          0, SWP_NoSize);
+          // Put APS back on top
+          SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+          SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+      end;
+
+      if ABConfirmBefore then
+      begin
+        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect) = 7 then
         begin
           SetWindowPos(SelectedAppHandle, HWND_TOP,
             PreviousWindowRect.Left,
@@ -267,6 +467,11 @@ end;
 procedure TApplicationBoundsFrame.aGetSetPageExecute(Sender: TObject);
 begin
   ApplicationBounsJvPageList.ActivePageIndex := 3;
+end;
+
+procedure TApplicationBoundsFrame.aMovePageExecute(Sender: TObject);
+begin
+  ApplicationBounsJvPageList.ActivePageIndex := 4;
 end;
 
 procedure TApplicationBoundsFrame.aSidesPageExecute(Sender: TObject);
@@ -300,6 +505,48 @@ begin
     WidthLabeledEdit.Text := IntToStr(WindowRect.Width);
     HeightLabeledEdit.Text := IntToStr(WindowRect.Height);
   end;
+end;
+
+procedure TApplicationBoundsFrame.HeightJvSpinButtonBottomClick(Sender: TObject);
+begin
+  HeightLabeledEdit.Text := IntToStr(StrToInt(HeightLabeledEdit.Text) - 1);
+  HeightLabeledEdit.SetFocus;
+  HeightLabeledEdit.SelStart := Length(HeightLabeledEdit.Text)
+end;
+
+procedure TApplicationBoundsFrame.HeightJvSpinButtonTopClick(Sender: TObject);
+begin
+  HeightLabeledEdit.Text := IntToStr(StrToInt(HeightLabeledEdit.Text) + 1);
+  HeightLabeledEdit.SetFocus;
+  HeightLabeledEdit.SelStart := Length(HeightLabeledEdit.Text)
+end;
+
+procedure TApplicationBoundsFrame.LeftJvSpinButtonBottomClick(Sender: TObject);
+begin
+  LeftLabeledEdit.Text := IntToStr(StrToInt(LeftLabeledEdit.Text) - 1);
+  LeftLabeledEdit.SetFocus;
+  LeftLabeledEdit.SelStart := Length(LeftLabeledEdit.Text)
+end;
+
+procedure TApplicationBoundsFrame.LeftJvSpinButtonTopClick(Sender: TObject);
+begin
+  LeftLabeledEdit.Text := IntToStr(StrToInt(LeftLabeledEdit.Text) + 1);
+  LeftLabeledEdit.SetFocus;
+  LeftLabeledEdit.SelStart := Length(LeftLabeledEdit.Text)
+end;
+
+procedure TApplicationBoundsFrame.TopJvSpinButtonBottomClick(Sender: TObject);
+begin
+  TopLabeledEdit.Text := IntToStr(StrToInt(TopLabeledEdit.Text) - 1);
+  TopLabeledEdit.SetFocus;
+  TopLabeledEdit.SelStart := Length(TopLabeledEdit.Text)
+end;
+
+procedure TApplicationBoundsFrame.TopJvSpinButtonTopClick(Sender: TObject);
+begin
+  TopLabeledEdit.Text := IntToStr(StrToInt(TopLabeledEdit.Text) + 1);
+  TopLabeledEdit.SetFocus;
+  TopLabeledEdit.SelStart := Length(TopLabeledEdit.Text)
 end;
 
 end.

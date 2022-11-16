@@ -1,8 +1,11 @@
 program APS;
 
+{$I jcl.inc}
+
 uses
+  JclAppInst,
   Forms,
-  MFUnit in 'MFUnit.pas' {MainForm},
+  MFUnit in 'MFUnit.pas' {APSMainForm},
   UtlUnit in '..\UTL\UtlUnit.pas',
   About in 'About.pas' {AboutBox},
   SelectFileUnit in 'SelectFileUnit.pas' {SelectFileDlg},
@@ -13,15 +16,19 @@ uses
   Vcl.Styles,
   InitAppUnit in 'InitAppUnit.pas' {Form1},
   ABFrameUnit in 'ABFrameUnit.pas' {ApplicationBoundsFrame: TFrame},
-  GSFrameUnit in 'GSFrameUnit.pas' {GetSetFrame: TFrame};
+  GSFrameUnit in 'GSFrameUnit.pas' {GetSetFrame: TFrame},
+  RunAsFrameUnit in 'RunAsFrameUnit.pas' {RunAsFrame: TFrame};
 
 {$R *.res}
 
 begin
+  // Send message to ask APS to show itself
+  JclAppInstances.SendString('TAPSMainForm', 1, 'RestoreForm', JclAppInstances.AppWnds[0]);
+  JclAppInstances.CheckSingleInstance; // Added instance checking
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   TStyleManager.TrySetStyle('Windows10');
-  Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TAPSMainForm, APSMainForm);
   Application.CreateForm(TSelectFileDlg, SelectFileDlg);
   Application.CreateForm(TSettingsForm, SettingsForm);
   Application.Run;

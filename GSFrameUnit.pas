@@ -27,39 +27,43 @@ type
   end;
 
 var
-  ConfirmBefore: Boolean = True;
-  ConfirmAfter: Boolean = True;
+  GSConfirmBefore: Boolean = True;
+  GSConfirmAfter: Boolean = True;
+  GSAppRect: TRect;
 
 implementation
 
 {$R *.dfm}
 
-function MyMessageDlg(CONST Msg: string; DlgTypt: TmsgDlgType; button: TMsgDlgButtons;
-  Caption: ARRAY OF string; dlgcaption: string; DefaultButton: TMsgDlgBtn): Integer;
+function MyMessageDlg(const Msg: String; DlgType: TMsgDlgType; Button: TMsgDlgButtons;
+  Caption: array of String; DlgCaption: String; DefaultButton: TMsgDlgBtn;
+  const AppRect: TRect): Integer;
 var
-  aMsgdlg: TForm;
+  aMsgDlg: TForm;
   i: Integer;
-  Dlgbutton: Tbutton;
-  Captionindex: Integer;
+  DlgButton: TButton;
+  CaptionIndex: Integer;
 begin
-  aMsgdlg := createMessageDialog(Msg, DlgTypt, button, DefaultButton);
-  aMsgdlg.Caption := dlgcaption;
-  aMsgdlg.BiDiMode := bdRightToLeft;
+  aMsgdlg := CreateMessageDialog(Msg, DlgType, Button, DefaultButton);
+  aMsgdlg.Caption := DlgCaption;
   aMsgdlg.BorderIcons := aMsgdlg.BorderIcons - [biSystemMenu];
   aMsgdlg.BorderStyle := bsSingle;
 
-  Captionindex := 0;
-  for i := 0 to aMsgdlg.componentcount - 1 Do
+  aMsgdlg.Left := AppRect.Left + (AppRect.Width - aMsgdlg.Width) div 2;
+  aMsgdlg.Top := AppRect.Top + (AppRect.Height - aMsgdlg.Height) div 2;
+
+  CaptionIndex := 0;
+  for i := 0 to aMsgDlg.ComponentCount - 1 Do
   begin
-    if (aMsgdlg.components[i] is Tbutton) then
-    Begin
-      Dlgbutton := Tbutton(aMsgdlg.components[i]);
-      if Captionindex <= High(Caption) then
-        Dlgbutton.Caption := Caption[Captionindex];
-      inc(Captionindex);
+    if (aMsgDlg.Components[i] is TButton) then
+    begin
+      DlgButton := TButton(aMsgDlg.Components[i]);
+      if CaptionIndex <= High(Caption) then
+        DlgButton.Caption := Caption[CaptionIndex];
+      inc(CaptionIndex);
     end;
   end;
-  Result := aMsgdlg.Showmodal;
+  Result := aMsgdlg.ShowModal;
 end;
 
 procedure TGetSetFrame.GSGetWindowReticleDropSelect(Sender: TObject);
@@ -109,9 +113,9 @@ begin
     WindowNameStr := Reticle.AncestorCaption;
   end;
 
-  if ConfirmBefore then
+  if GSConfirmBefore then
   begin
-    OkToChg := (MessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes,mbNo], 0, mbNo) = mrYes);
+    OkToChg := (MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, GSAppRect) = 6);
   end
   else
   begin
@@ -148,10 +152,9 @@ begin
           SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
       end;
 
-      if ConfirmAfter then
+      if GSConfirmAfter then
       begin
-        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo) = 7 then
-//        if MessageDlg('Keep (Yes) or Revert (No)', mtConfirmation, [mbYes,mbNo], 0, mbNo) = mrNo then
+        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, GSAppRect) = 7 then
         begin
           SetWindowPos(SelectedAppHandle, HWND_TOP,
             PreviousWindowRect.Left,
