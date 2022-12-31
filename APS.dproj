@@ -94,9 +94,9 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>22</VerInfo_MajorVer>
-        <VerInfo_MinorVer>10</VerInfo_MinorVer>
-        <VerInfo_Release>27</VerInfo_Release>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=22.10.27.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <VerInfo_MinorVer>12</VerInfo_MinorVer>
+        <VerInfo_Release>31</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=22.12.31.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <Icon_MainIcon>APS.ico</Icon_MainIcon>
     </PropertyGroup>
@@ -140,6 +140,25 @@
         <DCCReference Include="RunAsFrameUnit.pas">
             <Form>RunAsFrame</Form>
             <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="SFTPFrameUnit.pas">
+            <Form>SFTPFrame</Form>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="FileViewForm.pas">
+            <Form>fmFileView</Form>
+        </DCCReference>
+        <DCCReference Include="NewNameForm.pas">
+            <Form>fmNewName</Form>
+        </DCCReference>
+        <DCCReference Include="IMUnit.pas">
+            <Form>InfoMemoForm</Form>
+        </DCCReference>
+        <DCCReference Include="AboutSftpUnit.pas">
+            <Form>AboutSftpForm</Form>
+        </DCCReference>
+        <DCCReference Include="SftpGetUnit.pas">
+            <Form>SftpGetForm</Form>
         </DCCReference>
         <None Include="APS.todo"/>
         <BuildConfiguration Include="Base">

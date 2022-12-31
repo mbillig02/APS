@@ -17,7 +17,13 @@ uses
   InitAppUnit in 'InitAppUnit.pas' {Form1},
   ABFrameUnit in 'ABFrameUnit.pas' {ApplicationBoundsFrame: TFrame},
   GSFrameUnit in 'GSFrameUnit.pas' {GetSetFrame: TFrame},
-  RunAsFrameUnit in 'RunAsFrameUnit.pas' {RunAsFrame: TFrame};
+  RunAsFrameUnit in 'RunAsFrameUnit.pas' {RunAsFrame: TFrame},
+  SFTPFrameUnit in 'SFTPFrameUnit.pas' {SFTPFrame: TFrame},
+  FileViewForm in 'FileViewForm.pas' {fmFileView},
+  NewNameForm in 'NewNameForm.pas' {fmNewName},
+  IMUnit in 'IMUnit.pas' {InfoMemoForm},
+  AboutSftpUnit in 'AboutSftpUnit.pas' {AboutSftpForm},
+  SftpGetUnit in 'SftpGetUnit.pas' {SftpGetForm};
 
 {$R *.res}
 
@@ -31,5 +37,11 @@ begin
   Application.CreateForm(TAPSMainForm, APSMainForm);
   Application.CreateForm(TSelectFileDlg, SelectFileDlg);
   Application.CreateForm(TSettingsForm, SettingsForm);
+  Application.CreateForm(TfmFileView, fmFileView);
+  Application.CreateForm(TfmNewName, fmNewName);
+  Application.CreateForm(TInfoMemoForm, InfoMemoForm);
+  Application.CreateForm(TAboutSftpForm, AboutSftpForm);
+  Application.CreateForm(TSftpGetForm, SftpGetForm);
+  Application.CreateForm(TSFTPFrame, SFTPFrame);
   Application.Run;
 end.

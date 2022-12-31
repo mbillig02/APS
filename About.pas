@@ -11,7 +11,7 @@ http://delphi.about.com/od/formsdialogs/a/fadeinmodalform.htm
 uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, pngimage, OverbyteIcsWndControl, OverbyteIcsFtpCli,
   JvExStdCtrls, JvButton, JvCtrls, ImgList, JvComponentBase, JvBalloonHint,
-  System.ImageList;
+  System.ImageList, System.UITypes, AboutSftpUnit, SftpGetUnit;
 
 type
   TFadeType = (ftIn, ftOut);
@@ -32,46 +32,44 @@ type
     ImageList: TImageList;
     JvBalloonHint: TJvBalloonHint;
     TestSetVersionToZeroBtn: TButton;
+    InstallBtn: TButton;
+    ProtocolRadioGroup: TRadioGroup;
     procedure fadeTimerTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure PgmUpdBtnClick(Sender: TObject);
     procedure PgmUpdDirJvImgBtnMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure JvBalloonHintClose(Sender: TObject);
     procedure TestSetVersionToZeroBtnClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure PgmUpdBtnMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure InstallBtnClick(Sender: TObject);
+    procedure ProtocolRadioGroupClick(Sender: TObject);
   private
 
     fFadeType: TFadeType;
     function CheckForPgmUpdate(HostDirName, HostName, UserName, PassWord,
       PgmVersionStr, RegexStr: String): String;
     procedure DownloadPgmUpdate;
-    procedure PgmUpdBtnClick2(Sender: TObject);
     procedure OpenDirectory(DirectoryName: String);
     procedure WriteIniFile(IniFileName: String);
-    procedure LoadSectionUpdate;
+    procedure InitAboutBox;
     property FadeType: TFadeType read fFadeType write fFadeType;
   public
     class function Execute(): TModalResult;
   end;
 
 var
-  AboutBox: TAboutBox;
-  LclInstalled: Boolean;
-  LclPgmUpdDir, LclTmpDir, LclVerStr, LclExeDir, LclDtaDir: String;
+  FAboutInitialized, lclInstalled: Boolean;
+  LclPgmUpdDir, LclTmpDir, LclVerStr, lclExeDir, LclDtaDir, lclKeyDir: String;
   CFPUHostName, CFPUUserName, CFPUPassWord, CFPUAppName: String;
-{   *** Add in main form
-    LclExeDir := ExeDir;
-    LclTmpDir := TmpDir;
-    LclDtaDir := DtaDir;
-    LclVerStr := VersionLbl.Caption;
-    LclPgmUpdDir := PgmUpdDir;
-}
+  CFPUProtocol: Integer;
 
 implementation
 
-uses UtlUnit, PerlRegEx, ShellApi, ClipBrd, IniFiles, MFUnit, Dialogs, System.UITypes;
+uses UtlUnit, PerlRegEx, ShellApi, ClipBrd, IniFiles, MFUnit, Dialogs, IMUnit,
+  SFTPFrameUnit;
 
 var
   UpdaterProgramFileName, UpdateStr: String;
@@ -102,7 +100,6 @@ begin
   with TAboutBox.Create(nil) do
   begin
     try
-//      PgmUpdBtn.Enabled := lclInstalled;
       Result := ShowModal;
     finally
       Release;
@@ -144,33 +141,20 @@ begin
   end;
 end;
 
-procedure TAboutBox.LoadSectionUpdate;
+procedure TAboutBox.InitAboutBox;
 var
   RegIniFile: TIniFile;
-{
-[Section-Update]
-FtpHostName=ftp.domain.com
-FtpUserName=DelphiTools
-FtpPassWord=TDT
-AppName=PingGUI
-}
+  SectionUpdateStrLst: TStringList;
 begin
-  if FileExists(LclDtaDir + 'Section-Update.INI') then
+  if not FAboutInitialized then
   begin
-    RegIniFile := TIniFile.Create(LclDtaDir + 'Section-Update.INI');
-    try
-      CFPUHostName := RegIniFile.ReadString('Section-Update', 'FtpHostName', '');
-      CFPUUserName := RegIniFile.ReadString('Section-Update', 'FtpUserName', '');
-      CFPUPassWord := RegIniFile.ReadString('Section-Update', 'FtpPassWord', '');
-      CFPUAppName := RegIniFile.ReadString('Section-Update', 'AppName', '');
-    finally
-      RegIniFile.Free;
-    end;
-    PgmUpdBtn.Enabled := True;
-  end
-  else
-  begin
-    PgmUpdBtn.Enabled := False;
+    FAboutInitialized := True;
+    ProtocolRadioGroup.ItemIndex := CFPUProtocol;
+    PgmUpdBtn.Hint := 'Left-Click: Check for update' + #13#10 +
+      'Right-Click: Simple Sftp Client' + #13#10 +
+      'Shift-Left-Click: Edit Section-Update.ini' + #13#10 +
+      'Shift-Right-Click: Load Section-Update.ini'; 
+    PgmUpdBtn.ShowHint := True;
   end;
 end;
 
@@ -183,7 +167,13 @@ begin
   VersionLbl.Caption := GetVersionInfoStr(ParamStr(0));
   CompilerLbl.Caption := 'Application compiled with: ' + GetCompilerName(CompilerVersion);
   UpdaterProgramFileName := LclExeDir + 'PgmUpdater.exe';
-  LoadSectionUpdate;
+  SftpGetForm.PgmUpdFileStorage.Path := lclKeyDir;
+  InitAboutBox;
+end;
+
+procedure TAboutBox.InstallBtnClick(Sender: TObject);
+begin
+  DownloadPgmUpdate;
 end;
 
 procedure TAboutBox.JvBalloonHintClose(Sender: TObject);
@@ -191,9 +181,84 @@ begin
   PgmUpdDirJvImgBtn.Hint := 'Program update directory, LC-Open, RC-Copy to clipboard';
 end;
 
-procedure TAboutBox.PgmUpdBtnClick2(Sender: TObject);
+procedure TAboutBox.PgmUpdBtnMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  HostDirName, PgmVersionStr, RegexStr: String;
+  FileList: TStringList;
 begin
-  DownloadPgmUpdate;
+  if ssShift in Shift then
+  begin
+    case Button of
+      mbLeft:
+      begin
+        // Shift-Left-Click : Edit Section-Update
+        ShellExecute(Handle, 'open', PChar(lclDtaDir + 'Section-Update.INI'), nil, nil, SW_SHOWNORMAL); // Open file in default text editor
+{
+        // get file
+        PgmUpdBtn.Enabled := False;
+        SftpGetForm.SftpDownload('LocalHost', 'TMSDelphiTools', 'TDT', '/APPS/SSC/Setup-SSC-v22.12.31.0.exe', LclPgmUpdDir + 'Setup-SSC-v22.12.31.0.exe');
+        PgmUpdBtn.Enabled := True;
+}
+      end;
+      mbRight:
+      begin
+        // Shift-Right-Click : Load Section-Update
+        APSMainForm.LoadSectionUpdate;
+{
+        // get directory list
+        PgmUpdBtn.Enabled := False;
+        FileList := TStringList.Create;
+        SftpGetForm.SftpDirectory('LocalHost', 'TMSDelphiTools', 'TDT', '/APPS/SSC', FileList);
+        FileList.SaveToFile(LclTmpDir + 'FTPFileList.TXT');
+        FileList.Free;
+        PgmUpdBtn.Enabled := True;
+}
+      end;
+    end;
+  end
+  else
+  begin
+    case Button of
+      mbLeft:
+      begin
+        // Left-Click : check for updates
+        PgmUpdBtn.Enabled := False;
+        OKBtn.Enabled := False;
+        PgmUpdDirJvImgBtn.Enabled := False;
+        PgmUpdBtn.Caption := 'Checking...';
+        PgmVersionStr := FileNameToVersionStr(LclVerStr);
+        HostDirName := '/APPS/' + CFPUAppName;
+        RegexStr := 'Setup-' + CFPUAppName + '-v([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}).exe\b';
+        try
+          UpdateStr := CheckForPgmUpdate(HostDirName, CFPUHostName, CFPUUserName, CFPUPassWord, PgmVersionStr, RegexStr);
+          if Length(UpdateStr) > 0 then
+          begin
+            PgmUpdBtn.Enabled := False;
+            InstallBtn.Enabled := True;
+            InstallBtn.Hint := 'Install updated version: ' + UpdateStr;
+            PgmUpdBtn.Caption := 'Available';
+            WriteIniFile(LclPgmUpdDir + 'PgmUpdater.ini');
+          end
+          else
+          begin
+            PgmUpdBtn.Caption := 'No update!';
+          end;
+          PgmUpdDirJvImgBtn.Enabled := True;
+        finally
+          PgmUpdBtn.Enabled := True;
+          OKBtn.Enabled := True;
+        end;
+      end;
+      mbRight:
+      begin
+        // Right-Click : sftp client
+        AboutSftpForm.SFTPAboutFrame.SetDtaDir(lclDtaDir);
+        AboutSftpForm.SetSFTPFrameKeyPath(lclKeyDir);
+        AboutSftpForm.Execute;
+      end;
+    end;
+  end;
 end;
 
 procedure TAboutBox.OpenDirectory(DirectoryName: String);
@@ -238,37 +303,14 @@ begin
   end;
 end;
 
-procedure TAboutBox.PgmUpdBtnClick(Sender: TObject);
-var
-  HostDirName, PgmVersionStr, RegexStr: String;
+procedure TAboutBox.ProtocolRadioGroupClick(Sender: TObject);
 begin
-  PgmUpdBtn.Enabled := False;
-  OKBtn.Enabled := False;
-  PgmUpdDirJvImgBtn.Enabled := False;
-  PgmUpdBtn.Caption := 'Checking...';
-  PgmVersionStr := FileNameToVersionStr(LclVerStr);
-  HostDirName := 'APPS/' + CFPUAppName;
-  RegexStr := 'Setup-' + CFPUAppName + '-v([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}).exe\b';
-  UpdateStr := CheckForPgmUpdate(HostDirName, CFPUHostName, CFPUUserName, CFPUPassWord, PgmVersionStr, RegexStr);
-  if Length(UpdateStr) > 0 then
-  begin
-    PgmUpdBtn.Caption := 'Install';
-    PgmUpdBtn.OnClick := PgmUpdBtnClick2;
-    PgmUpdBtn.Hint := 'Install updated version: ' + UpdateStr;
-    WriteIniFile(LclPgmUpdDir + 'PgmUpdater.ini');
-  end
-  else
-  begin
-    PgmUpdBtn.Caption := 'No update!';
-  end;
-  PgmUpdBtn.Enabled := True;
-  OKBtn.Enabled := True;
-  PgmUpdDirJvImgBtn.Enabled := True;
+  CFPUProtocol := ProtocolRadioGroup.ItemIndex;
 end;
 
 procedure TAboutBox.FormActivate(Sender: TObject);
 var
-  B1L, B1W, B2L, B2W, B3L, B3W, B4L, {B4W,} S1, S2, S3, ST: Integer;
+  B1L, B1W, B2L, B2W, B3L, B3W, B4L, B4W, B5L, S1, S2, S3, S4, ST: Integer;
 begin
   // Equally space buttons
   B1L := TestSetVersionToZeroBtn.Left;
@@ -277,16 +319,22 @@ begin
   B2W := PgmUpdDirJvImgBtn.Width;
   B3L := PgmUpdBtn.Left;
   B3W := PgmUpdBtn.Width;
-  B4L := OKBtn.Left;
-//  B4W := OKBtn.Width; // Not useed
+  B4L := InstallBtn.Left;
+  B4W := InstallBtn.Width;
+  B5L := OKBtn.Left;
+//  B4W := OKBtn.Width;
   S1 := B2L - (B1L + B1W);
   S2 := B3L - (B2L + B2W);
   S3 := B4L - (B3L + B3W);
-  ST := S1 + S2 + S3;
-  B2L := B1L + B1W + (ST div 3);
-  B3L := B2L + B2W + (ST div 3);
+  S4 := B5L - (B4L + B4W);
+  ST := S1 + S2 + S3 + S4;
+  B2L := B1L + B1W + (ST div 4);
+  B3L := B2L + B2W + (ST div 4);
+  B4L := B3L + B3W + (ST div 4);
   PgmUpdDirJvImgBtn.Left := B2L;
   PgmUpdBtn.Left := B3L;
+  InstallBtn.Left := B4L;
+  ProtocolRadioGroup.ItemIndex := CFPUProtocol;
 end;
 
 procedure TAboutBox.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -309,7 +357,7 @@ end;
 
 procedure TAboutBox.TestSetVersionToZeroBtnClick(Sender: TObject);
 begin
-  LclVerStr := CFPUAppName+'-v0.0.0.0';
+  LclVerStr := CFPUAppName + '-v0.0.0.0';
   VersionLbl.Caption := '0.0.0.0';
 end;
 
@@ -320,20 +368,35 @@ var
   i: Integer;
   Regex: TPerlRegEx;
   FtpVersionStr: String;
+  GetFileListSuccessful: Boolean;
 begin
+  InfoMemoForm.InfoMemo.Lines.Append('CheckForPgmUpdate' + #13#10);
   Result := '';
+  GetFileListSuccessful := False;
   Regex := TPerlRegEx.Create;
   UpdateVersionStr := '';
-  FTPClient.HostName := HostName;
-  FTPClient.UserName := UserName;
-  FTPClient.PassWord := PassWord;
-  FtpClient.HostDirName := HostDirName;
-  FtpClient.HostFileName := '';
-  FtpClient.LocalFileName := LclTmpDir + 'FTPFileList.TXT';
-  if FtpClient.Directory then // Connect, Cwd, Download a directory listing to a file & Quit
+  if ProtocolRadioGroup.ItemIndex = 0 then
+  begin
+    FTPClient.HostName := HostName;
+    FTPClient.UserName := UserName;
+    FTPClient.PassWord := PassWord;
+    FtpClient.HostDirName := HostDirName;
+    FtpClient.HostFileName := '';
+    FtpClient.LocalFileName := LclTmpDir + 'FTPFileList.TXT';
+    GetFileListSuccessful := FtpClient.Directory; // Connect, Cwd, Download a directory listing to a file & Quit
+    if FileExists(LclTmpDir + 'FTPFileList.TXT') then
+    begin
+      FileList := TStringList.Create;
+      FileList.LoadFromFile(LclTmpDir + 'FTPFileList.TXT');
+    end;
+  end;
+  if ProtocolRadioGroup.ItemIndex = 1 then
   begin
     FileList := TStringList.Create;
-    FileList.LoadFromFile(LclTmpDir + 'FTPFileList.TXT');
+    GetFileListSuccessful := SftpGetForm.SftpDirectory(HostName, UserName, PassWord, HostDirName, FileList);
+  end;
+  if GetFileListSuccessful and Assigned(FileList) then
+  begin
     for i := 0 to FileList.Count - 1 do
     begin
       Regex.RegEx := AnsiToUTF8(RegexStr);
@@ -348,6 +411,7 @@ begin
           begin
             UpdateVersionStr := FtpVersionStr;
             Result := Utf8ToAnsi(Regex.MatchedText);
+            InfoMemoForm.InfoMemo.Lines.Append('Update Found');
           end;
         end;
       end;
@@ -375,20 +439,28 @@ end;
 procedure TAboutBox.DownloadPgmUpdate;
 var
   HostDirName: String;
+  FileDownloaded: Boolean;
 begin
-  PgmUpdBtn.Caption := 'Working...';
+  InstallBtn.Caption := 'Working...';
   HostDirName := 'APPS/' + CFPUAppName;
-  FTPClient.HostName := CFPUHostName;
-  FTPClient.UserName := CFPUUserName;
-  FTPClient.PassWord := CFPUPassWord;
-  FTPClient.HostDirName := HostDirName;
-  FTPClient.LocalFileName := LclPgmUpdDir + UpdateStr;
-  FTPClient.HostFileName := UpdateStr;
-  if FTPClient.Receive then
-  // Connect, Cwd, Download a file & Quit
+  if ProtocolRadioGroup.ItemIndex = 0 then
   begin
-//    if SysUtils.FileExists(LclPgmUpdDir + UpdaterProgramFileName) then
-    if SysUtils.FileExists(UpdaterProgramFileName) then
+    FTPClient.HostName := CFPUHostName;
+    FTPClient.UserName := CFPUUserName;
+    FTPClient.PassWord := CFPUPassWord;
+    FTPClient.HostDirName := HostDirName;
+    FTPClient.LocalFileName := LclPgmUpdDir + UpdateStr;
+    FTPClient.HostFileName := UpdateStr;
+    // Connect, Cwd, Download a file & Quit
+    FileDownloaded := FTPClient.Receive;
+  end;
+  if ProtocolRadioGroup.ItemIndex = 1 then
+  begin
+    FileDownloaded := SftpGetForm.SftpDownload(CFPUHostName, CFPUUserName, CFPUPassWord, HostDirName + '/' + UpdateStr, LclPgmUpdDir + UpdateStr);
+  end;
+  if FileDownloaded then
+  begin
+    if SysUtils.FileExists(UpdaterProgramFileName) then // if PgmUpdater.exe in exe dir then run it else open FileExplorer
     begin
       Sleep(1000);
       ShellExecute(Application.Handle, nil, PWideChar(UpdaterProgramFileName), PWideChar(LclPgmUpdDir + 'PgmUpdater.ini'), nil, SW_MINIMIZE);
@@ -396,13 +468,13 @@ begin
     end
     else
     begin
-      PgmUpdBtn.Caption := 'Error!';
-      MessageDlg('PgmUpdater.exe not found!', mtError, [mbOk], 0);
+      MessageDlg('Close program before running install', mtInformation, [mbOk], 0);
+      OpenDirectory(LclPgmUpdDir);
     end;
   end
   else
   begin
-    PgmUpdBtn.Caption := 'Error!';
+    InstallBtn.Caption := 'Error!';
   end;
 end;
 

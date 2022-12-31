@@ -101,7 +101,8 @@ var
   SelectedAppHandle: hwnd;
   WindowRect, PreviousWindowRect: TRect;
   WindowNameStr: String;
-  OkToChg, ChangePending: Boolean;
+  OkToChg: Integer;
+  ChangePending: Boolean;
 begin
   Reticle := TWindowReticle(Sender);
   if Reticle.AncestorCaption = '' then
@@ -115,14 +116,19 @@ begin
 
   if GSConfirmBefore then
   begin
-    OkToChg := (MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, GSAppRect) = 6);
+    OkToChg := MyMessageDlg('What do you want to do with' + #10#13 + '"' + WindowNameStr + '" ?', mtConfirmation, [mbYes, mbOk, mbRetry, mbNo], ['Position/Size', 'Position', 'Size', 'Cancel'], 'Confirmation', mbRetry, GSAppRect);
   end
   else
   begin
-    OkToChg := True;
+    OkToChg := 6;
   end;
 
-  if OkToChg then
+// 6	mbYes		Position/Size
+// 7	mbOk		Position
+// 1	mbRetry		Size
+// 4	mbNo		Cancel
+
+  if OkToChg in [6, 7, 1] then
   begin
     SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
     if SelectedAppHandle <> 0 then
@@ -133,11 +139,29 @@ begin
       if (Sender as TWindowReticle).Name = 'GSSetWindowReticle' then
       begin
         // GS Set
-        WindowRect.Left := LeftSpinEdit.Value;
-        WindowRect.Top := TopSpinEdit.Value;
-        WindowRect.Width := WidthSpinEdit.Value;
-        WindowRect.Height := HeightSpinEdit.Value;
-        ChangePending := True;
+        case OkToChg of
+          6: begin
+               WindowRect.Left := LeftSpinEdit.Value;
+               WindowRect.Top := TopSpinEdit.Value;
+               WindowRect.Width := WidthSpinEdit.Value;
+               WindowRect.Height := HeightSpinEdit.Value;
+               ChangePending := True;
+             end;
+          7: begin
+               WindowRect.Left := LeftSpinEdit.Value;
+               WindowRect.Top := TopSpinEdit.Value;
+               WindowRect.Width := PreviousWindowRect.Width;
+               WindowRect.Height := PreviousWindowRect.Height;
+               ChangePending := True;
+             end;
+          1: begin
+               WindowRect.Left := PreviousWindowRect.Left;
+               WindowRect.Top := PreviousWindowRect.Top;
+               WindowRect.Width := WidthSpinEdit.Value;
+               WindowRect.Height := HeightSpinEdit.Value;
+               ChangePending := True;
+             end;
+        end;
       end;
 
       if ChangePending then

@@ -219,18 +219,31 @@ object AboutBox: TAboutBox
       Caption = 'CompilerLbl'
       ExplicitWidth = 208
     end
+    object ProtocolRadioGroup: TRadioGroup
+      Left = 215
+      Top = 22
+      Width = 55
+      Height = 52
+      Caption = 'Protocol'
+      ItemIndex = 1
+      Items.Strings = (
+        'FTP'
+        'SFTP')
+      TabOrder = 0
+      OnClick = ProtocolRadioGroupClick
+    end
   end
   object PgmUpdBtn: TButton
     Left = 60
     Top = 120
-    Width = 75
+    Width = 60
     Height = 25
     Hint = 'Check for update'
     Caption = 'Check'
     ParentShowHint = False
-    ShowHint = True
+    ShowHint = False
     TabOrder = 2
-    OnClick = PgmUpdBtnClick
+    OnMouseDown = PgmUpdBtnMouseDown
   end
   object OKBtn: TButton
     Left = 211
@@ -269,6 +282,18 @@ object AboutBox: TAboutBox
     ShowHint = True
     TabOrder = 4
     OnClick = TestSetVersionToZeroBtnClick
+  end
+  object InstallBtn: TButton
+    Left = 141
+    Top = 120
+    Width = 60
+    Height = 25
+    Caption = 'Install'
+    Enabled = False
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 5
+    OnClick = InstallBtnClick
   end
   object fadeTimer: TTimer
     Enabled = False

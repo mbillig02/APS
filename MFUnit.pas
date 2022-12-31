@@ -8,7 +8,8 @@ uses
   JvComponentBase, JvBalloonHint, UtlUnit, Menus, About, ActnList,
   System.Actions, System.UITypes, Themes, MruUnit, comp.reticle,
   Vcl.Samples.Spin, Data.DB, Vcl.Grids, Vcl.DBGrids, JvDataSource, JvCsvData,
-  Vcl.DBCtrls, JvPageList, JvExControls, InitAppUnit, ABFrameUnit, GSFrameUnit, JclAppInst;
+  Vcl.DBCtrls, JvPageList, JvExControls, InitAppUnit, ABFrameUnit, GSFrameUnit, JclAppInst,
+  JvCaptionButton;
 
 type
   TTopLeftHeightWidth = record
@@ -173,11 +174,14 @@ type
     pmiQuit: TMenuItem;
     pmiRestore: TMenuItem;
     aMoveToSystemTray: TAction;
-    mmiMoveToSystemTray: TMenuItem;
+    mmiHideForm: TMenuItem;
     N9: TMenuItem;
     pmiAbout: TMenuItem;
     N12: TMenuItem;
     N13: TMenuItem;
+    mmiMoveToSystemTray: TMenuItem;
+    aInfoMemo: TAction;
+    mmiInfoMemo: TMenuItem;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -251,6 +255,9 @@ type
     procedure TrayIconDblClick(Sender: TObject);
     procedure aMoveToSystemTrayExecute(Sender: TObject);
     procedure pmiAboutClick(Sender: TObject);
+    procedure mmiMoveToSystemTrayClick(Sender: TObject);
+    procedure aInfoMemoExecute(Sender: TObject);
+    procedure LoadSectionUpdate;
   private
     HotKey1: NativeUInt;
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
@@ -289,7 +296,7 @@ type
 
 var
   APSMainForm: TAPSMainForm;
-  ExeDir, TmpDir, LstDir, PgmUpdDir, StyleStr: String;
+  ExeDir, TmpDir, LstDir, PgmUpdDir, KeyDir, StyleStr: String;
   MainFormDefaultRect, MainFormRect: TTopLeftHeightWidth;
   SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB: Boolean;
   HotKey1AltB, HotKey1CtrlB,HotKey1ShftB: Boolean;
@@ -300,7 +307,7 @@ implementation
 uses
   JclSecurity, ShellApi, ClipBrd, JclSysInfo, IniFiles, JclFileUtils,
   SelectFileUnit, SetUnit, JclAnsiStrings, System.IOUtils, Winapi.PsAPI,
-  System.RegularExpressions, System.RegularExpressionsCore;
+  System.RegularExpressions, System.RegularExpressionsCore, IMUnit;
 
 var
   FInitialized, AutoElevateDoNotSave: Boolean;
@@ -662,6 +669,31 @@ begin
     WidthSpinEdit.Value := WindowRect.Width;
     HeightSpinEdit.Value := WindowRect.Height;
   end;
+end;
+
+procedure TAPSMainForm.aInfoMemoExecute(Sender: TObject);
+begin
+  if Application.MainForm.Left + Application.MainForm.Width + InfoMemoForm.Width < Screen.WorkAreaWidth then
+  begin
+    InfoMemoForm.Position := poDesigned;
+    InfoMemoForm.Top := Application.MainForm.Top;
+    InfoMemoForm.Left := Application.MainForm.Left + Application.MainForm.Width;
+  end
+  else
+  begin
+    if Application.MainForm.Top + Application.MainForm.Height + InfoMemoForm.Height < Screen.WorkAreaHeight then
+    begin
+      InfoMemoForm.Position := poDesigned;
+      InfoMemoForm.Top := Application.MainForm.Top + Application.MainForm.Height;
+      InfoMemoForm.Left := Application.MainForm.Left;
+    end
+    else
+    begin
+//      InfoMemoForm.Position := poMainFormCenter;
+      InfoMemoForm.Position := poDesktopCenter;
+    end;
+  end;
+  InfoMemoForm.Show;
 end;
 
 procedure TAPSMainForm.aOpenDBExecute(Sender: TObject);
@@ -1279,6 +1311,7 @@ end;
 
 procedure TAPSMainForm.FormCreate(Sender: TObject);
 begin
+  Application.HintHidePause := 5000; // hint disappears after 5 secs
   InitDtaDir;
   LoadStyleSettings;
   TStyleManager.TrySetStyle(StyleStr);
@@ -1339,6 +1372,11 @@ begin
   begin
     Menu.Items[i].Checked := False;
   end;
+end;
+
+procedure TAPSMainForm.mmiMoveToSystemTrayClick(Sender: TObject);
+begin
+  HideForm;
 end;
 
 procedure TAPSMainForm.mmiStylesClick(Sender: TObject);
@@ -1419,6 +1457,8 @@ begin
     SettingsForm.DtaDirLbl.Caption := DtaDir;
     SettingsForm.LstDirLbl.Caption := LstDir;
     SettingsForm.TmpDirLbl.Caption := TmpDir;
+    KeyDir := DtaDir + 'KEY\'; ForceDirectories(KeyDir);
+    lclKeyDir := KeyDir;
     VerStr := PgmName + '-v' + GetVersionInfoStr(ParamStr(0));
     MostRecentFiles.IniFile := DtaDir + 'LoadFile-MRU.INI';
 
@@ -1604,6 +1644,30 @@ begin
   end;
 end;
 
+procedure TAPSMainForm.LoadSectionUpdate;
+var
+  RegIniFile: TIniFile;
+  TmpStr: String;
+begin
+  InfoMemoForm.InfoMemo.Lines.Append('INI File: ' + DtaDir + 'Section-Update.INI');
+  RegIniFile := TIniFile.Create(DtaDir + 'Section-Update.INI');
+  try
+    CFPUHostName := RegIniFile.ReadString('Section-Update', 'FtpHostName', 'ftp.domain.com');
+    InfoMemoForm.InfoMemo.Lines.Append('Hostname: ' + CFPUHostName);
+    CFPUUserName := RegIniFile.ReadString('Section-Update', 'FtpUserName', 'Username');
+    InfoMemoForm.InfoMemo.Lines.Append('Username: ' + CFPUUserName);
+    CFPUPassWord := RegIniFile.ReadString('Section-Update', 'FtpPassWord', 'Password');
+    InfoMemoForm.InfoMemo.Lines.Append('Password: ' + CFPUPassWord);
+    CFPUAppName := RegIniFile.ReadString('Section-Update', 'AppName', PgmName);
+    InfoMemoForm.InfoMemo.Lines.Append('AppName: ' + CFPUAppName);
+    CFPUProtocol := RegIniFile.ReadInteger('Section-Update', 'Protocol', 1);
+    if CFPUProtocol = 0 then TmpStr := 'FTP' else TmpStr := 'SFTP';
+    InfoMemoForm.InfoMemo.Lines.Append('Protocol: ' + TmpStr);
+  finally
+    RegIniFile.Free;
+  end;
+end;
+
 procedure TAPSMainForm.LoadSettingsFromFormActivate;
 var
   RegIniFile: TIniFile;
@@ -1611,11 +1675,6 @@ var
 begin
   RegIniFile := TIniFile.Create(DtaDir + PgmIni);
   try
-    CFPUHostName := RegIniFile.ReadString('Section-Update', 'FtpHostName', 'ftp2.tmshealth.com');
-    CFPUUserName := RegIniFile.ReadString('Section-Update', 'FtpUserName', 'TMSDelphiTools');
-    CFPUPassWord := RegIniFile.ReadString('Section-Update', 'FtpPassWord', 'TDT');
-    CFPUAppName := RegIniFile.ReadString('Section-Update', 'AppName', PgmName);
-
 //    SelectFileDlg.Top := RegIniFile.ReadInteger('Section-Window', 'SelectFileTop', 100);
 //    SelectFileDlg.Left := RegIniFile.ReadInteger('Section-Window', 'SelectFileLeft', 100);
     SelectFileDlg.Height := RegIniFile.ReadInteger('Section-Window', 'SelectFileHeight', 275);
@@ -1630,6 +1689,9 @@ begin
   finally
     RegIniFile.Free;
   end;
+
+  LoadSectionUpdate;
+
 end;
 
 procedure TAPSMainForm.LoadSettingsLateFormActivate;
@@ -1695,11 +1757,6 @@ begin
     RegIniFile.WriteInteger('Section-Window', 'Left', APSMainForm.Left);
     RegIniFile.WriteInteger('Section-Window', 'Height', APSMainForm.Height);
     RegIniFile.WriteInteger('Section-Window', 'Width', APSMainForm.Width);
-
-    RegIniFile.WriteString('Section-Update', 'FtpHostName', CFPUHostName);
-    RegIniFile.WriteString('Section-Update', 'FtpUserName', CFPUUserName);
-    RegIniFile.WriteString('Section-Update', 'FtpPassWord', CFPUPassWord);
-    RegIniFile.WriteString('Section-Update', 'AppName', CFPUAppName);
 {
     RegIniFile.WriteInteger('Section-Window', 'SelectFileTop', SelectFileDlg.Top);
     RegIniFile.WriteInteger('Section-Window', 'SelectFileLeft', SelectFileDlg.Left);
@@ -1739,6 +1796,18 @@ begin
   finally
     RegIniFile.Free;
   end;
+
+  RegIniFile := TIniFile.Create(DtaDir + 'Section-Update.INI');
+  try
+    RegIniFile.WriteString('Section-Update', 'FtpHostName', CFPUHostName);
+    RegIniFile.WriteString('Section-Update', 'FtpUserName', CFPUUserName);
+    RegIniFile.WriteString('Section-Update', 'FtpPassWord', CFPUPassWord);
+    RegIniFile.WriteString('Section-Update', 'AppName', CFPUAppName);
+    RegIniFile.WriteInteger('Section-Update', 'Protocol', CFPUProtocol);
+  finally
+    RegIniFile.Free;
+  end;
+
 end;
 
 procedure TAPSMainForm.AddStylesToListBox;

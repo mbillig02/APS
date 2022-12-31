@@ -160,7 +160,8 @@ var
   SelectedAppHandle: hwnd;
   WindowRect, PreviousWindowRect: TRect;
   WindowNameStr: String;
-  OkToChg, ChangePending: Boolean;
+  OkToChg: Integer;
+  ChangePending: Boolean;
 begin
   Reticle := TWindowReticle(Sender);
   if Reticle.AncestorCaption = '' then
@@ -174,14 +175,22 @@ begin
 
   if ABConfirmBefore then
   begin
-    OkToChg := (MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect) = 6);
+    if (Sender as TWindowReticle).Name = 'GSSetWindowReticle' then
+    begin
+      // GS Set
+      OkToChg := MyMessageDlg('What do you want to do with' + #10#13 + '"' + WindowNameStr + '" ?', mtConfirmation, [mbYes, mbOk, mbRetry, mbNo], ['Position/Size', 'Position', 'Size', 'Cancel'], 'Confirmation', mbRetry, ABAppRect);
+    end
+    else
+    begin
+      OkToChg := MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect);
+    end;
   end
   else
   begin
-    OkToChg := True;
+    OkToChg := 6;
   end;
 
-  if OkToChg then
+  if OkToChg in [6, 7, 1] then
   begin
     SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
     if SelectedAppHandle <> 0 then
@@ -267,11 +276,29 @@ begin
       if (Sender as TWindowReticle).Name = 'GSSetWindowReticle' then
       begin
         // GS Set
-        WindowRect.Left := StrToInt(LeftLabeledEdit.Text);
-        WindowRect.Top := StrToInt(TopLabeledEdit.Text);
-        WindowRect.Width := StrToInt(WidthLabeledEdit.Text);
-        WindowRect.Height := StrToInt(HeightLabeledEdit.Text);
-        ChangePending := True;
+        case OkToChg of
+          6: begin
+               WindowRect.Left := StrToInt(LeftLabeledEdit.Text);
+               WindowRect.Top := StrToInt(TopLabeledEdit.Text);
+               WindowRect.Width := StrToInt(WidthLabeledEdit.Text);
+               WindowRect.Height := StrToInt(HeightLabeledEdit.Text);
+               ChangePending := True;
+             end;
+          7: begin
+               WindowRect.Left := StrToInt(LeftLabeledEdit.Text);
+               WindowRect.Top := StrToInt(TopLabeledEdit.Text);
+               WindowRect.Width := PreviousWindowRect.Width;
+               WindowRect.Height := PreviousWindowRect.Height;
+               ChangePending := True;
+             end;
+          1: begin
+               WindowRect.Left := PreviousWindowRect.Left;
+               WindowRect.Top := PreviousWindowRect.Top;
+               WindowRect.Width := StrToInt(WidthLabeledEdit.Text);
+               WindowRect.Height := StrToInt(HeightLabeledEdit.Text);
+               ChangePending := True;
+             end;
+        end;
       end;
 
       if ChangePending then

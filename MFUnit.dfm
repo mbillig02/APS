@@ -565,7 +565,7 @@ object APSMainForm: TAPSMainForm
       object N3: TMenuItem
         Caption = '-'
       end
-      object mmiMoveToSystemTray: TMenuItem
+      object mmiHideForm: TMenuItem
         Action = aMoveToSystemTray
       end
       object N6: TMenuItem
@@ -574,6 +574,10 @@ object APSMainForm: TAPSMainForm
       object mmiAutoStartElevated: TMenuItem
         AutoCheck = True
         Caption = 'Auto Start Elevated'
+        Visible = False
+      end
+      object mmiInfoMemo: TMenuItem
+        Action = aInfoMemo
       end
       object N9: TMenuItem
         Caption = '-'
@@ -669,6 +673,10 @@ object APSMainForm: TAPSMainForm
     end
     object mmiRestartElevated: TMenuItem
       Action = aRestartElevated
+    end
+    object mmiMoveToSystemTray: TMenuItem
+      Caption = '-->'
+      OnClick = mmiMoveToSystemTrayClick
     end
     object mmiVersionAbout: TMenuItem
       Caption = 'About'
@@ -870,8 +878,13 @@ object APSMainForm: TAPSMainForm
       OnExecute = aSelectFrameListExecute
     end
     object aMoveToSystemTray: TAction
-      Caption = 'Move To System Tray'
+      Caption = '--> Move To System Tray'
       OnExecute = aMoveToSystemTrayExecute
+    end
+    object aInfoMemo: TAction
+      Category = 'File'
+      Caption = 'InfoMemo'
+      OnExecute = aInfoMemoExecute
     end
   end
   object MostRecentFiles: TMostRecentFiles
@@ -948,6 +961,9 @@ object APSMainForm: TAPSMainForm
     end
   end
   object TrayIcon: TTrayIcon
+    Hint = 'Application Position &&& Size'
+    BalloonHint = 'Double click the system tray icon to restore the window.'
+    BalloonTitle = 'Restoring the window.'
     Icon.Data = {
       000001000800000000000100100028800C008600000000000000010010002820
       0300AE800C00808000000100100028C80000D6A00F0040400000010010002832
@@ -35385,6 +35401,7 @@ object APSMainForm: TAPSMainForm
     Top = 88
     object pmiRestore: TMenuItem
       Caption = 'Restore'
+      Default = True
       OnClick = pmiRestoreClick
     end
     object N12: TMenuItem
