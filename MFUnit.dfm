@@ -21,7 +21,7 @@ object APSMainForm: TAPSMainForm
     Top = 0
     Width = 559
     Height = 185
-    ActivePage = JvStandardPage3
+    ActivePage = JvStandardPage4
     PropagateEnable = False
     Align = alClient
     object JvStandardPage1: TJvStandardPage
@@ -430,7 +430,6 @@ object APSMainForm: TAPSMainForm
           Align = alBottom
           Caption = 'Confirm Set'
           TabOrder = 0
-          ExplicitTop = 143
           object BeforeCheckBox: TCheckBox
             Left = 21
             Top = 15
@@ -466,37 +465,69 @@ object APSMainForm: TAPSMainForm
           ExplicitWidth = 178
           ExplicitHeight = 143
           inherited ApplicationBounsJvPageList: TJvPageList
+            inherited CenterPercentJvStandardPage: TJvStandardPage
+              inherited CenterPercentGroupBox: TGroupBox
+                inherited CenterPercentSpinEdit: TSpinEdit
+                  Height = 22
+                  ExplicitHeight = 22
+                end
+              end
+            end
             inherited GetSetJvStandardPage: TJvStandardPage
               inherited GetSetGroupBox: TGroupBox
                 inherited LeftLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 2
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 23
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
                 end
                 inherited TopLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 45
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 22
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
                 end
                 inherited WidthLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Width = 32
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 88
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 32
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
                 end
                 inherited HeightLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Width = 35
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 131
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 35
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
+                end
+              end
+            end
+            inherited SizeJvStandardPage: TJvStandardPage
+              inherited SizeGroupBox: TGroupBox
+                inherited SizeRightPanel: TPanel
+                  Top = 15
+                  Height = 94
+                  ExplicitTop = 15
+                  ExplicitHeight = 94
+                end
+                inherited SizeScrollBox: TScrollBox
+                  Top = 15
+                  Height = 94
+                  ExplicitTop = 15
+                  ExplicitHeight = 94
                 end
               end
             end
@@ -515,8 +546,59 @@ object APSMainForm: TAPSMainForm
         Align = alClient
         PopupMenu = FrameScrollPopupMenu
         TabOrder = 1
-        ExplicitWidth = 375
-        ExplicitHeight = 184
+      end
+    end
+    object JvStandardPage4: TJvStandardPage
+      Left = 0
+      Top = 0
+      Width = 559
+      Height = 185
+      Caption = 'JvStandardPage4'
+      OnShow = JvStandardPage4Show
+      inline RealtimeFrame: TRealtimeFrame
+        Left = 0
+        Top = 0
+        Width = 559
+        Height = 185
+        Align = alClient
+        Color = clBtnFace
+        ParentBackground = False
+        ParentColor = False
+        TabOrder = 0
+        ExplicitLeft = 96
+        ExplicitTop = 17
+        inherited RectLbl: TLabel
+          Top = 159
+          Width = 559
+          Height = 13
+          ExplicitTop = 139
+          ExplicitWidth = 35
+          ExplicitHeight = 13
+        end
+        inherited AppHandleLbl: TLabel
+          Top = 146
+          Width = 559
+          Height = 13
+          ExplicitTop = 126
+          ExplicitWidth = 65
+          ExplicitHeight = 13
+        end
+        inherited AppNameLbl: TLabel
+          Top = 172
+          Width = 559
+          Height = 13
+          ExplicitTop = 152
+          ExplicitWidth = 59
+          ExplicitHeight = 13
+        end
+        inherited PidLbl: TLabel
+          Top = 133
+          Width = 559
+          Height = 13
+          ExplicitTop = 113
+          ExplicitWidth = 27
+          ExplicitHeight = 13
+        end
       end
     end
   end
@@ -588,6 +670,7 @@ object APSMainForm: TAPSMainForm
     end
     object mmiPages: TMenuItem
       Caption = 'Pages'
+      Visible = False
       object mmiPage3: TMenuItem
         Action = aPage3
       end
@@ -596,6 +679,9 @@ object APSMainForm: TAPSMainForm
       end
       object mmiPage2: TMenuItem
         Action = aPage2
+      end
+      object mmiPage4: TMenuItem
+        Action = aPage4
       end
     end
     object mmiFrames: TMenuItem
@@ -885,6 +971,11 @@ object APSMainForm: TAPSMainForm
       Category = 'File'
       Caption = 'InfoMemo'
       OnExecute = aInfoMemoExecute
+    end
+    object aPage4: TAction
+      Category = 'Page'
+      Caption = 'Realtime'
+      OnExecute = aPage4Execute
     end
   end
   object MostRecentFiles: TMostRecentFiles

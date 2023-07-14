@@ -4,6 +4,9 @@ program APS;
 
 uses
   JclAppInst,
+  JclSysInfo,
+  JclFileUtils,
+  SysUtils,
   Forms,
   MFUnit in 'MFUnit.pas' {APSMainForm},
   UtlUnit in '..\UTL\UtlUnit.pas',
@@ -18,19 +21,31 @@ uses
   ABFrameUnit in 'ABFrameUnit.pas' {ApplicationBoundsFrame: TFrame},
   GSFrameUnit in 'GSFrameUnit.pas' {GetSetFrame: TFrame},
   RunAsFrameUnit in 'RunAsFrameUnit.pas' {RunAsFrame: TFrame},
-  SFTPFrameUnit in 'SFTPFrameUnit.pas' {SFTPFrame: TFrame},
   FileViewForm in 'FileViewForm.pas' {fmFileView},
   NewNameForm in 'NewNameForm.pas' {fmNewName},
   IMUnit in 'IMUnit.pas' {InfoMemoForm},
+  {$IFDEF ABOUTSFTP}
   AboutSftpUnit in 'AboutSftpUnit.pas' {AboutSftpForm},
-  SftpGetUnit in 'SftpGetUnit.pas' {SftpGetForm};
+  SFTPFrameUnit in 'SFTPFrameUnit.pas' {SFTPFrame: TFrame},
+  SftpGetUnit in 'SftpGetUnit.pas' {SftpGetForm},
+  {$ENDIF }
+  FtpFrameUnit in 'FtpFrameUnit.pas' {FtpFrame: TFrame},
+  AboutFtpUnit in 'AboutFtpUnit.pas' {AboutFtpForm},
+  RealtimeFrameUnit in 'RealtimeFrameUnit.pas' {RealtimeFrame: TFrame};
 
 {$R *.res}
 
 begin
   // Send message to ask APS to show itself
   JclAppInstances.SendString('TAPSMainForm', 1, 'RestoreForm', JclAppInstances.AppWnds[0]);
-  JclAppInstances.CheckSingleInstance; // Added instance checking
+  if FileExists(GetWindowsTempFolder + '\APSRestart.Semaphore') then
+  begin
+    DeleteFile(GetWindowsTempFolder + '\APSRestart.Semaphore');
+  end
+  else
+  begin
+    JclAppInstances.CheckSingleInstance; // Added instance checking
+  end;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   TStyleManager.TrySetStyle('Windows10');
@@ -40,8 +55,11 @@ begin
   Application.CreateForm(TfmFileView, fmFileView);
   Application.CreateForm(TfmNewName, fmNewName);
   Application.CreateForm(TInfoMemoForm, InfoMemoForm);
-  Application.CreateForm(TAboutSftpForm, AboutSftpForm);
-  Application.CreateForm(TSftpGetForm, SftpGetForm);
-  Application.CreateForm(TSFTPFrame, SFTPFrame);
+  Application.CreateForm(TAboutFtpForm, AboutFtpForm);
+  {$IFDEF ABOUTSFTP}
+    Application.CreateForm(TAboutSftpForm, AboutSftpForm);
+    Application.CreateForm(TSftpGetForm, SftpGetForm);
+    Application.CreateForm(TSFTPFrame, SFTPFrame);
+  {$ENDIF}
   Application.Run;
 end.

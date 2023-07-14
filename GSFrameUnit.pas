@@ -66,12 +66,18 @@ begin
   Result := aMsgdlg.ShowModal;
 end;
 
+function InsertDotDotDot(OrgStr: String; MaxLength: Integer): String;
+begin
+  Result := Trim(Copy(OrgStr, 1, (MaxLength div 2) - 2)) + '...' + Trim(Copy(OrgStr, Length(OrgStr) - (MaxLength div 2) + 2));
+end;
+
 procedure TGetSetFrame.GSGetWindowReticleDropSelect(Sender: TObject);
 var
   Reticle: TWindowReticle;
   SelectedAppHandle: hwnd;
   WindowRect: TRect;
-  WindowNameStr: String;
+  WindowNameStr, WithStr: String;
+  OkToChg: Integer;
 begin
   Reticle := TWindowReticle(Sender);
   if Reticle.AncestorCaption = '' then
@@ -83,15 +89,32 @@ begin
     WindowNameStr := Reticle.AncestorCaption;
   end;
 
-  SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
-  if SelectedAppHandle <> 0 then
+  if Length(WindowNameStr) > 45 then
   begin
-    GetWindowRect(SelectedAppHandle, WindowRect);
-    NameEdit.Text := WindowNameStr;
-    LeftSpinEdit.Value := WindowRect.Left;
-    TopSpinEdit.Value := WindowRect.Top;
-    WidthSpinEdit.Value := WindowRect.Width;
-    HeightSpinEdit.Value := WindowRect.Height;
+    WithStr := InsertDotDotDot(WindowNameStr, 40);
+  end
+  else
+  begin
+    WithStr := WindowNameStr;
+  end;
+  // 6	mbYes    Replace
+  // 7	mbOk     Add New  // not sure if we can or should do this here
+  // 4	mbNo		 Cancel
+  OkToChg := MyMessageDlg('Replace "' + NameEdit.Text + '"' + #10#13 + 'with "' + WithStr + '" ?', mtConfirmation, [mbYes, mbNo], ['Replace', 'Cancel'], 'Confirmation', mbNo, GSAppRect);
+
+  case OkToChg of
+    6: begin // 6	mbYes    Replace
+         SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
+         if SelectedAppHandle <> 0 then
+         begin
+           GetWindowRect(SelectedAppHandle, WindowRect);
+           NameEdit.Text := WithStr;
+           LeftSpinEdit.Value := WindowRect.Left;
+           TopSpinEdit.Value := WindowRect.Top;
+           WidthSpinEdit.Value := WindowRect.Width;
+           HeightSpinEdit.Value := WindowRect.Height;
+         end;
+       end;
   end;
 end;
 

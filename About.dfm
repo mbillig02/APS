@@ -233,7 +233,7 @@ object AboutBox: TAboutBox
       OnClick = ProtocolRadioGroupClick
     end
   end
-  object PgmUpdBtn: TButton
+  object CheckBtn: TButton
     Left = 60
     Top = 120
     Width = 60
@@ -243,7 +243,7 @@ object AboutBox: TAboutBox
     ParentShowHint = False
     ShowHint = False
     TabOrder = 2
-    OnMouseDown = PgmUpdBtnMouseDown
+    OnMouseDown = CheckBtnMouseDown
   end
   object OKBtn: TButton
     Left = 211

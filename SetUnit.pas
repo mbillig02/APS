@@ -76,6 +76,14 @@ type
     HotKeysBtn: TButton;
     AppHideShowGroupBox: TGroupBox;
     SetHotKeyBtn: TButton;
+    JvStandardPagePages: TJvStandardPage;
+    PagesBtn: TButton;
+    MiscMainMenuGroupBox: TGroupBox;
+    PagesCheckBox: TCheckBox;
+    Page1CheckBox: TCheckBox;
+    Page2CheckBox: TCheckBox;
+    Page3CheckBox: TCheckBox;
+    Page4CheckBox: TCheckBox;
     procedure SetDefaultScreenBtnClick(Sender: TObject);
     procedure SetAlomstFullScreenBtnClick(Sender: TObject);
     procedure SavFrmSizChkBoxClick(Sender: TObject);
@@ -117,6 +125,12 @@ type
     procedure ShowMissingLinksCheckBoxClick(Sender: TObject);
     procedure HotKeysBtnClick(Sender: TObject);
     procedure SetHotKeyBtnClick(Sender: TObject);
+    procedure PagesBtnClick(Sender: TObject);
+    procedure PagesCheckBoxClick(Sender: TObject);
+    procedure Page1CheckBoxClick(Sender: TObject);
+    procedure Page2CheckBoxClick(Sender: TObject);
+    procedure Page3CheckBoxClick(Sender: TObject);
+    procedure Page4CheckBoxClick(Sender: TObject);
   private
     procedure OpenDirectory(DirectoryName: String);
     procedure ListToForm(PositionB, SizeB: Boolean);
@@ -281,6 +295,11 @@ end;
 procedure TSettingsForm.MainFormSizeSettingsToFormBtnClick(Sender: TObject);
 begin
   ListToForm(False, True);
+end;
+
+procedure TSettingsForm.PagesBtnClick(Sender: TObject);
+begin
+  JvPageList.ActivePageIndex := 5;
 end;
 
 procedure TSettingsForm.MainFormPosSettingsToFormBtnClick(Sender: TObject);
@@ -494,6 +513,30 @@ begin
   LoadAndCheck(APSMainForm.GetDtaDir + 'RunAsLst.ini');
 end;
 
+procedure TSettingsForm.Page1CheckBoxClick(Sender: TObject);
+begin
+  Page1 := Page1CheckBox.Checked;
+  APSMainForm.mmiPage1.Visible := Page1;
+end;
+
+procedure TSettingsForm.Page2CheckBoxClick(Sender: TObject);
+begin
+  Page2 := Page2CheckBox.Checked;
+  APSMainForm.mmiPage2.Visible := Page2;
+end;
+
+procedure TSettingsForm.Page3CheckBoxClick(Sender: TObject);
+begin
+  Page3 := Page3CheckBox.Checked;
+  APSMainForm.mmiPage3.Visible := Page3;
+end;
+
+procedure TSettingsForm.Page4CheckBoxClick(Sender: TObject);
+begin
+  Page4 := Page4CheckBox.Checked;
+  APSMainForm.mmiPage4.Visible := Page4;
+end;
+
 procedure TSettingsForm.CreateIniBtnClick(Sender: TObject);
 begin
   CreateIniFile(APSMainForm.GetDtaDir + 'RunAsLst.ini');
@@ -574,6 +617,13 @@ begin
     nil,
     SW_NORMAL     //see other possibilities by ctrl+clicking on SW_NORMAL
     );
+end;
+
+procedure TSettingsForm.PagesCheckBoxClick(Sender: TObject);
+begin
+  PagesMM := PagesCheckBox.Checked;
+  APSMainForm.mmiPages.Visible := PagesMM;
+  APSMainForm.RightMenu(APSMainForm.mmiVersionAbout);
 end;
 
 procedure TSettingsForm.SavFrmPosChkBoxClick(Sender: TObject);

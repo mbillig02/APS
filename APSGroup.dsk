@@ -1,32 +1,38 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\TMP\Delphi.Win32\APS\About.pas',0,1,123,34,157,0,0,,{0,196,1}
-File_1=TSourceModule,'C:\TMP\Delphi.Win32\APS\SFTPFrameUnit.pas',0,1,611,1,629,0,0,,
-File_2=TSourceModule,'C:\TMP\Delphi.Win32\APS\IMUnit.pas',0,1,1,15,20,0,0,,
-File_3=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.ShellAPI.pas',0,1,1739,1,1786,0,0,,
-File_4=TSourceModule,'C:\TMP\Delphi.Win32\APS\InitAppUnit.pas',0,1,10,1,16,0,0,,
-File_5=TSourceModule,'C:\TMP\Delphi.Win32\APS\MFUnit.dfm',0,1,1,1,1,0,0,,
-File_6=TSourceModule,'C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas',0,1,101,109,119,0,0,,
-File_7=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,95,16,118,0,0,,
-File_8=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\common\System.UITypes.pas',0,1,29,21,53,0,0,,
-File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\common\System.Classes.pas',0,1,150,29,174,0,0,,
-File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Forms.pas',0,1,2916,34,2946,0,0,{{1990,4}
-File_11=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Controls.pas',0,1,835,1,859,0,0,,
-File_12=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.pas',0,1,591,14,606,0,0,,
-File_13=TSourceModule,'C:\Users\user\Documents\Embarcadero\Studio\21.0\CatalogRepository\JEDICodeLibraryJCL-2022.02\source\windows\JclAppInst.pas',0,1,914,1,945,0,0,,
+File_0=TSourceModule,'C:\TMP\Delphi.Win32\APS\comp.reticle.pas',0,1,160,1,178,0,0,,
+File_1=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Forms.pas',0,1,7977,1,7972,0,0,{{1990,4}
+File_2=TSourceModule,'C:\TMP\Delphi.Win32\APS\SFTPFrameUnit.pas',0,1,381,1,400,0,0,,
+File_3=TSourceModule,'C:\TMP\Delphi.Win32\APS\About.pas',0,1,123,34,157,0,0,,{0
+File_4=TSourceModule,'C:\TMP\Delphi.Win32\APS\IMUnit.pas',0,1,1,15,20,0,0,,
+File_5=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.ShellAPI.pas',0,1,1739,1,1786,0,0,,
+File_6=TSourceModule,'C:\TMP\Delphi.Win32\APS\InitAppUnit.pas',0,1,10,1,16,0,0,,
+File_7=TSourceModule,'C:\TMP\Delphi.Win32\APS\MFUnit.dfm',0,1,1,1,1,0,0,,
+File_8=TSourceModule,'C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas',0,1,101,109,119,0,0,,
+File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,95,16,118,0,0,,
+File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\common\System.UITypes.pas',0,1,29,21,53,0,0,,
+File_11=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\common\System.Classes.pas',0,1,150,29,174,0,0,,
+File_12=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Controls.pas',0,1,835,1,859,0,0,,
+File_13=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.pas',0,1,591,14,606,0,0,,
+File_14=TSourceModule,'C:\Users\user\Documents\Embarcadero\Studio\21.0\CatalogRepository\JEDICodeLibraryJCL-2022.02\source\windows\JclAppInst.pas',0,1,914,1,945,0,0,,
 
 [Modules]
-Module0=C:\TMP\Delphi.Win32\APS\MFUnit.pas
-Count=1
+Module0=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
+Module1=C:\TMP\Delphi.Win32\APS\MFUnit.pas
+Count=2
 EditWindowCount=1
+
+[C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas]
+ModuleType=TSourceModule
 
 [C:\TMP\Delphi.Win32\APS\MFUnit.pas]
 ModuleType=TSourceModule
 
 [EditWindow0]
-ViewCount=2
-CurrentEditView=C:\TMP\Delphi.Win32\APS\MFUnit.pas
+ViewCount=3
+CurrentEditView=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
 View0=0
 View1=1
+View2=2
 PercentageSizes=1
 Create=1
 Visible=1
@@ -63,16 +69,29 @@ OTAEditViewType=WelcomePage.MainPage
 [View1]
 CustomEditViewType=TEditView
 Module=C:\TMP\Delphi.Win32\APS\MFUnit.pas
-CursorX=64
-CursorY=1314
-TopLine=1288
+CursorX=1
+CursorY=1522
+TopLine=1503
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\TMP\Delphi.Win32\APS\MFUnit.pas
 
+[View2]
+CustomEditViewType=TEditView
+Module=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
+CursorX=34
+CursorY=185
+TopLine=160
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
+
 [Watches]
-Count=0
+Count=2
+Watch0='WindowRect.Width',256,0,18,1,0,'Watches',1
+Watch1='WindowRect.Height',256,0,18,1,0,'Watches',1
 
 [WatchWindow]
 WatchColumnWidth=120
@@ -195,7 +214,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1892
 ClientHeight=2957
-TBDockHeight=9011
+TBDockHeight=8565
 LRDockWidth=1892
 Dockable=1
 StayOnTop=0
@@ -632,7 +651,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1998
 ClientHeight=4489
-TBDockHeight=9011
+TBDockHeight=8565
 LRDockWidth=1998
 Dockable=1
 StayOnTop=0
@@ -656,7 +675,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1892
 ClientHeight=3446
-TBDockHeight=9011
+TBDockHeight=8565
 LRDockWidth=1892
 Dockable=1
 StayOnTop=0
@@ -680,7 +699,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1998
 ClientHeight=1913
-TBDockHeight=9011
+TBDockHeight=8565
 LRDockWidth=1998
 Dockable=1
 StayOnTop=0

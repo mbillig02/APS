@@ -11,7 +11,7 @@ http://delphi.about.com/od/formsdialogs/a/fadeinmodalform.htm
 uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls,
   Buttons, ExtCtrls, pngimage, OverbyteIcsWndControl, OverbyteIcsFtpCli,
   JvExStdCtrls, JvButton, JvCtrls, ImgList, JvComponentBase, JvBalloonHint,
-  System.ImageList, System.UITypes, AboutSftpUnit, SftpGetUnit;
+  System.ImageList, System.UITypes {$IFDEF ABOUTSFTP} ,AboutSftpUnit,SftpGetUnit {$ENDIF};
 
 type
   TFadeType = (ftIn, ftOut);
@@ -25,7 +25,7 @@ type
     ProgrammerLbl: TLabel;
     EmailLbl: TLabel;
     CompilerLbl: TLabel;
-    PgmUpdBtn: TButton;
+    CheckBtn: TButton;
     OKBtn: TButton;
     FtpClient: TFtpClient;
     PgmUpdDirJvImgBtn: TJvImgBtn;
@@ -42,7 +42,7 @@ type
     procedure JvBalloonHintClose(Sender: TObject);
     procedure TestSetVersionToZeroBtnClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
-    procedure PgmUpdBtnMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure CheckBtnMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure InstallBtnClick(Sender: TObject);
     procedure ProtocolRadioGroupClick(Sender: TObject);
@@ -56,6 +56,7 @@ type
     procedure WriteIniFile(IniFileName: String);
     procedure InitAboutBox;
     property FadeType: TFadeType read fFadeType write fFadeType;
+    procedure SetCheckBtnHint;
   public
     class function Execute(): TModalResult;
   end;
@@ -68,8 +69,8 @@ var
 
 implementation
 
-uses UtlUnit, PerlRegEx, ShellApi, ClipBrd, IniFiles, MFUnit, Dialogs, IMUnit,
-  SFTPFrameUnit;
+uses UtlUnit, PerlRegEx, ShellApi, ClipBrd, IniFiles, MFUnit, Dialogs, IMUnit {$IFDEF ABOUTSFTP} ,SFTPFrameUnit {$ENDIF},
+  AboutFtpUnit;
 
 var
   UpdaterProgramFileName, UpdateStr: String;
@@ -107,6 +108,26 @@ begin
   end;
 end;
 
+procedure TAboutBox.SetCheckBtnHint;
+var
+  TmpStr: String;
+begin
+  case ProtocolRadioGroup.ItemIndex of
+    0:
+      begin
+        TmpStr := 'FTP';
+      end;
+    1:
+      begin
+        TmpStr := 'SFTP';
+      end;
+  end;
+  CheckBtn.Hint := 'Left-Click: Check for update' + ''#13''#10'' +
+    'Right-Click: Simple ' + TmpStr + ' Client' + ''#13''#10'' +
+    'Shift-Left-Click: Edit Section-Update.ini' + ''#13''#10'' +
+    'Shift-Right-Click: Load Section-Update.ini';
+end;
+
 procedure TAboutBox.fadeTimerTimer(Sender: TObject);
 const
   FADE_IN_SPEED = 5;
@@ -142,19 +163,19 @@ begin
 end;
 
 procedure TAboutBox.InitAboutBox;
-var
-  RegIniFile: TIniFile;
-  SectionUpdateStrLst: TStringList;
 begin
   if not FAboutInitialized then
   begin
     FAboutInitialized := True;
-    ProtocolRadioGroup.ItemIndex := CFPUProtocol;
-    PgmUpdBtn.Hint := 'Left-Click: Check for update' + #13#10 +
-      'Right-Click: Simple Sftp Client' + #13#10 +
-      'Shift-Left-Click: Edit Section-Update.ini' + #13#10 +
-      'Shift-Right-Click: Load Section-Update.ini'; 
-    PgmUpdBtn.ShowHint := True;
+    {$IFDEF ABOUTSFTP}
+      ProtocolRadioGroup.ItemIndex := CFPUProtocol;
+      ProtocolRadioGroup.Visible := True;
+    {$ELSE}
+      ProtocolRadioGroup.ItemIndex := 0;
+      ProtocolRadioGroup.Visible := False;
+    {$ENDIF}
+    SetCheckBtnHint;
+    CheckBtn.ShowHint := True;
   end;
 end;
 
@@ -167,7 +188,9 @@ begin
   VersionLbl.Caption := GetVersionInfoStr(ParamStr(0));
   CompilerLbl.Caption := 'Application compiled with: ' + GetCompilerName(CompilerVersion);
   UpdaterProgramFileName := LclExeDir + 'PgmUpdater.exe';
-  SftpGetForm.PgmUpdFileStorage.Path := lclKeyDir;
+  {$IFDEF ABOUTSFTP}
+    SftpGetForm.PgmUpdFileStorage.Path := lclKeyDir;
+  {$ENDIF}
   InitAboutBox;
 end;
 
@@ -181,11 +204,10 @@ begin
   PgmUpdDirJvImgBtn.Hint := 'Program update directory, LC-Open, RC-Copy to clipboard';
 end;
 
-procedure TAboutBox.PgmUpdBtnMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TAboutBox.CheckBtnMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   HostDirName, PgmVersionStr, RegexStr: String;
-  FileList: TStringList;
 begin
   if ssShift in Shift then
   begin
@@ -194,26 +216,11 @@ begin
       begin
         // Shift-Left-Click : Edit Section-Update
         ShellExecute(Handle, 'open', PChar(lclDtaDir + 'Section-Update.INI'), nil, nil, SW_SHOWNORMAL); // Open file in default text editor
-{
-        // get file
-        PgmUpdBtn.Enabled := False;
-        SftpGetForm.SftpDownload('LocalHost', 'TMSDelphiTools', 'TDT', '/APPS/SSC/Setup-SSC-v22.12.31.0.exe', LclPgmUpdDir + 'Setup-SSC-v22.12.31.0.exe');
-        PgmUpdBtn.Enabled := True;
-}
       end;
       mbRight:
       begin
         // Shift-Right-Click : Load Section-Update
         APSMainForm.LoadSectionUpdate;
-{
-        // get directory list
-        PgmUpdBtn.Enabled := False;
-        FileList := TStringList.Create;
-        SftpGetForm.SftpDirectory('LocalHost', 'TMSDelphiTools', 'TDT', '/APPS/SSC', FileList);
-        FileList.SaveToFile(LclTmpDir + 'FTPFileList.TXT');
-        FileList.Free;
-        PgmUpdBtn.Enabled := True;
-}
       end;
     end;
   end
@@ -223,10 +230,10 @@ begin
       mbLeft:
       begin
         // Left-Click : check for updates
-        PgmUpdBtn.Enabled := False;
+        CheckBtn.Enabled := False;
         OKBtn.Enabled := False;
         PgmUpdDirJvImgBtn.Enabled := False;
-        PgmUpdBtn.Caption := 'Checking...';
+        CheckBtn.Caption := 'Checking...';
         PgmVersionStr := FileNameToVersionStr(LclVerStr);
         HostDirName := '/APPS/' + CFPUAppName;
         RegexStr := 'Setup-' + CFPUAppName + '-v([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}).exe\b';
@@ -234,28 +241,37 @@ begin
           UpdateStr := CheckForPgmUpdate(HostDirName, CFPUHostName, CFPUUserName, CFPUPassWord, PgmVersionStr, RegexStr);
           if Length(UpdateStr) > 0 then
           begin
-            PgmUpdBtn.Enabled := False;
+            CheckBtn.Enabled := False;
             InstallBtn.Enabled := True;
             InstallBtn.Hint := 'Install updated version: ' + UpdateStr;
-            PgmUpdBtn.Caption := 'Available';
+            CheckBtn.Caption := 'Available';
             WriteIniFile(LclPgmUpdDir + 'PgmUpdater.ini');
           end
           else
           begin
-            PgmUpdBtn.Caption := 'No update!';
+            CheckBtn.Caption := 'No update!';
           end;
           PgmUpdDirJvImgBtn.Enabled := True;
         finally
-          PgmUpdBtn.Enabled := True;
+          CheckBtn.Enabled := True;
           OKBtn.Enabled := True;
         end;
       end;
       mbRight:
       begin
         // Right-Click : sftp client
-        AboutSftpForm.SFTPAboutFrame.SetDtaDir(lclDtaDir);
-        AboutSftpForm.SetSFTPFrameKeyPath(lclKeyDir);
-        AboutSftpForm.Execute;
+        case ProtocolRadioGroup.ItemIndex of
+          0: begin
+               AboutFtpForm.Execute;
+             end;
+          1: begin
+             {$IFDEF ABOUTSFTP}
+               AboutSftpForm.SFTPAboutFrame.SetDtaDir(lclDtaDir);
+               AboutSftpForm.SetSFTPFrameKeyPath(lclKeyDir);
+               AboutSftpForm.Execute;
+             {$ENDIF}
+             end;
+        end;
       end;
     end;
   end;
@@ -306,6 +322,7 @@ end;
 procedure TAboutBox.ProtocolRadioGroupClick(Sender: TObject);
 begin
   CFPUProtocol := ProtocolRadioGroup.ItemIndex;
+  SetCheckBtnHint;
 end;
 
 procedure TAboutBox.FormActivate(Sender: TObject);
@@ -317,8 +334,8 @@ begin
   B1W := TestSetVersionToZeroBtn.Width;
   B2L := PgmUpdDirJvImgBtn.Left;
   B2W := PgmUpdDirJvImgBtn.Width;
-  B3L := PgmUpdBtn.Left;
-  B3W := PgmUpdBtn.Width;
+  B3L := CheckBtn.Left;
+  B3W := CheckBtn.Width;
   B4L := InstallBtn.Left;
   B4W := InstallBtn.Width;
   B5L := OKBtn.Left;
@@ -332,7 +349,7 @@ begin
   B3L := B2L + B2W + (ST div 4);
   B4L := B3L + B3W + (ST div 4);
   PgmUpdDirJvImgBtn.Left := B2L;
-  PgmUpdBtn.Left := B3L;
+  CheckBtn.Left := B3L;
   InstallBtn.Left := B4L;
   ProtocolRadioGroup.ItemIndex := CFPUProtocol;
 end;
@@ -393,7 +410,9 @@ begin
   if ProtocolRadioGroup.ItemIndex = 1 then
   begin
     FileList := TStringList.Create;
-    GetFileListSuccessful := SftpGetForm.SftpDirectory(HostName, UserName, PassWord, HostDirName, FileList);
+    {$IFDEF ABOUTSFTP}
+      GetFileListSuccessful := SftpGetForm.SftpDirectory(HostName, UserName, PassWord, HostDirName, FileList);
+    {$ENDIF}
   end;
   if GetFileListSuccessful and Assigned(FileList) then
   begin
@@ -443,6 +462,7 @@ var
 begin
   InstallBtn.Caption := 'Working...';
   HostDirName := 'APPS/' + CFPUAppName;
+  FileDownloaded := False;
   if ProtocolRadioGroup.ItemIndex = 0 then
   begin
     FTPClient.HostName := CFPUHostName;
@@ -456,7 +476,9 @@ begin
   end;
   if ProtocolRadioGroup.ItemIndex = 1 then
   begin
+  {$IFDEF ABOUTSFTP}
     FileDownloaded := SftpGetForm.SftpDownload(CFPUHostName, CFPUUserName, CFPUPassWord, HostDirName + '/' + UpdateStr, LclPgmUpdDir + UpdateStr);
+  {$ENDIF}
   end;
   if FileDownloaded then
   begin

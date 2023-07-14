@@ -19,22 +19,22 @@ object SettingsForm: TSettingsForm
     Top = 0
     Width = 355
     Height = 325
-    ActivePage = JvStandardPageHotKeys
+    ActivePage = JvStandardPagePages
     PropagateEnable = False
     Align = alClient
+    ExplicitWidth = 351
+    ExplicitHeight = 324
     object JvStandardPageAdmin: TJvStandardPage
       Left = 0
       Top = 0
-      Width = 359
-      Height = 326
+      Width = 355
+      Height = 325
       Caption = 'JvStandardPageAdmin'
       OnShow = JvStandardPageAdminShow
-      ExplicitWidth = 549
-      ExplicitHeight = 441
       object PublicDesktopGroupBox: TGroupBox
         Left = 0
         Top = 0
-        Width = 359
+        Width = 355
         Height = 35
         Hint = 'C:\Users\Public\Desktop\APS.lnk'
         Align = alTop
@@ -54,7 +54,7 @@ object SettingsForm: TSettingsForm
       object PublicStartMenuGroupBox: TGroupBox
         Left = 0
         Top = 35
-        Width = 359
+        Width = 355
         Height = 35
         Hint = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\APS\APS.lnk'
         Align = alTop
@@ -74,7 +74,7 @@ object SettingsForm: TSettingsForm
       object UserTaskbarGroupBox: TGroupBox
         Left = 0
         Top = 105
-        Width = 359
+        Width = 355
         Height = 35
         Hint = 
           'C:\Users\user\AppData\Roaming\Microsoft\Internet Explorer\Quick ' +
@@ -96,7 +96,7 @@ object SettingsForm: TSettingsForm
       object UserDesktopGroupBox: TGroupBox
         Left = 0
         Top = 70
-        Width = 359
+        Width = 355
         Height = 35
         Hint = 
           'C:\Users\user\AppData\Roaming\Microsoft\Internet Explorer\Quick ' +
@@ -118,17 +118,15 @@ object SettingsForm: TSettingsForm
       object SetAdmBtmPanel: TPanel
         Left = 0
         Top = 140
-        Width = 359
-        Height = 186
+        Width = 355
+        Height = 185
         Align = alClient
         TabOrder = 4
-        ExplicitWidth = 549
-        ExplicitHeight = 301
         object SetAdmBtmRPanel: TPanel
-          Left = 282
+          Left = 278
           Top = 1
           Width = 76
-          Height = 184
+          Height = 183
           Align = alRight
           TabOrder = 0
           object CreateIniBtn: TButton
@@ -172,8 +170,8 @@ object SettingsForm: TSettingsForm
         inline RunAsFrame: TRunAsFrame
           Left = 1
           Top = 1
-          Width = 281
-          Height = 184
+          Width = 277
+          Height = 183
           Margins.Left = 5
           Margins.Top = 5
           Margins.Right = 5
@@ -182,11 +180,11 @@ object SettingsForm: TSettingsForm
           TabOrder = 1
           ExplicitLeft = 1
           ExplicitTop = 1
-          ExplicitWidth = 471
-          ExplicitHeight = 299
+          ExplicitWidth = 277
+          ExplicitHeight = 183
           inherited RunAsListBox: TListBox
-            Top = 88
-            Width = 281
+            Top = 87
+            Width = 277
             Height = 96
             ItemHeight = 13
             ExplicitTop = 87
@@ -209,12 +207,10 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = 'JvStandardPageDirectories'
-      ExplicitWidth = 359
-      ExplicitHeight = 326
       object DtaDirGrpBox: TGroupBox
         Left = 0
         Top = 0
-        Width = 359
+        Width = 355
         Height = 65
         Align = alTop
         Caption = 'DtaDir'
@@ -248,7 +244,7 @@ object SettingsForm: TSettingsForm
       object TmpDirGrpBox: TGroupBox
         Left = 0
         Top = 130
-        Width = 359
+        Width = 355
         Height = 65
         Align = alTop
         Caption = 'TmpDir'
@@ -282,7 +278,7 @@ object SettingsForm: TSettingsForm
       object LstDirGrpBox: TGroupBox
         Left = 0
         Top = 65
-        Width = 359
+        Width = 355
         Height = 65
         Align = alTop
         Caption = 'LstDir'
@@ -320,8 +316,6 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = ' '
-      ExplicitWidth = 359
-      ExplicitHeight = 326
       object SetDefaultScreenBtn: TButton
         Left = 17
         Top = 17
@@ -498,8 +492,6 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = ' '
-      ExplicitWidth = 359
-      ExplicitHeight = 326
       object StylesListBox: TListBox
         Left = 24
         Top = 24
@@ -622,6 +614,68 @@ object SettingsForm: TSettingsForm
         end
       end
     end
+    object JvStandardPagePages: TJvStandardPage
+      Left = 0
+      Top = 0
+      Width = 355
+      Height = 325
+      Caption = 'JvStandardPagePages'
+      ExplicitWidth = 351
+      ExplicitHeight = 324
+      object MiscMainMenuGroupBox: TGroupBox
+        Left = 6
+        Top = 3
+        Width = 163
+        Height = 142
+        Caption = 'MainMenu'
+        TabOrder = 0
+        object PagesCheckBox: TCheckBox
+          Left = 16
+          Top = 18
+          Width = 137
+          Height = 17
+          Caption = 'Show Pages Sub-menu'
+          TabOrder = 0
+          OnClick = PagesCheckBoxClick
+        end
+        object Page1CheckBox: TCheckBox
+          Left = 16
+          Top = 41
+          Width = 129
+          Height = 17
+          Caption = 'Page 1 (CSV DB)'
+          TabOrder = 1
+          OnClick = Page1CheckBoxClick
+        end
+        object Page2CheckBox: TCheckBox
+          Left = 16
+          Top = 65
+          Width = 129
+          Height = 17
+          Caption = 'Page 2 (Test)'
+          TabOrder = 2
+          OnClick = Page2CheckBoxClick
+        end
+        object Page3CheckBox: TCheckBox
+          Left = 16
+          Top = 88
+          Width = 129
+          Height = 17
+          Caption = 'Page 3 (MainScreen)'
+          TabOrder = 3
+          OnClick = Page3CheckBoxClick
+        end
+        object Page4CheckBox: TCheckBox
+          Left = 16
+          Top = 111
+          Width = 129
+          Height = 17
+          Caption = 'Page 4 (Realtime)'
+          TabOrder = 4
+          OnClick = Page4CheckBoxClick
+        end
+      end
+    end
   end
   object SetLeftPanel: TPanel
     Left = 0
@@ -630,6 +684,7 @@ object SettingsForm: TSettingsForm
     Height = 325
     Align = alLeft
     TabOrder = 1
+    ExplicitHeight = 324
     object AdminBtn: TButton
       Left = 1
       Top = 1
@@ -662,7 +717,7 @@ object SettingsForm: TSettingsForm
     end
     object StylesBtn: TButton
       Left = 1
-      Top = 76
+      Top = 126
       Width = 73
       Height = 25
       Align = alTop
@@ -672,13 +727,23 @@ object SettingsForm: TSettingsForm
     end
     object HotKeysBtn: TButton
       Left = 1
-      Top = 101
+      Top = 76
       Width = 73
       Height = 25
       Align = alTop
       Caption = 'HotKeys'
       TabOrder = 4
       OnClick = HotKeysBtnClick
+    end
+    object PagesBtn: TButton
+      Left = 1
+      Top = 101
+      Width = 73
+      Height = 25
+      Align = alTop
+      Caption = 'Pages'
+      TabOrder = 5
+      OnClick = PagesBtnClick
     end
   end
   object DtaDirJvBalloonHint: TJvBalloonHint

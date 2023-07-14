@@ -7,7 +7,8 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, comp.reticle, System.UITypes,
   Vcl.ExtCtrls, Vcl.StdCtrls, JvExControls, JvPageList, Vcl.Samples.Spin,
   System.Actions, Vcl.ActnList, Vcl.ComCtrls, Vcl.ToolWin, JvExComCtrls,
-  JvToolBar, JvSpin, System.ImageList, Vcl.ImgList, Vcl.Buttons, Vcl.Mask;
+  JvToolBar, JvSpin, System.ImageList, Vcl.ImgList, Vcl.Buttons, Vcl.Mask,
+  Vcl.Menus;
 
 type
   TApplicationBoundsFrame = class(TFrame)
@@ -73,6 +74,24 @@ type
     SidesSpeedButton: TSpeedButton;
     MoveSpeedButton: TSpeedButton;
     GetSetSpeedButton: TSpeedButton;
+    SizeJvStandardPage: TJvStandardPage;
+    aSizePage: TAction;
+    SpeedButton1: TSpeedButton;
+    SizeScrollBox: TScrollBox;
+    SizeRightPanel: TPanel;
+    SizeGetPanel: TPanel;
+    SizeGetWindowReticle: TWindowReticle;
+    SizeSetPanel: TPanel;
+    SizeSetWindowReticle: TWindowReticle;
+    aClearSizeBtns: TAction;
+    aAddSizeBtn: TAction;
+    ScrollBoxPopupMenu: TPopupMenu;
+    pmiScrollBoxClearSizeBtns: TMenuItem;
+    pmiScrollBoxAddSizeBtn: TMenuItem;
+    SizeBtnPopupMenu: TPopupMenu;
+    pmiDelSizeBtn: TMenuItem;
+    SizeGroupBox: TGroupBox;
+    pmiAddSizeBtn: TMenuItem;
     procedure GSGetWindowReticleDropSelect(Sender: TObject);
     procedure DropSelect(Sender: TObject);
     procedure WindowReticleDropSelectMove(Sender: TObject);
@@ -89,7 +108,18 @@ type
     procedure HeightJvSpinButtonBottomClick(Sender: TObject);
     procedure HeightJvSpinButtonTopClick(Sender: TObject);
     procedure aMovePageExecute(Sender: TObject);
+    procedure aSizePageExecute(Sender: TObject);
+    procedure SizeGetWindowReticleDropSelect(Sender: TObject);
+    procedure aClearSizeBtnsExecute(Sender: TObject);
+    procedure aAddSizeBtnExecute(Sender: TObject);
+    procedure LoadButtonList(TempFileName: String);
+    procedure SaveButtonList(TempFileName: String);
+    procedure pmiDelSizeBtnClick(Sender: TObject);
+    procedure SizeSetWindowReticleDropSelect(Sender: TObject);
   private
+    procedure AddSizeBtn;
+    procedure ClearSizeBtns;
+    procedure SizeBtnClick(Sender: TObject);
     { Private declarations }
   public
     { Public declarations }
@@ -101,6 +131,9 @@ var
   ABAppRect: TRect;
 
 implementation
+
+var
+  SizeBtnA: array of TSpeedButton;
 
 {$R *.dfm}
 
@@ -135,6 +168,105 @@ begin
   Result := aMsgdlg.ShowModal;
 end;
 
+procedure TApplicationBoundsFrame.ClearSizeBtns;
+var
+  i: Integer;
+begin
+  for i := 0 to High(SizeBtnA) do
+  begin
+    SizeBtnA[i].Free;
+    SizeBtnA[i] := nil;
+  end;
+  SetLength(SizeBtnA, 0);
+end;
+
+procedure TApplicationBoundsFrame.SizeBtnClick(Sender: TObject);
+begin
+  SizeRightPanel.Enabled := True;
+end;
+
+procedure TApplicationBoundsFrame.AddSizeBtn;
+begin
+  SetLength(SizeBtnA, Length(SizeBtnA) + 1);
+  SizeBtnA[High(SizeBtnA)] := TSpeedButton.Create(SizeScrollBox);
+  with SizeBtnA[High(SizeBtnA)] do
+  begin
+    Parent := SizeScrollBox;
+    Top := High(SizeBtnA) * Height + 5;
+    Align := alTop;
+    Name := 'SizeBtn_' + IntToStr(High(SizeBtnA));
+    Caption := Name;
+    Tag := High(SizeBtnA);
+    GroupIndex := 1;
+    PopupMenu := SizeBtnPopupMenu;
+    OnClick := SizeBtnClick;
+  end;
+end;
+
+procedure TApplicationBoundsFrame.pmiDelSizeBtnClick(Sender: TObject);
+var
+  Caller: TObject;
+  i, SelectedBtn, TopBtn: Integer;
+begin
+  Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
+  SelectedBtn := (Caller as TControl).Tag;
+  TopBtn := SizeBtnA[High(SizeBtnA)].Tag;
+  if SelectedBtn = TopBtn then
+  begin
+    SizeBtnA[(Caller as TControl).Tag].Free;
+    SizeBtnA[(Caller as TControl).Tag] := nil;
+    SetLength(SizeBtnA, Length(SizeBtnA) - 1);
+  end
+  else
+  begin
+    for i := SelectedBtn to TopBtn - 1 do
+    begin
+      SizeBtnA[i].Caption := SizeBtnA[i + 1].Caption;
+    end;
+    SizeBtnA[High(SizeBtnA)].Free;
+    SizeBtnA[High(SizeBtnA)] := nil;
+    SetLength(SizeBtnA, Length(SizeBtnA) - 1);
+  end;
+end;
+
+procedure TApplicationBoundsFrame.LoadButtonList(TempFileName: String);
+var
+  FrmStrLst: TStringList;
+  i: Integer;
+begin
+  if FileExists(TempFileName) then
+  begin
+    ClearSizeBtns;
+    FrmStrLst := TStringList.Create;
+    FrmStrLst.LoadFromFile(TempFileName);
+    for i := 0 to FrmStrLst.Count - 1 do
+    begin
+      AddSizeBtn;
+      SizeBtnA[High(SizeBtnA)].Caption := FrmStrLst[i];
+    end;
+    FrmStrLst.Free;
+  end;
+end;
+
+procedure TApplicationBoundsFrame.SaveButtonList(TempFileName: String);
+var
+  FrmStrLst: TStringList;
+  i: Integer;
+begin
+  FrmStrLst := TStringList.Create;
+  for i := 0 to High(SizeBtnA) do
+  begin
+    FrmStrLst.Append(SizeBtnA[i].Caption);
+  end;
+  FrmStrLst.SaveToFile(TempFileName);
+  FrmStrLst.Free;
+end;
+
+procedure TApplicationBoundsFrame.aAddSizeBtnExecute(Sender: TObject);
+begin
+  AddSizeBtn;
+end;
+
 procedure TApplicationBoundsFrame.aCenterPageExecute(Sender: TObject);
 begin
   ApplicationBounsJvPageList.ActivePageIndex := 0;
@@ -162,6 +294,8 @@ var
   WindowNameStr: String;
   OkToChg: Integer;
   ChangePending: Boolean;
+  AppCenterPoint: TPoint;
+  Monitor: TMonitor;
 begin
   Reticle := TWindowReticle(Sender);
   if Reticle.AncestorCaption = '' then
@@ -198,11 +332,15 @@ begin
       GetWindowRect(SelectedAppHandle, PreviousWindowRect);
       ChangePending := False;
 
+      AppCenterPoint.X := PreviousWindowRect.Left + (PreviousWindowRect.Width div 2);
+      AppCenterPoint.Y := PreviousWindowRect.Top + (PreviousWindowRect.Height div 2);
+      Monitor := Screen.MonitorFromPoint(AppCenterPoint);
+
       if (Sender as TWindowReticle).Name = 'CenterWindowReticle' then
       begin
         // Center
-        WindowRect.Left := (Screen.WorkAreaWidth div 2) - (PreviousWindowRect.Width div 2);
-        WindowRect.Top :=  (Screen.WorkAreaHeight div 2) - (PreviousWindowRect.Height div 2);
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (PreviousWindowRect.Width div 2));
+        WindowRect.Top :=  Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (PreviousWindowRect.Height div 2));
         WindowRect.Width := PreviousWindowRect.Width;
         WindowRect.Height := PreviousWindowRect.Height;
         ChangePending := True;
@@ -210,66 +348,66 @@ begin
       if (Sender as TWindowReticle).Name = 'CenterPercentWindowReticle' then
       begin
         // Center Percent
-        WindowRect.Left := Round((Screen.WorkAreaWidth / 2) - ((Screen.WorkAreaWidth / 2) * (CenterPercentSpinEdit.Value / 100)));
-        WindowRect.Top := Round((Screen.WorkAreaHeight / 2) - ((Screen.WorkAreaHeight / 2) * (CenterPercentSpinEdit.Value / 100)));
-        WindowRect.Width := Round(((Screen.WorkAreaWidth / 2) * (CenterPercentSpinEdit.Value / 100)) * 2);
-        WindowRect.Height := Round(((Screen.WorkAreaHeight / 2) * (CenterPercentSpinEdit.Value / 100)) * 2);
+        WindowRect.Left := Monitor.Left + (Round((Monitor.WorkareaRect.Width / 2) - ((Monitor.WorkareaRect.Width / 2) * (CenterPercentSpinEdit.Value / 100))));
+        WindowRect.Top := Monitor.Top + (Round((Monitor.WorkareaRect.Height / 2) - ((Monitor.WorkareaRect.Height / 2) * (CenterPercentSpinEdit.Value / 100))));
+        WindowRect.Width := Round(((Monitor.WorkareaRect.Width / 2) * (CenterPercentSpinEdit.Value / 100)) * 2);
+        WindowRect.Height := Round(((Monitor.WorkareaRect.Height / 2) * (CenterPercentSpinEdit.Value / 100)) * 2);
         ChangePending := True;
       end;
 
       if (Sender as TWindowReticle).Name = 'SCBLWindowReticle' then
       begin
         // Bottom Left Corner
-        WindowRect.Left := 0;
-        WindowRect.Top := (Screen.WorkAreaHeight div 2) + 1;
-        WindowRect.Width := Screen.WorkAreaWidth div 2;
-        WindowRect.Height := Screen.WorkAreaHeight div 2;
+        WindowRect.Left := Monitor.WorkareaRect.Left;
+        WindowRect.Top := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) + 1);
+        WindowRect.Width := Monitor.WorkareaRect.Width div 2;
+        WindowRect.Height := Monitor.WorkareaRect.Height div 2;
         ChangePending := True;
       end;
       if (Sender as TWindowReticle).Name = 'SCBRWindowReticle' then
       begin
         // Bottom Right Corner
-        WindowRect.Left := (Screen.WorkAreaWidth div 2) + 1;
-        WindowRect.Top := (Screen.WorkAreaHeight div 2) + 1;
-        WindowRect.Width := Screen.WorkAreaWidth div 2;
-        WindowRect.Height := Screen.WorkAreaHeight div 2;
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) + 1);
+        WindowRect.Top := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) + 1);
+        WindowRect.Width := Monitor.WorkareaRect.Width div 2;
+        WindowRect.Height := Monitor.WorkareaRect.Height div 2;
         ChangePending := True;
       end;
       if (Sender as TWindowReticle).Name = 'SCTLWindowReticle' then
       begin
         // Top Left Corner
-        WindowRect.Left := 0;
-        WindowRect.Top := 0;
-        WindowRect.Width := Screen.WorkAreaWidth div 2;
-        WindowRect.Height := Screen.WorkAreaHeight div 2;
+        WindowRect.Left := Monitor.WorkareaRect.Left;
+        WindowRect.Top := Monitor.WorkareaRect.Top;
+        WindowRect.Width := Monitor.WorkareaRect.Width div 2;
+        WindowRect.Height := Monitor.WorkareaRect.Height div 2;
         ChangePending := True;
       end;
       if (Sender as TWindowReticle).Name = 'SCTRWindowReticle' then
       begin
         // Top Right Corner
-        WindowRect.Left := (Screen.WorkAreaWidth div 2) + 1;
-        WindowRect.Top := 0;
-        WindowRect.Width := Screen.WorkAreaWidth div 2;
-        WindowRect.Height := Screen.WorkAreaHeight div 2;
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) + 1);
+        WindowRect.Top := Monitor.WorkareaRect.Top;
+        WindowRect.Width := Monitor.WorkareaRect.Width div 2;
+        WindowRect.Height := Monitor.WorkareaRect.Height div 2;
         ChangePending := True;
       end;
 
       if (Sender as TWindowReticle).Name = 'SSLWindowReticle' then
       begin
         // Left Side
-        WindowRect.Left := 0;
-        WindowRect.Top := 0;
-        WindowRect.Width := Screen.WorkAreaWidth div 2;
-        WindowRect.Height := Screen.WorkAreaHeight;
+        WindowRect.Left := Monitor.WorkareaRect.Left;
+        WindowRect.Top := Monitor.WorkareaRect.Top;
+        WindowRect.Width := Monitor.WorkareaRect.Width div 2;
+        WindowRect.Height := Monitor.WorkareaRect.Height;
         ChangePending := True;
       end;
       if (Sender as TWindowReticle).Name = 'SSRWindowReticle' then
       begin
         // Right Side
-        WindowRect.Left := (Screen.WorkAreaWidth div 2) + 1;
-        WindowRect.Top := 0;
-        WindowRect.Width := Screen.WorkAreaWidth div 2;
-        WindowRect.Height := Screen.WorkAreaHeight;
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) + 1);
+        WindowRect.Top := Monitor.WorkareaRect.Top;
+        WindowRect.Width := Monitor.WorkareaRect.Width div 2;
+        WindowRect.Height := Monitor.WorkareaRect.Height;
         ChangePending := True;
       end;
 
@@ -331,6 +469,126 @@ begin
   end;
 end;
 
+procedure TApplicationBoundsFrame.SizeGetWindowReticleDropSelect(Sender: TObject);
+var
+  Reticle: TWindowReticle;
+  SelectedAppHandle: hwnd;
+  WindowRect: TRect;
+  WindowNameStr: String;
+  i: Integer;
+begin
+  Reticle := TWindowReticle(Sender);
+  if Reticle.AncestorCaption = '' then
+  begin
+    WindowNameStr := Reticle.WindowCaption;
+  end
+  else
+  begin
+    WindowNameStr := Reticle.AncestorCaption;
+  end;
+
+  SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
+  if SelectedAppHandle <> 0 then
+  begin
+    GetWindowRect(SelectedAppHandle, WindowRect);
+    for i := 0 to SizeScrollBox.ControlCount - 1 do
+    begin
+      if (SizeScrollBox.Controls[i] as TSpeedButton).Down then
+        if Length((SizeScrollBox.Controls[i] as TSpeedButton).Caption) = 0 then
+        begin
+          (SizeScrollBox.Controls[i] as TSpeedButton).Caption := IntToStr(WindowRect.Width) + ' x ' + IntToStr(WindowRect.Height);
+        end
+        else
+        begin
+          if MyMessageDlg('Replace or Keep', mtConfirmation, [mbYes, mbNo], ['Replace','Keep'], 'Confirmation', mbNo, ABAppRect) = 6 then
+          begin // 6 Replace mbYes
+            (SizeScrollBox.Controls[i] as TSpeedButton).Caption := IntToStr(WindowRect.Width) + ' x ' + IntToStr(WindowRect.Height);
+          end;
+        end;
+    end;
+
+  end;
+
+end;
+
+procedure TApplicationBoundsFrame.SizeSetWindowReticleDropSelect(Sender: TObject);
+var
+  Reticle: TWindowReticle;
+  SelectedAppHandle: hwnd;
+  WindowRect, PreviousWindowRect: TRect;
+  WindowNameStr, SizeBtnCaption: String;
+  OkToChg: Boolean;
+  AppCenterPoint: TPoint;
+  Monitor: TMonitor;
+  i, MmdResult: Integer;
+begin
+  for i := 0 to SizeScrollBox.ControlCount - 1 do
+  begin
+    if (SizeScrollBox.Controls[i] as TSpeedButton).Down then
+    begin
+      SizeBtnCaption := (SizeScrollBox.Controls[i] as TSpeedButton).Caption;
+      Reticle := TWindowReticle(Sender);
+      if Reticle.AncestorCaption = '' then
+      begin
+        WindowNameStr := Reticle.WindowCaption;
+      end
+      else
+      begin
+        WindowNameStr := Reticle.AncestorCaption;
+      end;
+
+      if ABConfirmBefore then
+      begin
+        MmdResult := MyMessageDlg('Do you want to resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect);
+        OkToChg := MmdResult = 6;
+      end
+      else
+      begin
+        OkToChg := True;
+      end;
+
+      if OkToChg then
+      begin
+        SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
+        if SelectedAppHandle <> 0 then
+        begin
+          GetWindowRect(SelectedAppHandle, PreviousWindowRect);
+
+          // Size Set
+          WindowRect.Left := PreviousWindowRect.Left;
+          WindowRect.Top := PreviousWindowRect.Top;
+          WindowRect.Width := StrToInt(Copy(SizeBtnCaption, 1, Pos(' x ', SizeBtnCaption) - 1 ));
+          WindowRect.Height := StrToInt(Copy(SizeBtnCaption, Pos(' x ', SizeBtnCaption) + 3 ));
+
+          SetWindowPos(SelectedAppHandle, HWND_TOP,
+            WindowRect.Left,
+            WindowRect.Top,
+            WindowRect.Width,
+            WindowRect.Height, 0);
+            // Put APS back on top
+            SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+
+          if ABConfirmBefore then
+          begin
+            if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect) = 7 then
+            begin
+              SetWindowPos(SelectedAppHandle, HWND_TOP,
+                PreviousWindowRect.Left,
+                PreviousWindowRect.Top,
+                PreviousWindowRect.Width,
+                PreviousWindowRect.Height, 0);
+                // Put APS back on top
+                SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+                SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure TApplicationBoundsFrame.WindowReticleDropSelectMove(Sender: TObject);
 var
   Reticle: TWindowReticle;
@@ -338,6 +596,8 @@ var
   WindowRect, PreviousWindowRect: TRect;
   WindowNameStr: String;
   OkToChg, ChangePending: Boolean;
+  AppCenterPoint: TPoint;
+  Monitor: TMonitor;
 begin
   Reticle := TWindowReticle(Sender);
   if Reticle.AncestorCaption = '' then
@@ -366,11 +626,15 @@ begin
       GetWindowRect(SelectedAppHandle, PreviousWindowRect);
       ChangePending := False;
 
+      AppCenterPoint.X := PreviousWindowRect.Left + (PreviousWindowRect.Width div 2);
+      AppCenterPoint.Y := PreviousWindowRect.Top + (PreviousWindowRect.Height div 2);
+      Monitor := Screen.MonitorFromPoint(AppCenterPoint);
+
       if (Sender as TWindowReticle).Name = 'WindowReticleMTL' then
       begin
         // Move Top Left
-        WindowRect.Left := 0;
-        WindowRect.Top := 0;
+        WindowRect.Left := Monitor.WorkareaRect.Left;
+        WindowRect.Top := Monitor.WorkareaRect.Top;
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -379,8 +643,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMTC' then
       begin
         // Move Top Center
-        WindowRect.Left := (Screen.WorkAreaWidth div 2) - (PreviousWindowRect.Width div 2);
-        WindowRect.Top := 0;
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (PreviousWindowRect.Width div 2));
+        WindowRect.Top := Monitor.WorkareaRect.Top;
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -389,8 +653,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMTR' then
       begin
         // Move Top Right
-        WindowRect.Left := Screen.WorkAreaWidth - PreviousWindowRect.Width;
-        WindowRect.Top := 0;
+        WindowRect.Left := Monitor.Left + (Monitor.WorkareaRect.Width - PreviousWindowRect.Width);
+        WindowRect.Top := Monitor.WorkareaRect.Top;
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -399,8 +663,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMCL' then
       begin
         // Move Center Left
-        WindowRect.Left := 0;
-        WindowRect.Top := (Screen.WorkAreaHeight div 2) - (PreviousWindowRect.Height div 2);
+        WindowRect.Left := Monitor.WorkareaRect.Left;
+        WindowRect.Top := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (PreviousWindowRect.Height div 2));
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -409,8 +673,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMCC' then
       begin
         // Move Center Center
-        WindowRect.Left := (Screen.WorkAreaWidth div 2) - (PreviousWindowRect.Width div 2);
-        WindowRect.Top := (Screen.WorkAreaHeight div 2) - (PreviousWindowRect.Height div 2);
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (PreviousWindowRect.Width div 2));
+        WindowRect.Top := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (PreviousWindowRect.Height div 2));
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -419,8 +683,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMCR' then
       begin
         // Move Center Right
-        WindowRect.Left := Screen.WorkAreaWidth - PreviousWindowRect.Width;
-        WindowRect.Top := (Screen.WorkAreaHeight div 2) - (PreviousWindowRect.Height div 2);
+        WindowRect.Left := Monitor.Left + (Monitor.WorkareaRect.Width - PreviousWindowRect.Width);
+        WindowRect.Top := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (PreviousWindowRect.Height div 2));
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -429,8 +693,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMBL' then
       begin
         // Move Bottom Left
-        WindowRect.Left := 0;
-        WindowRect.Top := Screen.WorkAreaHeight - PreviousWindowRect.Height;
+        WindowRect.Left := Monitor.WorkareaRect.Left;
+        WindowRect.Top := Monitor.Top + (Monitor.WorkareaRect.Height - PreviousWindowRect.Height);
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -439,8 +703,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMBC' then
       begin
         // Move Bottom Center
-        WindowRect.Left := (Screen.WorkAreaWidth div 2) - (PreviousWindowRect.Width div 2);
-        WindowRect.Top := Screen.WorkAreaHeight - PreviousWindowRect.Height;
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (PreviousWindowRect.Width div 2));
+        WindowRect.Top := Monitor.Top + (Monitor.WorkareaRect.Height - PreviousWindowRect.Height);
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -449,8 +713,8 @@ begin
       if (Sender as TWindowReticle).Name = 'WindowReticleMBR' then
       begin
         // Move Bottom Right
-        WindowRect.Left := Screen.WorkAreaWidth - PreviousWindowRect.Width;
-        WindowRect.Top := Screen.WorkAreaHeight - PreviousWindowRect.Height;
+        WindowRect.Left := Monitor.Left + (Monitor.WorkareaRect.Width - PreviousWindowRect.Width);
+        WindowRect.Top := Monitor.Top + (Monitor.WorkareaRect.Height - PreviousWindowRect.Height);
         WindowRect.Width := 0;
         WindowRect.Height := 0;
         ChangePending := True;
@@ -486,6 +750,11 @@ begin
   end;
 end;
 
+procedure TApplicationBoundsFrame.aClearSizeBtnsExecute(Sender: TObject);
+begin
+  ClearSizeBtns;
+end;
+
 procedure TApplicationBoundsFrame.aCornersPageExecute(Sender: TObject);
 begin
   ApplicationBounsJvPageList.ActivePageIndex := 1;
@@ -504,6 +773,11 @@ end;
 procedure TApplicationBoundsFrame.aSidesPageExecute(Sender: TObject);
 begin
   ApplicationBounsJvPageList.ActivePageIndex := 2;
+end;
+
+procedure TApplicationBoundsFrame.aSizePageExecute(Sender: TObject);
+begin
+  ApplicationBounsJvPageList.ActivePageIndex := 5;
 end;
 
 procedure TApplicationBoundsFrame.GSGetWindowReticleDropSelect(Sender: TObject);

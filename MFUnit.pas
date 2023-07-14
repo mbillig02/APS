@@ -9,7 +9,7 @@ uses
   System.Actions, System.UITypes, Themes, MruUnit, comp.reticle,
   Vcl.Samples.Spin, Data.DB, Vcl.Grids, Vcl.DBGrids, JvDataSource, JvCsvData,
   Vcl.DBCtrls, JvPageList, JvExControls, InitAppUnit, ABFrameUnit, GSFrameUnit, JclAppInst,
-  JvCaptionButton;
+  JvCaptionButton, RealtimeFrameUnit;
 
 type
   TTopLeftHeightWidth = record
@@ -182,6 +182,10 @@ type
     mmiMoveToSystemTray: TMenuItem;
     aInfoMemo: TAction;
     mmiInfoMemo: TMenuItem;
+    JvStandardPage4: TJvStandardPage;
+    mmiPage4: TMenuItem;
+    aPage4: TAction;
+    RealtimeFrame: TRealtimeFrame;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -258,6 +262,8 @@ type
     procedure mmiMoveToSystemTrayClick(Sender: TObject);
     procedure aInfoMemoExecute(Sender: TObject);
     procedure LoadSectionUpdate;
+    procedure aPage4Execute(Sender: TObject);
+    procedure JvStandardPage4Show(Sender: TObject);
   private
     HotKey1: NativeUInt;
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
@@ -298,7 +304,7 @@ var
   APSMainForm: TAPSMainForm;
   ExeDir, TmpDir, LstDir, PgmUpdDir, KeyDir, StyleStr: String;
   MainFormDefaultRect, MainFormRect: TTopLeftHeightWidth;
-  SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB: Boolean;
+  SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB, PagesMM, Page1, Page2, Page3, Page4: Boolean;
   HotKey1AltB, HotKey1CtrlB,HotKey1ShftB: Boolean;
   HotKey1Key: String;
 
@@ -413,6 +419,12 @@ end;
 procedure TAPSMainForm.JvStandardPage3Show(Sender: TObject);
 begin
   mmiFrames.Visible := True;
+  RightMenu(mmiVersionAbout); // Run after change to MainMenu
+end;
+
+procedure TAPSMainForm.JvStandardPage4Show(Sender: TObject);
+begin
+  mmiFrames.Visible := False;
   RightMenu(mmiVersionAbout); // Run after change to MainMenu
 end;
 
@@ -750,8 +762,22 @@ begin
   JvPageList.ActivePage := JvStandardPage3;
 end;
 
-procedure TAPSMainForm.aRestartElevatedExecute(Sender: TObject);
+procedure TAPSMainForm.aPage4Execute(Sender: TObject);
 begin
+  JvPageList.ActivePage := JvStandardPage4;
+end;
+
+procedure TAPSMainForm.aRestartElevatedExecute(Sender: TObject);
+var
+  WinTmp: String;
+  APSRestartSemaphoreStrLst: TStringList;
+begin
+  WinTmp := GetWindowsTempFolder;
+  InfoMemoForm.InfoMemo.Lines.Append('WinTmp: ' + WinTmp);
+  APSRestartSemaphoreStrLst := TStringList.Create;
+  APSRestartSemaphoreStrLst.Append('APS Restart Elevated');
+  APSRestartSemaphoreStrLst.SaveToFile(WinTmp + '\APSRestart.Semaphore');
+  APSRestartSemaphoreStrLst.Free;
   ShellExecute(Handle, 'runas', PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
   Close;
 end;
@@ -1039,6 +1065,11 @@ begin
   SettingsForm.CtrlCheckBox.Checked := HotKey1CtrlB;
   SettingsForm.ShftCheckBox.Checked := HotKey1ShftB;
   SettingsForm.KeyComboBox.Text := HotKey1Key;
+  SettingsForm.PagesCheckBox.Checked := PagesMM;
+  SettingsForm.Page1CheckBox.Checked := Page1;
+  SettingsForm.Page2CheckBox.Checked := Page2;
+  SettingsForm.Page3CheckBox.Checked := Page3;
+  SettingsForm.Page4CheckBox.Checked := Page4;
   SettingsForm.Show;
 end;
 
@@ -1322,6 +1353,12 @@ begin
       ShellExecute(Handle, 'runas', PChar(Application.ExeName), nil, nil, SW_SHOWNORMAL);
     end;
   if StylesMM then mmiStyles.Visible := True else mmiStyles.Visible := False;
+  if PagesMM then mmiPages.Visible := True else mmiPages.Visible := False;
+  if Page1 then mmiPage1.Visible := True else mmiPage1.Visible := False;
+  if Page2 then mmiPage2.Visible := True else mmiPage2.Visible := False;
+  if Page3 then mmiPage3.Visible := True else mmiPage3.Visible := False;
+  if Page4 then mmiPage4.Visible := True else mmiPage4.Visible := False;
+
   LoadSettingsFromFormCreate;
   RestoreMainFormPositionAndSize;
   SetHotKey;
@@ -1504,6 +1541,7 @@ begin
     SettingsForm.StylesListBox.ItemIndex := SettingsForm.StylesListBox.Items.IndexOf(StyleStr);
 
     if FileExists(LstDir + 'FrameList.txt') then LoadFrameList(LstDir + 'FrameList.txt');
+    if FileExists(LstDir + 'ButtonList.txt') then ApplicationBoundsFrame.LoadButtonList(LstDir + 'ButtonList.txt');
 
     ABAppRect.Top := APSMainForm.Top;
     ABAppRect.Left := APSMainForm.Left;
@@ -1522,6 +1560,7 @@ procedure TAPSMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if not AutoElevateDoNotSave then SaveSettings;
   SaveFramesToFile(LstDir + 'FrameList.txt');
+  ApplicationBoundsFrame.SaveButtonList(LstDir + 'ButtonList.txt');
 end;
 
 procedure TAPSMainForm.OnMoving(var Msg: TWMMoving);
@@ -1638,6 +1677,12 @@ begin
     HotKey1CtrlB := RegIniFile.ReadBool('Section-HotKey', 'HotKey1Ctrl', False);
     HotKey1ShftB := RegIniFile.ReadBool('Section-HotKey', 'HotKey1Shft', False);
     HotKey1Key := RegIniFile.ReadString('Section-HotKey', 'HotKey1Key', 'Z');
+
+    PagesMM := RegIniFile.ReadBool('Section-Page', 'PagesMM', False);
+    Page1 := RegIniFile.ReadBool('Section-Page', 'Page1', False);
+    Page2 := RegIniFile.ReadBool('Section-Page', 'Page2', False);
+    Page3 := RegIniFile.ReadBool('Section-Page', 'Page3', True);
+    Page4 := RegIniFile.ReadBool('Section-Page', 'Page4', False);
 
   finally
     RegIniFile.Free;
@@ -1782,6 +1827,11 @@ begin
     RegIniFile.WriteBool('Section-Elevated', 'StartElevated', mmiAutoStartElevated.Checked);
 
     RegIniFile.WriteInteger('Section-Page', 'CurrentPage', JvPageList.ActivePageIndex);
+    RegIniFile.WriteBool('Section-Page', 'PagesMM', PagesMM);
+    RegIniFile.WriteBool('Section-Page', 'Page1', Page1);
+    RegIniFile.WriteBool('Section-Page', 'Page2', Page2);
+    RegIniFile.WriteBool('Section-Page', 'Page3', Page3);
+    RegIniFile.WriteBool('Section-Page', 'Page4', Page4);
 
     RegIniFile.WriteBool('Section-Options', 'ConfirmAfter', AfterCheckBox.Checked);
     RegIniFile.WriteBool('Section-Options', 'ConfirmBefore', BeforeCheckBox.Checked);
