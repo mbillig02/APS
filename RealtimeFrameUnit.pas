@@ -41,6 +41,8 @@ type
     TriangleButtonIB: TTriangleButton;
     TriangleButtonDR: TTriangleButton;
     TriangleButtonIR: TTriangleButton;
+    IncrementX5Lbl: TLabel;
+    IncrementX10Lbl: TLabel;
     procedure GSGetWindowReticleDropSelect(Sender: TObject);
     procedure RefreshBtnClick(Sender: TObject);
     procedure RefreshTimerTimer(Sender: TObject);

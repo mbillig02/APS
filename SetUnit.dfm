@@ -31,6 +31,8 @@ object SettingsForm: TSettingsForm
       Height = 325
       Caption = 'JvStandardPageAdmin'
       OnShow = JvStandardPageAdminShow
+      ExplicitWidth = 549
+      ExplicitHeight = 441
       object PublicDesktopGroupBox: TGroupBox
         Left = 0
         Top = 0
@@ -122,6 +124,8 @@ object SettingsForm: TSettingsForm
         Height = 185
         Align = alClient
         TabOrder = 4
+        ExplicitWidth = 549
+        ExplicitHeight = 301
         object SetAdmBtmRPanel: TPanel
           Left = 278
           Top = 1
@@ -180,23 +184,23 @@ object SettingsForm: TSettingsForm
           TabOrder = 1
           ExplicitLeft = 1
           ExplicitTop = 1
-          ExplicitWidth = 277
-          ExplicitHeight = 183
+          ExplicitWidth = 471
+          ExplicitHeight = 299
           inherited RunAsListBox: TListBox
             Top = 87
             Width = 277
             Height = 96
             ItemHeight = 13
-            ExplicitTop = 87
-            ExplicitWidth = 277
+            ExplicitTop = 203
+            ExplicitWidth = 471
             ExplicitHeight = 96
           end
           inherited RunAsCheckListBox: TCheckListBox
             Width = 277
             Height = 87
-            ItemHeight = 17
-            ExplicitWidth = 277
-            ExplicitHeight = 87
+            ItemHeight = 13
+            ExplicitWidth = 471
+            ExplicitHeight = 203
           end
         end
       end
@@ -661,7 +665,7 @@ object SettingsForm: TSettingsForm
           Top = 88
           Width = 129
           Height = 17
-          Caption = 'Page 3 (MainScreen)'
+          Caption = 'Page 3 (Get Set)'
           TabOrder = 3
           OnClick = Page3CheckBoxClick
         end
@@ -670,7 +674,7 @@ object SettingsForm: TSettingsForm
           Top = 111
           Width = 129
           Height = 17
-          Caption = 'Page 4 (Realtime)'
+          Caption = 'Page 4 (Real Time)'
           TabOrder = 4
           OnClick = Page4CheckBoxClick
         end

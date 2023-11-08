@@ -30,6 +30,7 @@ var
   GSConfirmBefore: Boolean = True;
   GSConfirmAfter: Boolean = True;
   GSAppRect: TRect;
+  GSStayOnTopB: Boolean = False;
 
 implementation
 
@@ -100,8 +101,9 @@ begin
   // 6	mbYes    Replace
   // 7	mbOk     Add New  // not sure if we can or should do this here
   // 4	mbNo		 Cancel
+  if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   OkToChg := MyMessageDlg('Replace "' + NameEdit.Text + '"' + #10#13 + 'with "' + WithStr + '" ?', mtConfirmation, [mbYes, mbNo], ['Replace', 'Cancel'], 'Confirmation', mbNo, GSAppRect);
-
+  if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   case OkToChg of
     6: begin // 6	mbYes    Replace
          SelectedAppHandle := FindWindow(nil, PWideChar(WindowNameStr));
@@ -124,7 +126,7 @@ var
   SelectedAppHandle: hwnd;
   WindowRect, PreviousWindowRect: TRect;
   WindowNameStr: String;
-  OkToChg: Integer;
+  OkToChg, AcceptOrRevert: Integer;
   ChangePending: Boolean;
 begin
   Reticle := TWindowReticle(Sender);
@@ -139,7 +141,9 @@ begin
 
   if GSConfirmBefore then
   begin
+    if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
     OkToChg := MyMessageDlg('What do you want to do with' + #10#13 + '"' + WindowNameStr + '" ?', mtConfirmation, [mbYes, mbOk, mbRetry, mbNo], ['Position/Size', 'Position', 'Size', 'Cancel'], 'Confirmation', mbRetry, GSAppRect);
+    if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   end
   else
   begin
@@ -198,10 +202,12 @@ begin
           SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
           SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
       end;
-
       if GSConfirmAfter then
       begin
-        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, GSAppRect) = 7 then
+        if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        AcceptOrRevert := MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, GSAppRect);
+        if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        if AcceptOrRevert = 7 then
         begin
           SetWindowPos(SelectedAppHandle, HWND_TOP,
             PreviousWindowRect.Left,

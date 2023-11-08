@@ -50,16 +50,16 @@ object RealtimeFrame: TRealtimeFrame
     Height = 40
     Alignment = taLeftJustify
     BorderWidth = 4
-    Caption = 'GET'
+    Caption = 'Select'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -13
+    Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
     TabOrder = 0
     object GSGetWindowReticle: TWindowReticle
-      Left = 30
+      Left = 36
       Top = 4
       Width = 32
       Height = 32
@@ -106,9 +106,39 @@ object RealtimeFrame: TRealtimeFrame
     Height = 45
     Caption = 'Increment'
     TabOrder = 4
+    object IncrementX5Lbl: TLabel
+      Left = 50
+      Top = 31
+      Width = 15
+      Height = 11
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'x5'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
+    object IncrementX10Lbl: TLabel
+      Left = 65
+      Top = 31
+      Width = 15
+      Height = 11
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'x10'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+    end
     object SpinButtonX5: TSpinButton
       Left = 50
-      Top = 17
+      Top = 15
       Width = 15
       Height = 17
       Hint = 'Adjust increment by 5'
@@ -143,14 +173,14 @@ object RealtimeFrame: TRealtimeFrame
       Top = 15
       Width = 44
       Height = 24
-      MaxValue = 25
+      MaxValue = 50
       MinValue = 1
       TabOrder = 1
       Value = 1
     end
     object SpinButtonX10: TSpinButton
       Left = 65
-      Top = 17
+      Top = 15
       Width = 15
       Height = 17
       Hint = 'Adjust increment by 10'

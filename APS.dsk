@@ -1,32 +1,36 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'C:\TMP\Delphi.Win32\APS\MFUnit.pas',0,1,1,1,1,0,0,,{0
-File_1=TSourceModule,'C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.dfm',0,1,1,1,1,0,0,,
-File_2=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.pas',0,1,68,23,80,0,0,,
-File_3=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.Windows.pas',0,1,40303,18,40333,0,0,,
-File_4=TSourceModule,'C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas',0,1,174,1,200,0,0,,
-File_5=TSourceModule,'C:\TMP\Delphi.Win32\APS\About.pas',0,1,153,29,164,0,0,,
-File_6=TSourceModule,'C:\TMP\Delphi.Win32\APS\AboutFtpUnit.pas',0,1,1,52,7,0,0,,
-File_7=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,41169,1,41192,0,0,,
-File_8=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,2627,1,2650,0,0,,
-File_9=TSourceModule,'C:\TMP\Delphi.Win32\APS\SelectFileFrameUnit.pas',0,1,30,1,117,0,0,,
-File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,10785,1,10791,0,0,,
-File_11=TSourceModule,'C:\Tmp\Delphi.Win32\~TEMP\WindowPos\MFUnit.pas',0,1,67,7,88,0,0,,
-File_12=TSourceModule,'C:\TMP\Delphi.Win32\WSM\WSMFrameUnit.pas',0,1,724,1,743,0,0,,{0
-File_13=TSourceModule,'C:\TMP\Delphi.Win32\WSM\MFUnit.pas',0,1,487,2,517,0,0,,
+File_0=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.pas',0,1,186,39,208,0,0,,
+File_1=TSourceModule,'C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas',0,1,191,24,207,0,0,,
+File_2=TSourceModule,'C:\TMP\Delphi.Win32\APS\MFUnit.pas',0,1,1,1,1,0,0,,{0
+File_3=TSourceModule,'C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.dfm',0,1,1,1,1,0,0,,
+File_4=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.Windows.pas',0,1,40303,18,40333,0,0,,
+File_5=TSourceModule,'C:\TMP\Delphi.Win32\APS\AboutFtpUnit.pas',0,1,1,52,7,0,0,,
+File_6=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,41169,1,41192,0,0,,
+File_7=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,2627,1,2650,0,0,,
+File_8=TSourceModule,'C:\TMP\Delphi.Win32\APS\SelectFileFrameUnit.pas',0,1,30,1,117,0,0,,
+File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,10785,1,10791,0,0,,
+File_10=TSourceModule,'C:\Tmp\Delphi.Win32\~TEMP\WindowPos\MFUnit.pas',0,1,67,7,88,0,0,,
+File_11=TSourceModule,'C:\TMP\Delphi.Win32\WSM\WSMFrameUnit.pas',0,1,724,1,743,0,0,,{0
+File_12=TSourceModule,'C:\TMP\Delphi.Win32\WSM\MFUnit.pas',0,1,487,2,517,0,0,,
 
 [Modules]
-Module0=C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.pas
-Count=1
+Module0=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
+Module1=C:\TMP\Delphi.Win32\APS\About.pas
+Count=2
 EditWindowCount=1
 
-[C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.pas]
+[C:\Tmp\Delphi.Win32\APS\MFUnit.pas]
+ModuleType=TSourceModule
+
+[C:\TMP\Delphi.Win32\APS\About.pas]
 ModuleType=TSourceModule
 
 [EditWindow0]
-ViewCount=2
-CurrentEditView=C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.pas
+ViewCount=3
+CurrentEditView=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
 View0=0
 View1=1
+View2=2
 PercentageSizes=1
 Create=1
 Visible=1
@@ -45,13 +49,13 @@ BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1892
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000AC1200000000000001640700000000000001000000005D0E000009000000446F636B53697465330100000000342100001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000F10E00000000000001640700000000000001000000005D0E000009000000446F636B53697465330100000000921A00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1998
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=00000800010100000000AC1200000000000001CE0700000000000001000000004512000009000000446F636B536974653201000000003421000009000000446F636B5369746534FFFFFFFF
-BottomPanelSize=0
+RightPanelData=00000800010100000000F10E00000000000001CE0700000000000001000000004512000009000000446F636B53697465320100000000921A000009000000446F636B5369746534FFFFFFFF
+BottomPanelSize=1615
 BottomPanelClients=MessageView,DockSite1
-BottomPanelData=000008000102020000000F0000004D65737361676556696577466F726D09000000446F636B53697465311534000000000000022506000000000000FFFFFFFF
+BottomPanelData=0000080001020100000009000000446F636B5369746531CF44000000000000024F060000000000000100000000CF4400000F0000004D65737361676556696577466F726DFFFFFFFF
 BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0,GraphDrawingModel
 BottomMiddelPanelData=0000080001020200000009000000446F636B536974653010000000477261706844726177696E67566965779F1D00000000000002F506000000000000FFFFFFFF
@@ -62,14 +66,25 @@ OTAEditViewType=WelcomePage.MainPage
 
 [View1]
 CustomEditViewType=TEditView
-Module=C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.pas
+Module=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
 CursorX=1
-CursorY=215
-TopLine=179
+CursorY=1817
+TopLine=1791
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=Borland.FormDesignerView
+EditViewName=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
+
+[View2]
+CustomEditViewType=TEditView
+Module=C:\TMP\Delphi.Win32\APS\About.pas
+CursorX=25
+CursorY=100
+TopLine=26
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\TMP\Delphi.Win32\APS\About.pas
 
 [Watches]
 Count=0
@@ -146,18 +161,18 @@ StayOnTop=0
 [MessageView]
 PercentageSizes=1
 Create=1
-Visible=0
+Visible=1
 Docked=1
 State=0
 Left=0
-Top=0
-Width=2771
-Height=1424
+Top=28
+Width=9906
+Height=1380
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2771
-ClientHeight=1424
-TBDockHeight=1424
+ClientWidth=9906
+ClientHeight=1380
+TBDockHeight=1380
 LRDockWidth=2771
 Dockable=1
 StayOnTop=0
@@ -171,11 +186,11 @@ State=0
 Left=0
 Top=0
 Width=1998
-Height=3685
+Height=1913
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1998
-ClientHeight=3685
+ClientHeight=1913
 TBDockHeight=7152
 LRDockWidth=1998
 Dockable=1
@@ -190,21 +205,16 @@ State=0
 Left=0
 Top=381
 Width=1892
-Height=4728
+Height=2957
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1892
-ClientHeight=4728
+ClientHeight=2957
 TBDockHeight=9011
 LRDockWidth=1892
 Dockable=1
 StayOnTop=0
 SplitPos=111
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Top,
-ExpandedItems=LiveBindings=0,"LiveBindings Designer=0",Margins=0,Anchors=0,Constraints=0,Font=0,HeaderFont=0,Padding=0,StyleElements=0,Touch=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -680,11 +690,11 @@ State=0
 Left=0
 Top=477
 Width=1998
-Height=3685
+Height=1913
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1998
-ClientHeight=3685
+ClientHeight=1913
 TBDockHeight=9011
 LRDockWidth=1998
 Dockable=1

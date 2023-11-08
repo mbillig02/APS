@@ -21,7 +21,7 @@ object APSMainForm: TAPSMainForm
     Top = 0
     Width = 559
     Height = 185
-    ActivePage = JvStandardPage4
+    ActivePage = JvStandardPage3
     PropagateEnable = False
     Align = alClient
     object JvStandardPage1: TJvStandardPage
@@ -565,39 +565,41 @@ object APSMainForm: TAPSMainForm
         ParentBackground = False
         ParentColor = False
         TabOrder = 0
-        ExplicitLeft = 96
-        ExplicitTop = 17
+        ExplicitWidth = 559
+        ExplicitHeight = 185
         inherited RectLbl: TLabel
           Top = 159
           Width = 559
           Height = 13
-          ExplicitTop = 139
-          ExplicitWidth = 35
+          ExplicitTop = 159
           ExplicitHeight = 13
         end
         inherited AppHandleLbl: TLabel
           Top = 146
           Width = 559
           Height = 13
-          ExplicitTop = 126
-          ExplicitWidth = 65
+          ExplicitTop = 146
           ExplicitHeight = 13
         end
         inherited AppNameLbl: TLabel
           Top = 172
           Width = 559
           Height = 13
-          ExplicitTop = 152
-          ExplicitWidth = 59
+          ExplicitTop = 172
           ExplicitHeight = 13
         end
         inherited PidLbl: TLabel
           Top = 133
           Width = 559
           Height = 13
-          ExplicitTop = 113
-          ExplicitWidth = 27
+          ExplicitTop = 133
           ExplicitHeight = 13
+        end
+        inherited IncGroupBox: TGroupBox
+          inherited IncSpinEdit: TSpinEdit
+            Height = 22
+            ExplicitHeight = 22
+          end
         end
       end
     end
@@ -673,6 +675,7 @@ object APSMainForm: TAPSMainForm
       Visible = False
       object mmiPage3: TMenuItem
         Action = aPage3
+        Caption = 'Get Set'
       end
       object mmiPage1: TMenuItem
         Action = aPage1
@@ -682,6 +685,7 @@ object APSMainForm: TAPSMainForm
       end
       object mmiPage4: TMenuItem
         Action = aPage4
+        Caption = 'Real Time'
       end
     end
     object mmiFrames: TMenuItem

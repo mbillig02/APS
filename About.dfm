@@ -12,7 +12,6 @@ object AboutBox: TAboutBox
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   Position = poMainFormCenter
-  OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   DesignSize = (
@@ -219,31 +218,6 @@ object AboutBox: TAboutBox
       Caption = 'CompilerLbl'
       ExplicitWidth = 208
     end
-    object ProtocolRadioGroup: TRadioGroup
-      Left = 215
-      Top = 22
-      Width = 55
-      Height = 52
-      Caption = 'Protocol'
-      ItemIndex = 1
-      Items.Strings = (
-        'FTP'
-        'SFTP')
-      TabOrder = 0
-      OnClick = ProtocolRadioGroupClick
-    end
-  end
-  object CheckBtn: TButton
-    Left = 60
-    Top = 120
-    Width = 60
-    Height = 25
-    Hint = 'Check for update'
-    Caption = 'Check'
-    ParentShowHint = False
-    ShowHint = False
-    TabOrder = 2
-    OnMouseDown = CheckBtnMouseDown
   end
   object OKBtn: TButton
     Left = 211
@@ -257,71 +231,11 @@ object AboutBox: TAboutBox
     TabOrder = 0
     ExplicitLeft = 207
   end
-  object PgmUpdDirJvImgBtn: TJvImgBtn
-    Left = 25
-    Top = 120
-    Width = 29
-    Height = 25
-    Hint = 'Program update directory, LC-Open, RC-Copy to clipboard'
-    ImageAlignment = iaCenter
-    ImageIndex = 2
-    Images = ImageList
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 3
-    OnMouseDown = PgmUpdDirJvImgBtnMouseDown
-  end
-  object TestSetVersionToZeroBtn: TButton
-    Left = 8
-    Top = 124
-    Width = 15
-    Height = 18
-    Hint = 'Set version to 0.0.0.0'
-    Caption = 'V'
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 4
-    OnClick = TestSetVersionToZeroBtnClick
-  end
-  object InstallBtn: TButton
-    Left = 141
-    Top = 120
-    Width = 60
-    Height = 25
-    Caption = 'Install'
-    Enabled = False
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 5
-    OnClick = InstallBtnClick
-  end
   object fadeTimer: TTimer
     Enabled = False
     Interval = 1
     OnTimer = fadeTimerTimer
     Left = 32
-    Top = 64
-  end
-  object FtpClient: TFtpClient
-    Timeout = 15
-    Port = 'ftp'
-    CodePage = 0
-    DataPortRangeStart = 0
-    DataPortRangeEnd = 0
-    LocalAddr = '0.0.0.0'
-    LocalAddr6 = '::'
-    DisplayFileFlag = False
-    Binary = True
-    ShareMode = ftpShareExclusive
-    Options = [ftpAcceptLF]
-    ConnectionType = ftpDirect
-    ProxyPort = 'ftp'
-    Language = 'EN'
-    BandwidthLimit = 10000
-    BandwidthSampling = 1000
-    SocketFamily = sfIPv4
-    SocketErrs = wsErrTech
-    Left = 184
     Top = 64
   end
   object ImageList: TImageList
@@ -600,7 +514,6 @@ object AboutBox: TAboutBox
       000000000000}
   end
   object JvBalloonHint: TJvBalloonHint
-    OnClose = JvBalloonHintClose
     Left = 184
     Top = 16
   end

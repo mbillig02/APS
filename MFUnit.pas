@@ -261,9 +261,9 @@ type
     procedure pmiAboutClick(Sender: TObject);
     procedure mmiMoveToSystemTrayClick(Sender: TObject);
     procedure aInfoMemoExecute(Sender: TObject);
-    procedure LoadSectionUpdate;
     procedure aPage4Execute(Sender: TObject);
     procedure JvStandardPage4Show(Sender: TObject);
+    procedure SetStayOnTopB(LocalStayOnTopB: Boolean);
   private
     HotKey1: NativeUInt;
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
@@ -302,7 +302,7 @@ type
 
 var
   APSMainForm: TAPSMainForm;
-  ExeDir, TmpDir, LstDir, PgmUpdDir, KeyDir, StyleStr: String;
+  ExeDir, TmpDir, LstDir, KeyDir, StyleStr: String;
   MainFormDefaultRect, MainFormRect: TTopLeftHeightWidth;
   SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB, PagesMM, Page1, Page2, Page3, Page4: Boolean;
   HotKey1AltB, HotKey1CtrlB,HotKey1ShftB: Boolean;
@@ -1495,16 +1495,8 @@ begin
     SettingsForm.LstDirLbl.Caption := LstDir;
     SettingsForm.TmpDirLbl.Caption := TmpDir;
     KeyDir := DtaDir + 'KEY\'; ForceDirectories(KeyDir);
-    lclKeyDir := KeyDir;
     VerStr := PgmName + '-v' + GetVersionInfoStr(ParamStr(0));
     MostRecentFiles.IniFile := DtaDir + 'LoadFile-MRU.INI';
-
-    LclExeDir := ExeDir;
-    LclDtaDir := DtaDir;
-    LclTmpDir := TmpDir;
-    LclVerStr := VerStr;
-    PgmUpdDir := TmpDir + 'PgmUpdates\'; ForceDirectories(PgmUpdDir);
-    LclPgmUpdDir := PgmUpdDir;
 
     LoadSettingsFromFormActivate;
 
@@ -1655,6 +1647,7 @@ begin
     MainFormDefaultRect.Width := RegIniFile.ReadInteger('Section-Window', 'DefaultWidth', 600);
 
     StayOnTopB := RegIniFile.ReadBool('Section-Options', 'StayOnTop', False);
+    GSStayOnTopB := StayOnTopB;
 
     SaveFormSize := RegIniFile.ReadBool('Section-Window', 'SaveFormSize', False);
     SaveFormPosition := RegIniFile.ReadBool('Section-Window', 'SaveFormPosition', False);
@@ -1678,36 +1671,12 @@ begin
     HotKey1ShftB := RegIniFile.ReadBool('Section-HotKey', 'HotKey1Shft', False);
     HotKey1Key := RegIniFile.ReadString('Section-HotKey', 'HotKey1Key', 'Z');
 
-    PagesMM := RegIniFile.ReadBool('Section-Page', 'PagesMM', False);
+    PagesMM := RegIniFile.ReadBool('Section-Page', 'PagesMM', True);
     Page1 := RegIniFile.ReadBool('Section-Page', 'Page1', False);
     Page2 := RegIniFile.ReadBool('Section-Page', 'Page2', False);
     Page3 := RegIniFile.ReadBool('Section-Page', 'Page3', True);
-    Page4 := RegIniFile.ReadBool('Section-Page', 'Page4', False);
+    Page4 := RegIniFile.ReadBool('Section-Page', 'Page4', True);
 
-  finally
-    RegIniFile.Free;
-  end;
-end;
-
-procedure TAPSMainForm.LoadSectionUpdate;
-var
-  RegIniFile: TIniFile;
-  TmpStr: String;
-begin
-  InfoMemoForm.InfoMemo.Lines.Append('INI File: ' + DtaDir + 'Section-Update.INI');
-  RegIniFile := TIniFile.Create(DtaDir + 'Section-Update.INI');
-  try
-    CFPUHostName := RegIniFile.ReadString('Section-Update', 'FtpHostName', 'ftp.domain.com');
-    InfoMemoForm.InfoMemo.Lines.Append('Hostname: ' + CFPUHostName);
-    CFPUUserName := RegIniFile.ReadString('Section-Update', 'FtpUserName', 'Username');
-    InfoMemoForm.InfoMemo.Lines.Append('Username: ' + CFPUUserName);
-    CFPUPassWord := RegIniFile.ReadString('Section-Update', 'FtpPassWord', 'Password');
-    InfoMemoForm.InfoMemo.Lines.Append('Password: ' + CFPUPassWord);
-    CFPUAppName := RegIniFile.ReadString('Section-Update', 'AppName', PgmName);
-    InfoMemoForm.InfoMemo.Lines.Append('AppName: ' + CFPUAppName);
-    CFPUProtocol := RegIniFile.ReadInteger('Section-Update', 'Protocol', 1);
-    if CFPUProtocol = 0 then TmpStr := 'FTP' else TmpStr := 'SFTP';
-    InfoMemoForm.InfoMemo.Lines.Append('Protocol: ' + TmpStr);
   finally
     RegIniFile.Free;
   end;
@@ -1734,8 +1703,6 @@ begin
   finally
     RegIniFile.Free;
   end;
-
-  LoadSectionUpdate;
 
 end;
 
@@ -1847,17 +1814,6 @@ begin
     RegIniFile.Free;
   end;
 
-  RegIniFile := TIniFile.Create(DtaDir + 'Section-Update.INI');
-  try
-    RegIniFile.WriteString('Section-Update', 'FtpHostName', CFPUHostName);
-    RegIniFile.WriteString('Section-Update', 'FtpUserName', CFPUUserName);
-    RegIniFile.WriteString('Section-Update', 'FtpPassWord', CFPUPassWord);
-    RegIniFile.WriteString('Section-Update', 'AppName', CFPUAppName);
-    RegIniFile.WriteInteger('Section-Update', 'Protocol', CFPUProtocol);
-  finally
-    RegIniFile.Free;
-  end;
-
 end;
 
 procedure TAPSMainForm.AddStylesToListBox;
@@ -1880,6 +1836,12 @@ begin
   begin
     SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   end;
+end;
+
+procedure TAPSMainForm.SetStayOnTopB(LocalStayOnTopB: Boolean);
+begin
+  ABStayOnTopB := LocalStayOnTopB;
+  GSStayOnTopB := LocalStayOnTopB;
 end;
 
 end.

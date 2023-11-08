@@ -205,6 +205,7 @@ procedure TSettingsForm.StayOnTopCheckBoxClick(Sender: TObject);
 begin
   StayOnTopB := StayOnTopCheckBox.Checked;
   APSMainForm.SetStayOnTopStatus;
+  APSMainForm.SetStayOnTopB(StayOnTopB);
 end;
 
 procedure TSettingsForm.StylesListBoxClick(Sender: TObject);

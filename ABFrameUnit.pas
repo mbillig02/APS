@@ -129,6 +129,7 @@ var
   ABConfirmBefore: Boolean = True;
   ABConfirmAfter: Boolean = True;
   ABAppRect: TRect;
+  ABStayOnTopB: Boolean = False;
 
 implementation
 
@@ -292,7 +293,7 @@ var
   SelectedAppHandle: hwnd;
   WindowRect, PreviousWindowRect: TRect;
   WindowNameStr: String;
-  OkToChg: Integer;
+  OkToChg, MmdResult: Integer;
   ChangePending: Boolean;
   AppCenterPoint: TPoint;
   Monitor: TMonitor;
@@ -312,11 +313,15 @@ begin
     if (Sender as TWindowReticle).Name = 'GSSetWindowReticle' then
     begin
       // GS Set
+      if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
       OkToChg := MyMessageDlg('What do you want to do with' + #10#13 + '"' + WindowNameStr + '" ?', mtConfirmation, [mbYes, mbOk, mbRetry, mbNo], ['Position/Size', 'Position', 'Size', 'Cancel'], 'Confirmation', mbRetry, ABAppRect);
+      if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
     end
     else
     begin
+      if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
       OkToChg := MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect);
+      if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
     end;
   end
   else
@@ -453,7 +458,10 @@ begin
 
       if ABConfirmBefore then
       begin
-        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect) = 7 then
+        if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        MmdResult := MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect);
+        if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        if MmdResult = 7 then
         begin
           SetWindowPos(SelectedAppHandle, HWND_TOP,
             PreviousWindowRect.Left,
@@ -475,7 +483,7 @@ var
   SelectedAppHandle: hwnd;
   WindowRect: TRect;
   WindowNameStr: String;
-  i: Integer;
+  i, MmdResult: Integer;
 begin
   Reticle := TWindowReticle(Sender);
   if Reticle.AncestorCaption = '' then
@@ -500,7 +508,10 @@ begin
         end
         else
         begin
-          if MyMessageDlg('Replace or Keep', mtConfirmation, [mbYes, mbNo], ['Replace','Keep'], 'Confirmation', mbNo, ABAppRect) = 6 then
+          if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+          MmdResult := MyMessageDlg('Replace or Keep', mtConfirmation, [mbYes, mbNo], ['Replace','Keep'], 'Confirmation', mbNo, ABAppRect);
+          if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+          if MmdResult = 6 then
           begin // 6 Replace mbYes
             (SizeScrollBox.Controls[i] as TSpeedButton).Caption := IntToStr(WindowRect.Width) + ' x ' + IntToStr(WindowRect.Height);
           end;
@@ -539,7 +550,9 @@ begin
 
       if ABConfirmBefore then
       begin
+        if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
         MmdResult := MyMessageDlg('Do you want to resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect);
+        if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
         OkToChg := MmdResult = 6;
       end
       else
@@ -571,7 +584,10 @@ begin
 
           if ABConfirmBefore then
           begin
-            if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect) = 7 then
+            if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            MmdResult := MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect);
+            if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            if MmdResult = 7 then
             begin
               SetWindowPos(SelectedAppHandle, HWND_TOP,
                 PreviousWindowRect.Left,
@@ -598,6 +614,7 @@ var
   OkToChg, ChangePending: Boolean;
   AppCenterPoint: TPoint;
   Monitor: TMonitor;
+  MmdResult: Integer;
 begin
   Reticle := TWindowReticle(Sender);
   if Reticle.AncestorCaption = '' then
@@ -611,7 +628,9 @@ begin
 
   if ABConfirmBefore then
   begin
+    if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
     OkToChg := (MyMessageDlg('Do you want to reposition and/or resize' + #10#13 + '"' + WindowNameStr + '"', mtConfirmation, [mbYes, mbNo], ['Yes','No'], 'Confirmation', mbNo, ABAppRect) = 6);
+    if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
   end
   else
   begin
@@ -734,7 +753,10 @@ begin
 
       if ABConfirmBefore then
       begin
-        if MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect) = 7 then
+        if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        MmdResult := MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, ABAppRect);
+        if ABStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        if MmdResult = 7 then
         begin
           SetWindowPos(SelectedAppHandle, HWND_TOP,
             PreviousWindowRect.Left,

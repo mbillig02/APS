@@ -26,12 +26,12 @@ Delphi 11.2
 
 [Main Screen]
 <p align="center">
-  <img src="https://github.com/mbillig02/APS/blob/master/ScreenShots/MainScreen.PNG">
+  <img src="https://github.com/mbillig02/APS/blob/master/ScreenShots/GetSet.PNG">
 </p>
 
 [Page-3]
 <p align="center">
-  <img src="https://github.com/mbillig02/APS/blob/master/ScreenShots/APS-v22.9.16.0.PNG">
+  <img src="https://github.com/mbillig02/APS/blob/master/ScreenShots/RealTime.PNG">
 </p>
 
 ## License

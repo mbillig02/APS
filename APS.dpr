@@ -24,13 +24,6 @@ uses
   FileViewForm in 'FileViewForm.pas' {fmFileView},
   NewNameForm in 'NewNameForm.pas' {fmNewName},
   IMUnit in 'IMUnit.pas' {InfoMemoForm},
-  {$IFDEF ABOUTSFTP}
-  AboutSftpUnit in 'AboutSftpUnit.pas' {AboutSftpForm},
-  SFTPFrameUnit in 'SFTPFrameUnit.pas' {SFTPFrame: TFrame},
-  SftpGetUnit in 'SftpGetUnit.pas' {SftpGetForm},
-  {$ENDIF }
-  FtpFrameUnit in 'FtpFrameUnit.pas' {FtpFrame: TFrame},
-  AboutFtpUnit in 'AboutFtpUnit.pas' {AboutFtpForm},
   RealtimeFrameUnit in 'RealtimeFrameUnit.pas' {RealtimeFrame: TFrame};
 
 {$R *.res}
@@ -55,11 +48,5 @@ begin
   Application.CreateForm(TfmFileView, fmFileView);
   Application.CreateForm(TfmNewName, fmNewName);
   Application.CreateForm(TInfoMemoForm, InfoMemoForm);
-  Application.CreateForm(TAboutFtpForm, AboutFtpForm);
-  {$IFDEF ABOUTSFTP}
-    Application.CreateForm(TAboutSftpForm, AboutSftpForm);
-    Application.CreateForm(TSftpGetForm, SftpGetForm);
-    Application.CreateForm(TSFTPFrame, SFTPFrame);
-  {$ENDIF}
   Application.Run;
 end.
