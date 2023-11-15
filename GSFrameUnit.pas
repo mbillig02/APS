@@ -193,30 +193,36 @@ begin
 
       if ChangePending then
       begin
-        SetWindowPos(SelectedAppHandle, HWND_TOP,
-          WindowRect.Left,
-          WindowRect.Top,
-          WindowRect.Width,
-          WindowRect.Height, 0);
+        if SetWindowPos(SelectedAppHandle, HWND_TOP,
+            WindowRect.Left,
+            WindowRect.Top,
+            WindowRect.Width,
+            WindowRect.Height, 0) then
+        begin
           // Put APS back on top
           SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
           SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
-      end;
-      if GSConfirmAfter then
-      begin
-        if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
-        AcceptOrRevert := MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, GSAppRect);
-        if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
-        if AcceptOrRevert = 7 then
+          if GSConfirmAfter then
+          begin
+            if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            AcceptOrRevert := MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, GSAppRect);
+            if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            if AcceptOrRevert = 7 then
+            begin
+              SetWindowPos(SelectedAppHandle, HWND_TOP,
+                PreviousWindowRect.Left,
+                PreviousWindowRect.Top,
+                PreviousWindowRect.Width,
+                PreviousWindowRect.Height, 0);
+                // Put APS back on top
+                SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+                SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            end;
+          end;
+        end
+        else
         begin
-          SetWindowPos(SelectedAppHandle, HWND_TOP,
-            PreviousWindowRect.Left,
-            PreviousWindowRect.Top,
-            PreviousWindowRect.Width,
-            PreviousWindowRect.Height, 0);
-            // Put APS back on top
-            SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
-            SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+          MyMessageDlg('Failed to adjust!' + #13#10 + 'APS may need to be elevated', mtWarning, [mbOk], ['Ok'], 'Warning', mbOk, GSAppRect);
         end;
       end;
     end;
