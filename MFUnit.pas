@@ -175,17 +175,20 @@ type
     pmiRestore: TMenuItem;
     aMoveToSystemTray: TAction;
     mmiHideForm: TMenuItem;
-    N9: TMenuItem;
     pmiAbout: TMenuItem;
     N12: TMenuItem;
     N13: TMenuItem;
-    mmiMoveToSystemTray: TMenuItem;
     aInfoMemo: TAction;
     mmiInfoMemo: TMenuItem;
     JvStandardPage4: TJvStandardPage;
     mmiPage4: TMenuItem;
     aPage4: TAction;
     RealtimeFrame: TRealtimeFrame;
+    mmiDirectories: TMenuItem;
+    mmiMisc: TMenuItem;
+    mmiDebug: TMenuItem;
+    aHelp: TAction;
+    mmiHelp: TMenuItem;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -264,6 +267,7 @@ type
     procedure aPage4Execute(Sender: TObject);
     procedure JvStandardPage4Show(Sender: TObject);
     procedure SetStayOnTopB(LocalStayOnTopB: Boolean);
+    procedure aHelpExecute(Sender: TObject);
   private
     HotKey1: NativeUInt;
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
@@ -681,6 +685,11 @@ begin
     WidthSpinEdit.Value := WindowRect.Width;
     HeightSpinEdit.Value := WindowRect.Height;
   end;
+end;
+
+procedure TAPSMainForm.aHelpExecute(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', PChar(ExeDir + 'APS.chm'), nil, nil, SW_SHOWNORMAL);
 end;
 
 procedure TAPSMainForm.aInfoMemoExecute(Sender: TObject);
@@ -1504,6 +1513,7 @@ begin
     AddStylesToMainMenu('Styles');
     Item := FindMenuItemByHint(MainMenu, StyleStr);
     if Assigned(Item) then Item.Checked := True;
+    if FileExists(ExeDir + 'APS.chm') then aHelp.Visible := True;
     RightMenu(mmiVersionAbout); // Run after change to MainMenu
 
     if mmiAutoStartElevated.Checked then

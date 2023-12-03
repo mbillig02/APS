@@ -385,7 +385,7 @@ object APSMainForm: TAPSMainForm
             item
               Position = 0
               Text = 'File Description'
-              Width = 236
+              Width = 232
             end
             item
               Position = 1
@@ -430,6 +430,7 @@ object APSMainForm: TAPSMainForm
           Align = alBottom
           Caption = 'Confirm Set'
           TabOrder = 0
+          ExplicitTop = 143
           object BeforeCheckBox: TCheckBox
             Left = 21
             Top = 15
@@ -465,6 +466,7 @@ object APSMainForm: TAPSMainForm
           ExplicitWidth = 178
           ExplicitHeight = 143
           inherited ApplicationBounsJvPageList: TJvPageList
+            ActivePage = ApplicationBoundsFrame.GetSetJvStandardPage
             inherited CenterPercentJvStandardPage: TJvStandardPage
               inherited CenterPercentGroupBox: TGroupBox
                 inherited CenterPercentSpinEdit: TSpinEdit
@@ -546,6 +548,8 @@ object APSMainForm: TAPSMainForm
         Align = alClient
         PopupMenu = FrameScrollPopupMenu
         TabOrder = 1
+        ExplicitWidth = 375
+        ExplicitHeight = 184
       end
     end
     object JvStandardPage4: TJvStandardPage
@@ -622,29 +626,32 @@ object APSMainForm: TAPSMainForm
       object N1: TMenuItem
         Caption = '-'
       end
-      object mmiOpenDtaDirInExplorer: TMenuItem
-        Action = aOpenDtaDirInExplorer
-      end
-      object mmiCopyDtaDirPathToClipboard: TMenuItem
-        Action = aCopyDtaDirPathToClipboard
-      end
-      object N2: TMenuItem
-        Caption = '-'
-      end
-      object mmiOpenLstDirInExplorer: TMenuItem
-        Action = aOpenLstDirInExplorer
-      end
-      object mmiCopyLstDirPathToClipboard: TMenuItem
-        Action = aCopyLstDirPathToClipboard
-      end
-      object N4: TMenuItem
-        Caption = '-'
-      end
-      object mmiOpenTmpDirInExplorer: TMenuItem
-        Action = aOpenTmpDirInExplorer
-      end
-      object mmiCopyTmpDirPathToClipboard: TMenuItem
-        Action = aCopyTmpDirPathToClipboard
+      object mmiDirectories: TMenuItem
+        Caption = 'Directories'
+        object mmiOpenDtaDirInExplorer: TMenuItem
+          Action = aOpenDtaDirInExplorer
+        end
+        object mmiCopyDtaDirPathToClipboard: TMenuItem
+          Action = aCopyDtaDirPathToClipboard
+        end
+        object N2: TMenuItem
+          Caption = '-'
+        end
+        object mmiOpenLstDirInExplorer: TMenuItem
+          Action = aOpenLstDirInExplorer
+        end
+        object mmiCopyLstDirPathToClipboard: TMenuItem
+          Action = aCopyLstDirPathToClipboard
+        end
+        object N4: TMenuItem
+          Caption = '-'
+        end
+        object mmiOpenTmpDirInExplorer: TMenuItem
+          Action = aOpenTmpDirInExplorer
+        end
+        object mmiCopyTmpDirPathToClipboard: TMenuItem
+          Action = aCopyTmpDirPathToClipboard
+        end
       end
       object N3: TMenuItem
         Caption = '-'
@@ -653,17 +660,6 @@ object APSMainForm: TAPSMainForm
         Action = aMoveToSystemTray
       end
       object N6: TMenuItem
-        Caption = '-'
-      end
-      object mmiAutoStartElevated: TMenuItem
-        AutoCheck = True
-        Caption = 'Auto Start Elevated'
-        Visible = False
-      end
-      object mmiInfoMemo: TMenuItem
-        Action = aInfoMemo
-      end
-      object N9: TMenuItem
         Caption = '-'
       end
       object mmiExit: TMenuItem
@@ -755,6 +751,20 @@ object APSMainForm: TAPSMainForm
         Action = aAllAppsToCSV
       end
     end
+    object mmiMisc: TMenuItem
+      Caption = 'Misc'
+      object mmiDebug: TMenuItem
+        Caption = 'Debug'
+        object mmiAutoStartElevated: TMenuItem
+          AutoCheck = True
+          Caption = 'Auto Start Elevated'
+          Visible = False
+        end
+        object mmiInfoMemo: TMenuItem
+          Action = aInfoMemo
+        end
+      end
+    end
     object mmiSettings: TMenuItem
       Action = aSettings
     end
@@ -764,9 +774,8 @@ object APSMainForm: TAPSMainForm
     object mmiRestartElevated: TMenuItem
       Action = aRestartElevated
     end
-    object mmiMoveToSystemTray: TMenuItem
-      Caption = '-->'
-      OnClick = mmiMoveToSystemTrayClick
+    object mmiHelp: TMenuItem
+      Action = aHelp
     end
     object mmiVersionAbout: TMenuItem
       Caption = 'About'
@@ -980,6 +989,11 @@ object APSMainForm: TAPSMainForm
       Category = 'Page'
       Caption = 'Realtime'
       OnExecute = aPage4Execute
+    end
+    object aHelp: TAction
+      Caption = 'Help'
+      Visible = False
+      OnExecute = aHelpExecute
     end
   end
   object MostRecentFiles: TMostRecentFiles
