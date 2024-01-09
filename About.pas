@@ -28,9 +28,17 @@ type
     OKBtn: TButton;
     ImageList: TImageList;
     JvBalloonHint: TJvBalloonHint;
+    MajorGeeksLbl: TLabel;
+    SourceForgeLbl: TLabel;
     procedure fadeTimerTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure MajorGeeksLblMouseEnter(Sender: TObject);
+    procedure MajorGeeksLblMouseLeave(Sender: TObject);
+    procedure SourceForgeLblMouseEnter(Sender: TObject);
+    procedure SourceForgeLblMouseLeave(Sender: TObject);
+    procedure MajorGeeksLblDblClick(Sender: TObject);
+    procedure SourceForgeLblDblClick(Sender: TObject);
   private
 
     fFadeType: TFadeType;
@@ -43,7 +51,7 @@ implementation
 
 {$R *.dfm}
 
-uses UtlUnit;
+uses ShellAPI, UtlUnit;
 
 class function TAboutBox.Execute: TModalResult;
 begin
@@ -99,6 +107,42 @@ begin
   fadeTimer.Enabled := True;
   VersionLbl.Caption := GetVersionInfoStr(ParamStr(0));
   CompilerLbl.Caption := 'Application compiled with: ' + GetCompilerName(CompilerVersion);
+end;
+
+procedure TAboutBox.MajorGeeksLblDblClick(Sender: TObject);
+var
+  URL: string;
+begin
+  URL := 'https://www.majorgeeks.com/files/details/aps.html';
+  ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TAboutBox.MajorGeeksLblMouseEnter(Sender: TObject);
+begin
+  MajorGeeksLbl.Font.Style := [fsUnderline];
+end;
+
+procedure TAboutBox.MajorGeeksLblMouseLeave(Sender: TObject);
+begin
+  MajorGeeksLbl.Font.Style := [];
+end;
+
+procedure TAboutBox.SourceForgeLblDblClick(Sender: TObject);
+var
+  URL: string;
+begin
+  URL := 'https://sourceforge.net/projects/mwb-aps/files/';
+  ShellExecute(0, 'open', PChar(URL), nil, nil, SW_SHOWNORMAL);
+end;
+
+procedure TAboutBox.SourceForgeLblMouseEnter(Sender: TObject);
+begin
+  SourceForgeLbl.Font.Style := [fsUnderline];
+end;
+
+procedure TAboutBox.SourceForgeLblMouseLeave(Sender: TObject);
+begin
+  SourceForgeLbl.Font.Style := [];
 end;
 
 procedure TAboutBox.FormCloseQuery(Sender: TObject; var CanClose: Boolean);

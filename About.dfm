@@ -18,6 +18,26 @@ object AboutBox: TAboutBox
     294
     151)
   TextHeight = 13
+  object MajorGeeksLbl: TLabel
+    Left = 8
+    Top = 117
+    Width = 242
+    Height = 13
+    Caption = 'https://www.majorgeeks.com/files/details/aps.html'
+    OnDblClick = MajorGeeksLblDblClick
+    OnMouseEnter = MajorGeeksLblMouseEnter
+    OnMouseLeave = MajorGeeksLblMouseLeave
+  end
+  object SourceForgeLbl: TLabel
+    Left = 8
+    Top = 132
+    Width = 227
+    Height = 13
+    Caption = 'https://sourceforge.net/projects/mwb-aps/files/'
+    OnDblClick = SourceForgeLblDblClick
+    OnMouseEnter = SourceForgeLblMouseEnter
+    OnMouseLeave = SourceForgeLblMouseLeave
+  end
   object Panel: TPanel
     Left = 8
     Top = 8
@@ -220,16 +240,16 @@ object AboutBox: TAboutBox
     end
   end
   object OKBtn: TButton
-    Left = 211
+    Left = 256
     Top = 120
-    Width = 75
+    Width = 30
     Height = 25
     Anchors = [akTop, akRight]
     Caption = 'OK'
     Default = True
     ModalResult = 1
     TabOrder = 0
-    ExplicitLeft = 207
+    ExplicitLeft = 252
   end
   object fadeTimer: TTimer
     Enabled = False
