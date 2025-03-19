@@ -1,0 +1,6 @@
+25.3.18.0
+  Add Horizontal / Vertical Center
+  Added some hints
+
+24.5.2.0
+  Add Save Center Percent

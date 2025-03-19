@@ -32,6 +32,8 @@ object APSMainForm: TAPSMainForm
       Caption = 'JvStandardPage1'
       OnHide = JvStandardPage1Hide
       OnShow = JvStandardPage1Show
+      ExplicitWidth = 563
+      ExplicitHeight = 186
       object WindowNameEdit: TEdit
         Left = 0
         Top = 0
@@ -41,6 +43,7 @@ object APSMainForm: TAPSMainForm
         Alignment = taCenter
         TabOrder = 0
         Text = 'WindowName'
+        ExplicitWidth = 563
       end
       object BottomPanel: TPanel
         Left = 0
@@ -49,6 +52,8 @@ object APSMainForm: TAPSMainForm
         Height = 164
         Align = alClient
         TabOrder = 1
+        ExplicitWidth = 563
+        ExplicitHeight = 165
         object InfoMemo: TMemo
           Left = 8
           Top = 20
@@ -68,6 +73,7 @@ object APSMainForm: TAPSMainForm
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
+          ExplicitHeight = 163
           object HeightLbl: TLabel
             Left = 163
             Top = 1
@@ -194,7 +200,7 @@ object APSMainForm: TAPSMainForm
           end
           object FileNameEdit: TEdit
             Left = 1
-            Top = 140
+            Top = 141
             Width = 218
             Height = 21
             Align = alBottom
@@ -210,10 +216,12 @@ object APSMainForm: TAPSMainForm
           Height = 162
           Align = alClient
           TabOrder = 1
+          ExplicitWidth = 341
+          ExplicitHeight = 163
           object RightBottomPanel: TPanel
             Left = 1
-            Top = 132
-            Width = 335
+            Top = 133
+            Width = 339
             Height = 29
             Align = alBottom
             TabOrder = 0
@@ -229,8 +237,8 @@ object APSMainForm: TAPSMainForm
           object DBGrid: TDBGrid
             Left = 1
             Top = 1
-            Width = 335
-            Height = 131
+            Width = 339
+            Height = 132
             Align = alClient
             DataSource = JvDataSource
             TabOrder = 1
@@ -297,11 +305,13 @@ object APSMainForm: TAPSMainForm
       Width = 559
       Height = 185
       Caption = 'JvStandardPage2'
+      ExplicitWidth = 563
+      ExplicitHeight = 186
       object P2LeftPanel: TPanel
         Left = 0
         Top = 0
         Width = 121
-        Height = 185
+        Height = 186
         Align = alLeft
         TabOrder = 0
         object Button3: TButton
@@ -324,15 +334,15 @@ object APSMainForm: TAPSMainForm
       object P2RightPanel: TPanel
         Left = 121
         Top = 0
-        Width = 438
-        Height = 185
+        Width = 442
+        Height = 186
         Align = alClient
         Caption = 'P2RightPanel'
         TabOrder = 1
         object Splitter1: TSplitter
           Left = 1
-          Top = 84
-          Width = 436
+          Top = 85
+          Width = 440
           Height = 3
           Cursor = crVSplit
           Align = alBottom
@@ -342,8 +352,8 @@ object APSMainForm: TAPSMainForm
         object P2Memo: TMemo
           Left = 1
           Top = 1
-          Width = 436
-          Height = 83
+          Width = 440
+          Height = 84
           Align = alClient
           ScrollBars = ssBoth
           TabOrder = 0
@@ -381,11 +391,13 @@ object APSMainForm: TAPSMainForm
           OnMouseDown = VSTMouseDown
           Touch.InteractiveGestures = [igPan, igPressAndTap]
           Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
+          ExplicitTop = 88
+          ExplicitWidth = 440
           Columns = <
             item
               Position = 0
               Text = 'File Description'
-              Width = 232
+              Width = 236
             end
             item
               Position = 1
@@ -466,70 +478,37 @@ object APSMainForm: TAPSMainForm
           ExplicitWidth = 178
           ExplicitHeight = 143
           inherited ApplicationBounsJvPageList: TJvPageList
-            ActivePage = ApplicationBoundsFrame.GetSetJvStandardPage
-            inherited CenterPercentJvStandardPage: TJvStandardPage
-              inherited CenterPercentGroupBox: TGroupBox
-                inherited CenterPercentSpinEdit: TSpinEdit
-                  Height = 22
-                  ExplicitHeight = 22
-                end
-              end
-            end
-            inherited GetSetJvStandardPage: TJvStandardPage
+            inherited GetSetPage: TJvStandardPage
               inherited GetSetGroupBox: TGroupBox
                 inherited LeftLabeledEdit: TLabeledEdit
-                  Height = 21
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 2
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 23
                   EditLabel.ExplicitHeight = 13
-                  ExplicitHeight = 21
                 end
                 inherited TopLabeledEdit: TLabeledEdit
-                  Height = 21
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 45
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 22
                   EditLabel.ExplicitHeight = 13
-                  ExplicitHeight = 21
                 end
                 inherited WidthLabeledEdit: TLabeledEdit
-                  Height = 21
                   EditLabel.Width = 32
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 88
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 32
                   EditLabel.ExplicitHeight = 13
-                  ExplicitHeight = 21
                 end
                 inherited HeightLabeledEdit: TLabeledEdit
-                  Height = 21
                   EditLabel.Width = 35
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 131
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 35
                   EditLabel.ExplicitHeight = 13
-                  ExplicitHeight = 21
-                end
-              end
-            end
-            inherited SizeJvStandardPage: TJvStandardPage
-              inherited SizeGroupBox: TGroupBox
-                inherited SizeRightPanel: TPanel
-                  Top = 15
-                  Height = 94
-                  ExplicitTop = 15
-                  ExplicitHeight = 94
-                end
-                inherited SizeScrollBox: TScrollBox
-                  Top = 15
-                  Height = 94
-                  ExplicitTop = 15
-                  ExplicitHeight = 94
                 end
               end
             end

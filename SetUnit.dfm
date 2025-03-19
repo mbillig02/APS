@@ -19,7 +19,7 @@ object SettingsForm: TSettingsForm
     Top = 0
     Width = 355
     Height = 325
-    ActivePage = JvStandardPagePages
+    ActivePage = JvStandardPageAdmin
     PropagateEnable = False
     Align = alClient
     ExplicitWidth = 351
@@ -31,8 +31,6 @@ object SettingsForm: TSettingsForm
       Height = 325
       Caption = 'JvStandardPageAdmin'
       OnShow = JvStandardPageAdminShow
-      ExplicitWidth = 549
-      ExplicitHeight = 441
       object PublicDesktopGroupBox: TGroupBox
         Left = 0
         Top = 0
@@ -124,8 +122,6 @@ object SettingsForm: TSettingsForm
         Height = 185
         Align = alClient
         TabOrder = 4
-        ExplicitWidth = 549
-        ExplicitHeight = 301
         object SetAdmBtmRPanel: TPanel
           Left = 278
           Top = 1
@@ -184,23 +180,23 @@ object SettingsForm: TSettingsForm
           TabOrder = 1
           ExplicitLeft = 1
           ExplicitTop = 1
-          ExplicitWidth = 471
-          ExplicitHeight = 299
+          ExplicitWidth = 277
+          ExplicitHeight = 183
           inherited RunAsListBox: TListBox
             Top = 87
             Width = 277
             Height = 96
             ItemHeight = 13
-            ExplicitTop = 203
-            ExplicitWidth = 471
+            ExplicitTop = 87
+            ExplicitWidth = 277
             ExplicitHeight = 96
           end
           inherited RunAsCheckListBox: TCheckListBox
             Width = 277
             Height = 87
-            ItemHeight = 13
-            ExplicitWidth = 471
-            ExplicitHeight = 203
+            ItemHeight = 17
+            ExplicitWidth = 277
+            ExplicitHeight = 87
           end
         end
       end
@@ -680,6 +676,23 @@ object SettingsForm: TSettingsForm
         end
       end
     end
+    object JvStandardPageMisc: TJvStandardPage
+      Left = 0
+      Top = 0
+      Width = 355
+      Height = 325
+      Caption = 'JvStandardPageMisc'
+      ExplicitWidth = 351
+      ExplicitHeight = 324
+      object SaveCenterPercentCheckBox: TCheckBox
+        Left = 16
+        Top = 9
+        Width = 129
+        Height = 17
+        Caption = 'Save Center Percent'
+        TabOrder = 0
+      end
+    end
   end
   object SetLeftPanel: TPanel
     Left = 0
@@ -721,7 +734,7 @@ object SettingsForm: TSettingsForm
     end
     object StylesBtn: TButton
       Left = 1
-      Top = 126
+      Top = 151
       Width = 73
       Height = 25
       Align = alTop
@@ -741,13 +754,23 @@ object SettingsForm: TSettingsForm
     end
     object PagesBtn: TButton
       Left = 1
-      Top = 101
+      Top = 126
       Width = 73
       Height = 25
       Align = alTop
       Caption = 'Pages'
       TabOrder = 5
       OnClick = PagesBtnClick
+    end
+    object MiscBtn: TButton
+      Left = 1
+      Top = 101
+      Width = 73
+      Height = 25
+      Align = alTop
+      Caption = 'Misc'
+      TabOrder = 6
+      OnClick = MiscBtnClick
     end
   end
   object DtaDirJvBalloonHint: TJvBalloonHint

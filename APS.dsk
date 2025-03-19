@@ -1,45 +1,41 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,98,12,116,0,0,,
-File_1=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.pas',0,1,186,39,208,0,0,,
-File_2=TSourceModule,'C:\TMP\Delphi.Win32\APS\MFUnit.pas',0,1,1,1,1,0,0,,{0
-File_3=TSourceModule,'C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.dfm',0,1,1,1,1,0,0,,
-File_4=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.Windows.pas',0,1,40303,18,40333,0,0,,
-File_5=TSourceModule,'C:\TMP\Delphi.Win32\APS\AboutFtpUnit.pas',0,1,1,52,7,0,0,,
-File_6=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,41169,1,41192,0,0,,
-File_7=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,2627,1,2650,0,0,,
-File_8=TSourceModule,'C:\TMP\Delphi.Win32\APS\SelectFileFrameUnit.pas',0,1,30,1,117,0,0,,
-File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,10785,1,10791,0,0,,
-File_10=TSourceModule,'C:\Tmp\Delphi.Win32\~TEMP\WindowPos\MFUnit.pas',0,1,67,7,88,0,0,,
-File_11=TSourceModule,'C:\TMP\Delphi.Win32\WSM\WSMFrameUnit.pas',0,1,724,1,743,0,0,,{0
+File_0=TSourceModule,'C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas',0,1,180,58,219,0,0,,
+File_1=TSourceModule,'C:\TMP\Delphi.Win32\APS\About.pas',0,1,108,1,133,0,0,,
+File_2=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,98,12,116,0,0,,
+File_3=TSourceModule,'C:\TMP\Delphi.Win32\APS\MFUnit.pas',0,1,1,1,1,0,0,,{0
+File_4=TSourceModule,'C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.dfm',0,1,1,1,1,0,0,,
+File_5=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.Windows.pas',0,1,40303,18,40333,0,0,,
+File_6=TSourceModule,'C:\TMP\Delphi.Win32\APS\AboutFtpUnit.pas',0,1,1,52,7,0,0,,
+File_7=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,41169,1,41192,0,0,,
+File_8=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,2627,1,2650,0,0,,
+File_9=TSourceModule,'C:\TMP\Delphi.Win32\APS\SelectFileFrameUnit.pas',0,1,30,1,117,0,0,,
+File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\RTL\SYS\System.SysUtils.pas',0,1,10785,1,10791,0,0,,
+File_11=TSourceModule,'C:\Tmp\Delphi.Win32\~TEMP\WindowPos\MFUnit.pas',0,1,67,7,88,0,0,,
+File_12=TSourceModule,'C:\TMP\Delphi.Win32\WSM\WSMFrameUnit.pas',0,1,724,1,743,0,0,,{0
 
 [Modules]
-Module0=C:\TMP\Delphi.Win32\APS\About.pas
-Module1=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
-Module2=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
-Module3=C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas
-Count=4
+Module0=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
+Module1=C:\TMP\Delphi.Win32\APS\SetUnit.pas
+Module2=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
+Count=3
 EditWindowCount=1
 
-[C:\TMP\Delphi.Win32\APS\About.pas]
+[C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas]
+ModuleType=TSourceModule
+
+[C:\TMP\Delphi.Win32\APS\SetUnit.pas]
 ModuleType=TSourceModule
 
 [C:\Tmp\Delphi.Win32\APS\MFUnit.pas]
 ModuleType=TSourceModule
 
-[C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas]
-ModuleType=TSourceModule
-
-[C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas]
-ModuleType=TSourceModule
-
 [EditWindow0]
-ViewCount=5
-CurrentEditView=C:\TMP\Delphi.Win32\APS\About.pas
+ViewCount=4
+CurrentEditView=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
 View0=0
 View1=1
 View2=2
 View3=3
-View4=4
 PercentageSizes=1
 Create=1
 Visible=1
@@ -76,9 +72,9 @@ OTAEditViewType=WelcomePage.MainPage
 [View1]
 CustomEditViewType=TEditView
 Module=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
-CursorX=27
-CursorY=1362
-TopLine=1326
+CursorX=1
+CursorY=278
+TopLine=255
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -86,36 +82,25 @@ EditViewName=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
 
 [View2]
 CustomEditViewType=TEditView
-Module=C:\TMP\Delphi.Win32\APS\About.pas
-CursorX=1
-CursorY=133
-TopLine=123
+Module=C:\TMP\Delphi.Win32\APS\SetUnit.pas
+CursorX=34
+CursorY=307
+TopLine=305
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\TMP\Delphi.Win32\APS\About.pas
+EditViewName=Borland.FormDesignerView
 
 [View3]
 CustomEditViewType=TEditView
 Module=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
-CursorX=58
-CursorY=779
-TopLine=734
+CursorX=1
+CursorY=566
+TopLine=548
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\TMP\Delphi.Win32\APS\ABFrameUnit.pas
-
-[View4]
-CustomEditViewType=TEditView
-Module=C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas
-CursorX=58
-CursorY=219
-TopLine=180
-LeftCol=1
-Elisions=
-Bookmarks=
-EditViewName=C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas
+EditViewName=Borland.FormDesignerView
 
 [Watches]
 Count=0

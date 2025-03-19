@@ -1741,6 +1741,10 @@ begin
 
     ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-ABPage', 'CurrentPage', 3);
 
+    SettingsForm.SaveCenterPercentCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'SaveCenterPercent', True);
+    if SettingsForm.SaveCenterPercentCheckBox.Checked then
+      ApplicationBoundsFrame.CenterPercentSpinEdit.Value := RegIniFile.ReadInteger('Section-Options', 'SaveCenterPercentValue', 75);
+
   finally
     RegIniFile.Free;
   end;
@@ -1819,6 +1823,10 @@ begin
     RegIniFile.WriteBool('Section-HotKey', 'HotKey1Ctrl', HotKey1CtrlB);
     RegIniFile.WriteBool('Section-HotKey', 'HotKey1Shft', HotKey1ShftB);
     RegIniFile.WriteString('Section-HotKey', 'HotKey1Key', HotKey1Key);
+
+    RegIniFile.WriteBool('Section-Options', 'SaveCenterPercent', SettingsForm.SaveCenterPercentCheckBox.Checked);
+    if SettingsForm.SaveCenterPercentCheckBox.Checked then
+      RegIniFile.WriteInteger('Section-Options', 'SaveCenterPercentValue', ApplicationBoundsFrame.CenterPercentSpinEdit.Value);
 
   finally
     RegIniFile.Free;

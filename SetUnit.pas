@@ -84,6 +84,9 @@ type
     Page2CheckBox: TCheckBox;
     Page3CheckBox: TCheckBox;
     Page4CheckBox: TCheckBox;
+    JvStandardPageMisc: TJvStandardPage;
+    MiscBtn: TButton;
+    SaveCenterPercentCheckBox: TCheckBox;
     procedure SetDefaultScreenBtnClick(Sender: TObject);
     procedure SetAlomstFullScreenBtnClick(Sender: TObject);
     procedure SavFrmSizChkBoxClick(Sender: TObject);
@@ -131,6 +134,7 @@ type
     procedure Page2CheckBoxClick(Sender: TObject);
     procedure Page3CheckBoxClick(Sender: TObject);
     procedure Page4CheckBoxClick(Sender: TObject);
+    procedure MiscBtnClick(Sender: TObject);
   private
     procedure OpenDirectory(DirectoryName: String);
     procedure ListToForm(PositionB, SizeB: Boolean);
@@ -296,6 +300,11 @@ end;
 procedure TSettingsForm.MainFormSizeSettingsToFormBtnClick(Sender: TObject);
 begin
   ListToForm(False, True);
+end;
+
+procedure TSettingsForm.MiscBtnClick(Sender: TObject);
+begin
+  JvPageList.ActivePageIndex := 6;
 end;
 
 procedure TSettingsForm.PagesBtnClick(Sender: TObject);

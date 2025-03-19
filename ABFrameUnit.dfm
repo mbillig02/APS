@@ -9,27 +9,30 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
     Top = 22
     Width = 174
     Height = 111
-    ActivePage = SizeJvStandardPage
+    ActivePage = MovePage
     PropagateEnable = False
-    object CenterPercentJvStandardPage: TJvStandardPage
+    object CenterPercentPage: TJvStandardPage
       Left = 0
       Top = 0
       Width = 174
       Height = 111
-      Caption = 'CenterPercentJvStandardPage'
+      Caption = 'CenterPercentPage'
       object CenterPercentGroupBox: TGroupBox
         Left = 0
         Top = 0
         Width = 174
         Height = 111
         Align = alClient
-        Caption = 'Center'
+        Caption = 'Center Percent / Center'
         TabOrder = 0
         object CenterPercentPanel: TPanel
           Left = 26
           Top = 18
           Width = 72
           Height = 40
+          Hint = 'Center Percent'
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 0
           object CenterPercentWindowReticle: TWindowReticle
             Left = 20
@@ -55,6 +58,9 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 64
           Width = 72
           Height = 40
+          Hint = 'Center'
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 2
           object CenterWindowReticle: TWindowReticle
             Left = 20
@@ -66,24 +72,27 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
         end
       end
     end
-    object ScreenCornersJvStandardPage: TJvStandardPage
+    object ScreenCornersPage: TJvStandardPage
       Left = 0
       Top = 0
       Width = 174
       Height = 111
-      Caption = 'ScreenCornersJvStandardPage'
+      Caption = 'ScreenCornersPage'
       object ScreenCornersGroupBox: TGroupBox
         Left = 0
         Top = 0
         Width = 174
         Height = 110
         Caption = 'Screen Corners'
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         object SCTLPanel: TPanel
           Left = 10
           Top = 15
           Width = 72
           Height = 40
+          Hint = 'Move and resize to Top/Left quadrant'
           TabOrder = 0
           object SCTLWindowReticle: TWindowReticle
             Left = 20
@@ -98,6 +107,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 15
           Width = 72
           Height = 40
+          Hint = 'Move and resize to Top/Right quadrant'
           TabOrder = 1
           object SCTRWindowReticle: TWindowReticle
             Left = 20
@@ -112,6 +122,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 61
           Width = 72
           Height = 40
+          Hint = 'Move and resize to Bottom/Left quadrant'
           TabOrder = 2
           object SCBLWindowReticle: TWindowReticle
             Left = 20
@@ -126,6 +137,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 61
           Width = 72
           Height = 40
+          Hint = 'Move and resize to Bottom/Right quadrant'
           TabOrder = 3
           object SCBRWindowReticle: TWindowReticle
             Left = 20
@@ -137,24 +149,27 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
         end
       end
     end
-    object ScreenSidesJvStandardPage: TJvStandardPage
+    object ScreenSidesPage: TJvStandardPage
       Left = 0
       Top = 0
       Width = 174
       Height = 111
-      Caption = 'ScreenSidesJvStandardPage'
+      Caption = 'ScreenSidesPage'
       object ScreenSidesGroupBox: TGroupBox
         Left = 0
         Top = 0
         Width = 174
         Height = 110
         Caption = 'Screen Sides'
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         object SSLPanel: TPanel
           Left = 10
           Top = 15
           Width = 72
           Height = 86
+          Hint = 'Move and resize to Left side'
           TabOrder = 0
           object SSLWindowReticle: TWindowReticle
             Left = 20
@@ -169,6 +184,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 15
           Width = 72
           Height = 86
+          Hint = 'Move and resize to Right side'
           TabOrder = 1
           object SSRWindowReticle: TWindowReticle
             Left = 20
@@ -180,12 +196,12 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
         end
       end
     end
-    object GetSetJvStandardPage: TJvStandardPage
+    object GetSetPage: TJvStandardPage
       Left = 0
       Top = 0
       Width = 174
       Height = 111
-      Caption = 'GetSetJvStandardPage'
+      Caption = 'GetSetPage'
       object GetSetGroupBox: TGroupBox
         Left = 0
         Top = 0
@@ -325,12 +341,12 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
         end
       end
     end
-    object MoveJvStandardPage: TJvStandardPage
+    object MovePage: TJvStandardPage
       Left = 0
       Top = 0
       Width = 174
       Height = 111
-      Caption = 'MoveJvStandardPage'
+      Caption = 'MovePage'
       object MoveGroupBox: TGroupBox
         Left = 0
         Top = 0
@@ -338,12 +354,15 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
         Height = 111
         Align = alClient
         Caption = 'Move (no resize)'
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         object WindowReticleMBC: TWindowReticle
           Left = 71
           Top = 78
           Width = 28
           Height = 28
+          Hint = 'Move to Bottom and Center'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMBL: TWindowReticle
@@ -351,6 +370,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 78
           Width = 28
           Height = 28
+          Hint = 'Move to Bottom/Left corner'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMBR: TWindowReticle
@@ -358,6 +378,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 78
           Width = 28
           Height = 28
+          Hint = 'Move to Bottom/Right corner'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMCC: TWindowReticle
@@ -365,6 +386,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 46
           Width = 28
           Height = 28
+          Hint = 'Move to Center'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMCL: TWindowReticle
@@ -372,6 +394,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 46
           Width = 28
           Height = 28
+          Hint = 'Move to Left and Center'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMCR: TWindowReticle
@@ -379,6 +402,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 46
           Width = 28
           Height = 28
+          Hint = 'Move to Right and Center'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMTC: TWindowReticle
@@ -386,6 +410,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 14
           Width = 28
           Height = 28
+          Hint = 'Move to Top and Center'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMTL: TWindowReticle
@@ -393,6 +418,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 14
           Width = 28
           Height = 28
+          Hint = 'Move to Top/Left corner'
           OnDropSelect = WindowReticleDropSelectMove
         end
         object WindowReticleMTR: TWindowReticle
@@ -400,16 +426,17 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
           Top = 14
           Width = 28
           Height = 28
+          Hint = 'Move to Top/Right corner'
           OnDropSelect = WindowReticleDropSelectMove
         end
       end
     end
-    object SizeJvStandardPage: TJvStandardPage
+    object SizePage: TJvStandardPage
       Left = 0
       Top = 0
       Width = 174
       Height = 111
-      Caption = 'SizeJvStandardPage'
+      Caption = 'SizePage'
       object SizeGroupBox: TGroupBox
         Left = 0
         Top = 0
@@ -485,6 +512,58 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
         end
       end
     end
+    object HorizontalVerticalCenterPage: TJvStandardPage
+      Left = 0
+      Top = 0
+      Width = 174
+      Height = 111
+      Caption = 'HorizontalVerticalCenterPage'
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object HorizontalVerticalCenterGroupBox: TGroupBox
+        Left = 0
+        Top = 0
+        Width = 174
+        Height = 111
+        Align = alClient
+        Caption = 'Horizontal / Vertical Center'
+        TabOrder = 0
+        object HorizontalCenterPanel: TPanel
+          Left = 26
+          Top = 18
+          Width = 72
+          Height = 40
+          Hint = 'Horizontal Center'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          object HorizontalCenterWindowReticle: TWindowReticle
+            Left = 20
+            Top = 4
+            Width = 32
+            Height = 32
+            OnDropSelect = DropSelect
+          end
+        end
+        object VerticalCenterPanel: TPanel
+          Left = 26
+          Top = 64
+          Width = 72
+          Height = 40
+          Hint = 'Vertical Center'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
+          object VerticalCenterWindowReticle: TWindowReticle
+            Left = 20
+            Top = 4
+            Width = 32
+            Height = 32
+            OnDropSelect = DropSelect
+          end
+        end
+      end
+    end
   end
   object ButtonPanel: TPanel
     Left = 0
@@ -498,7 +577,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
     ShowHint = True
     TabOrder = 1
     object CornersSpeedButton: TSpeedButton
-      Left = 24
+      Left = 47
       Top = 0
       Width = 24
       Height = 24
@@ -518,25 +597,27 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
       Layout = blGlyphRight
     end
     object SidesSpeedButton: TSpeedButton
-      Left = 48
+      Left = 71
       Top = 0
       Width = 24
       Height = 24
       Action = aSidesPage
       Align = alLeft
       Images = ImageList24
+      ExplicitLeft = 48
     end
     object MoveSpeedButton: TSpeedButton
-      Left = 72
+      Left = 95
       Top = 0
       Width = 24
       Height = 24
       Action = aMovePage
       Align = alLeft
       Images = ImageList24
+      ExplicitLeft = 72
     end
     object GetSetSpeedButton: TSpeedButton
-      Left = 119
+      Left = 142
       Top = 0
       Width = 24
       Height = 24
@@ -545,8 +626,8 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
       Images = ImageList24
       ExplicitLeft = 136
     end
-    object SpeedButton1: TSpeedButton
-      Left = 96
+    object SizeSpeedButton: TSpeedButton
+      Left = 119
       Top = 0
       Width = 23
       Height = 24
@@ -556,22 +637,34 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
       ExplicitTop = 22
       ExplicitHeight = 22
     end
+    object HVCenterSpeedButton: TSpeedButton
+      Left = 24
+      Top = 0
+      Width = 23
+      Height = 24
+      Action = aHVCenterPage
+      Align = alLeft
+      ExplicitLeft = 19
+    end
   end
   object ABFActionList: TActionList
     Images = ImageList24
     Left = 120
     Top = 72
     object aCenterPage: TAction
+      Category = 'Center'
       Hint = 'Center'
       ImageIndex = 0
       OnExecute = aCenterPageExecute
     end
     object aCornersPage: TAction
+      Category = 'Edges'
       Hint = 'Corners'
       ImageIndex = 1
       OnExecute = aCornersPageExecute
     end
     object aSidesPage: TAction
+      Category = 'Edges'
       Hint = 'Sides'
       ImageIndex = 2
       OnExecute = aSidesPageExecute
@@ -601,6 +694,12 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
       Caption = 'Add Size Btn'
       OnExecute = aAddSizeBtnExecute
     end
+    object aHVCenterPage: TAction
+      Category = 'Center'
+      Hint = 'HVCenter'
+      ImageIndex = 6
+      OnExecute = aHVCenterPageExecute
+    end
   end
   object ImageList24: TImageList
     Height = 24
@@ -608,7 +707,7 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
     Left = 40
     Top = 70
     Bitmap = {
-      494C010106000800040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010107001800040018001800FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000003000000001002000000000000048
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1188,16 +1287,16 @@ object ApplicationBoundsFrame: TApplicationBoundsFrame
       FF00000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000424D3E000000000000003E000000
       2800000060000000300000000100010000000000400200000000000000000000
-      000000000000000000000000FFFFFF00FFF000FFFFFF00000000000000100080
-      0001000000000000001000BFFFFD000000000000001000A1FF85000000000000
-      001000A7FFE5000000000000001000ABFFD5000000000000001000ADFFB50000
-      00000000001000BE007D000000000000001000BEFF7D000000000000001000BE
-      FF7D000000000000001000BEFF7D000000000000000000BEFF7D000000000000
-      000FFFBEFF7D000000000000000001BEFF7D000000000000000001BEFF7D0000
-      00000000000001BEFF7D000000000000000001BE007D000000000000000001AD
-      FFB5000000000000000001ABFFD5000000000000000001A7FFE5000000000000
-      000001A1FF85000000000000000001BFFFFD0000000000000000018000010000
-      00000000000000FFFFFF000000000000FFFFFFFFFFFFFFFFFFFFF000FFFFFF00
+      000000000000000000000000FFFFFF00FFF000FFFFFFFFFFFF00000000100080
+      0001800001000000001000BFFFFDBFFFFD000000001000A1FF85BFFF05000000
+      001000A7FFE5BFFFDD000000001000ABFFD5BFFFDD000000001000ADFFB5BFFF
+      DD000000001000BE007DBFFFDD000000001000BEFF7DBFFFDD000000001000BE
+      FF7DBFFF8D000000001000BEFF7DBFFFDD000000000000BEFF7DBFFFDD000000
+      000FFFBEFF7DBFFFDD000000000001BEFF7DBFFFDD000000000001BEFF7DBFFF
+      DD000000000001BEFF7DBFFF05000000000001BE007DAFFEFD000000000001AD
+      FFB5AFBEFD000000000001ABFFD5A000FD000000000001A7FFE5AFBEFD000000
+      000001A1FF85AFFEFD000000000001BFFFFDBFFFFD0000000000018000018000
+      01000000000000FFFFFFFFFFFF000000FFFFFFFFFFFFFFFFFFFFF000FFFFFF00
       1001001001FFF7FEFFFFFF001001001001FFF7FEE00007001001001001FFF7FE
       EFFFF7001001001001FFF7FEEFFFF7001001001001FFF7FEEFE7F70010010010
       01FFF7FEEF81F7001001001001FFE07EEF66F7001001001001FFF67EEE817700

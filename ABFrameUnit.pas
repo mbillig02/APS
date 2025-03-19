@@ -22,19 +22,19 @@ type
     SCBLWindowReticle: TWindowReticle;
     SCBRPanel: TPanel;
     SCBRWindowReticle: TWindowReticle;
-    CenterPercentJvStandardPage: TJvStandardPage;
+    CenterPercentPage: TJvStandardPage;
     CenterPercentPanel: TPanel;
     CenterPercentWindowReticle: TWindowReticle;
     CenterPercentSpinEdit: TSpinEdit;
-    ScreenCornersJvStandardPage: TJvStandardPage;
+    ScreenCornersPage: TJvStandardPage;
     CenterPercentGroupBox: TGroupBox;
-    ScreenSidesJvStandardPage: TJvStandardPage;
+    ScreenSidesPage: TJvStandardPage;
     ScreenSidesGroupBox: TGroupBox;
     SSLPanel: TPanel;
     SSLWindowReticle: TWindowReticle;
     SSRPanel: TPanel;
     SSRWindowReticle: TWindowReticle;
-    GetSetJvStandardPage: TJvStandardPage;
+    GetSetPage: TJvStandardPage;
     GetSetGroupBox: TGroupBox;
     GSGetPanel: TPanel;
     GSGetWindowReticle: TWindowReticle;
@@ -55,7 +55,7 @@ type
     TopJvSpinButton: TJvSpinButton;
     WidthJvSpinButton: TJvSpinButton;
     HeightJvSpinButton: TJvSpinButton;
-    MoveJvStandardPage: TJvStandardPage;
+    MovePage: TJvStandardPage;
     aMovePage: TAction;
     WindowReticleMTL: TWindowReticle;
     WindowReticleMTC: TWindowReticle;
@@ -74,9 +74,9 @@ type
     SidesSpeedButton: TSpeedButton;
     MoveSpeedButton: TSpeedButton;
     GetSetSpeedButton: TSpeedButton;
-    SizeJvStandardPage: TJvStandardPage;
+    SizePage: TJvStandardPage;
     aSizePage: TAction;
-    SpeedButton1: TSpeedButton;
+    SizeSpeedButton: TSpeedButton;
     SizeScrollBox: TScrollBox;
     SizeRightPanel: TPanel;
     SizeGetPanel: TPanel;
@@ -92,6 +92,14 @@ type
     pmiDelSizeBtn: TMenuItem;
     SizeGroupBox: TGroupBox;
     pmiAddSizeBtn: TMenuItem;
+    HorizontalVerticalCenterPage: TJvStandardPage;
+    HorizontalVerticalCenterGroupBox: TGroupBox;
+    HorizontalCenterPanel: TPanel;
+    HorizontalCenterWindowReticle: TWindowReticle;
+    VerticalCenterPanel: TPanel;
+    VerticalCenterWindowReticle: TWindowReticle;
+    aHVCenterPage: TAction;
+    HVCenterSpeedButton: TSpeedButton;
     procedure GSGetWindowReticleDropSelect(Sender: TObject);
     procedure DropSelect(Sender: TObject);
     procedure WindowReticleDropSelectMove(Sender: TObject);
@@ -116,6 +124,7 @@ type
     procedure SaveButtonList(TempFileName: String);
     procedure pmiDelSizeBtnClick(Sender: TObject);
     procedure SizeSetWindowReticleDropSelect(Sender: TObject);
+    procedure aHVCenterPageExecute(Sender: TObject);
   private
     procedure AddSizeBtn;
     procedure ClearSizeBtns;
@@ -360,6 +369,26 @@ begin
         ChangePending := True;
       end;
 
+      if (Sender as TWindowReticle).Name = 'HorizontalCenterWindowReticle' then
+      begin
+        // Horizontal Center
+        WindowRect.Left := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (PreviousWindowRect.Width div 2));
+        WindowRect.Top :=  PreviousWindowRect.Top;
+        WindowRect.Width := PreviousWindowRect.Width;
+        WindowRect.Height := PreviousWindowRect.Height;
+        ChangePending := True;
+      end;
+      if (Sender as TWindowReticle).Name = 'VerticalCenterWindowReticle' then
+      begin
+        // Vertical Center
+        WindowRect.Left := PreviousWindowRect.Left;
+        WindowRect.Top :=  Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (PreviousWindowRect.Height div 2));
+        WindowRect.Width := PreviousWindowRect.Width;
+        WindowRect.Height := PreviousWindowRect.Height;
+        ChangePending := True;
+      end;
+
+
       if (Sender as TWindowReticle).Name = 'SCBLWindowReticle' then
       begin
         // Bottom Left Corner
@@ -534,8 +563,6 @@ var
   WindowRect, PreviousWindowRect: TRect;
   WindowNameStr, SizeBtnCaption: String;
   OkToChg: Boolean;
-  AppCenterPoint: TPoint;
-  Monitor: TMonitor;
   i, MmdResult: Integer;
 begin
   for i := 0 to SizeScrollBox.ControlCount - 1 do
@@ -802,6 +829,11 @@ end;
 procedure TApplicationBoundsFrame.aGetSetPageExecute(Sender: TObject);
 begin
   ApplicationBounsJvPageList.ActivePageIndex := 3;
+end;
+
+procedure TApplicationBoundsFrame.aHVCenterPageExecute(Sender: TObject);
+begin
+  ApplicationBounsJvPageList.ActivePageIndex := 6;
 end;
 
 procedure TApplicationBoundsFrame.aMovePageExecute(Sender: TObject);
