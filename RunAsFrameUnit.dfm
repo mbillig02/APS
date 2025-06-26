@@ -18,7 +18,7 @@ object RunAsFrame: TRunAsFrame
     Margins.Right = 5
     Margins.Bottom = 5
     Align = alBottom
-    ItemHeight = 13
+    ItemHeight = 15
     TabOrder = 1
     Visible = False
   end
@@ -31,10 +31,10 @@ object RunAsFrame: TRunAsFrame
     Margins.Top = 5
     Margins.Right = 5
     Margins.Bottom = 5
-    OnClickCheck = RunAsCheckListBoxClickCheck
     Align = alClient
-    Color = clActiveCaption
-    ItemHeight = 13
+    Color = clBtnHighlight
+    ItemHeight = 15
     TabOrder = 0
+    OnClickCheck = RunAsCheckListBoxClickCheck
   end
 end

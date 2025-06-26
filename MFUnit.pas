@@ -9,7 +9,8 @@ uses
   System.Actions, System.UITypes, Themes, MruUnit, comp.reticle,
   Vcl.Samples.Spin, Data.DB, Vcl.Grids, Vcl.DBGrids, JvDataSource, JvCsvData,
   Vcl.DBCtrls, JvPageList, JvExControls, InitAppUnit, ABFrameUnit, GSFrameUnit, JclAppInst,
-  JvCaptionButton, RealtimeFrameUnit;
+  JvCaptionButton, RealtimeFrameUnit, WindowList, VirtualTrees.Header,
+  Vcl.Buttons;
 
 type
   TTopLeftHeightWidth = record
@@ -25,7 +26,7 @@ type
     FTop: Integer;
     FWidth: Integer;
     FHeight: Integer;
-    AppHandle: UINT_PTR;
+    WindowListNo: Integer;
   end;
   TAPSMainForm = class(TForm)
     aCopyDtaDirPathToClipboard: TAction;
@@ -130,20 +131,13 @@ type
     aPage2: TAction;
     JvStandardPage2: TJvStandardPage;
     aListProcs: TAction;
-    P2Memo: TMemo;
-    Button3: TButton;
     P2LeftPanel: TPanel;
     mmiAutoStartElevated: TMenuItem;
     mmiPages: TMenuItem;
     mmiPage1: TMenuItem;
     mmiPage2: TMenuItem;
-    aTest: TAction;
-    Button1: TButton;
     VST: TVirtualStringTree;
     P2RightPanel: TPanel;
-    Splitter1: TSplitter;
-    VSTPopupMenu: TPopupMenu;
-    pmiGet: TMenuItem;
     JvStandardPage3: TJvStandardPage;
     ApplicationBoundsFrame: TApplicationBoundsFrame;
     aPage3: TAction;
@@ -163,8 +157,6 @@ type
     mmiSaveAsFrameList: TMenuItem;
     mmiSelectFrameListFile: TMenuItem;
     ConfirmSetGroupBox: TGroupBox;
-    BeforeCheckBox: TCheckBox;
-    AfterCheckBox: TCheckBox;
     pmiGSAddFrame: TMenuItem;
     N11: TMenuItem;
     Panel1: TPanel;
@@ -187,8 +179,60 @@ type
     mmiDirectories: TMenuItem;
     mmiMisc: TMenuItem;
     mmiDebug: TMenuItem;
-    aHelp: TAction;
+    aContents: TAction;
+    mmiContents: TMenuItem;
+    aOIFormExecute: TAction;
+    mmiObjectInspector: TMenuItem;
+    WindowList: TWindowList;
+    BottomPnl: TPanel;
+    ALHeightLbl: TLabel;
+    ALHeightSpinEdit: TSpinEdit;
+    ALLeftLbl: TLabel;
+    ALLeftSpinEdit: TSpinEdit;
+    ALTopLbl: TLabel;
+    ALTopSpinEdit: TSpinEdit;
+    ALWidthLbl: TLabel;
+    ALWidthSpinEdit: TSpinEdit;
+    ApplyBtn: TButton;
+    ALCenterBtn: TButton;
+    ALHorizontalCenterBtn: TButton;
+    ALVerticleCenterBtn: TButton;
+    WLRTimer: TTimer;
+    ALButtonPanel: TPanel;
+    ALCenterSpeedButton: TSpeedButton;
+    ALCornersSpeedButton: TSpeedButton;
+    ALSidesSpeedButton: TSpeedButton;
+    ALPageControl: TPageControl;
+    ALCenterTabSheet: TTabSheet;
+    ALCornersTabSheet: TTabSheet;
+    ALSidesTabSheet: TTabSheet;
+    ALTopLeftBtn: TButton;
+    ALBottomLeftBtn: TButton;
+    ALTopRightBtn: TButton;
+    ALBottomRightBtn: TButton;
+    ALMoveSpeedButton: TSpeedButton;
+    ALMoveTabSheet: TTabSheet;
+    ALLeftSideBtn: TButton;
+    ALRightSideBtn: TButton;
+    ALMTopLeftBtn: TButton;
+    ALMCenterLeftBtn: TButton;
+    ALMBottomLeftBtn: TButton;
+    ALMTopCenterBtn: TButton;
+    ALMCenterBtn: TButton;
+    ALMBottomCenterBtn: TButton;
+    ALMTopRightBtn: TButton;
+    ALMCenterRightBtn: TButton;
+    ALMBottomRightBtn: TButton;
+    RefreshApplicationListPnl: TPanel;
+    RefreshApplicationListSpdBtn: TSpeedButton;
+    ALCenterPercentBtn: TButton;
+    ALCenterPercentSpinEdit: TSpinEdit;
+    MsgPnl: TPanel;
+    aWhatsNew: TAction;
+    mmiWhatsNew: TMenuItem;
     mmiHelp: TMenuItem;
+    mmiResetLastVerNum: TMenuItem;
+    aResetLastVerNum: TAction;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -235,21 +279,16 @@ type
     procedure aAllAppsToCSVExecute(Sender: TObject);
     procedure aPage1Execute(Sender: TObject);
     procedure aPage2Execute(Sender: TObject);
-    procedure aListProcsExecute(Sender: TObject);
-    procedure aTestExecute(Sender: TObject);
     procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure VSTMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure pmiGetClick(Sender: TObject);
     procedure aPage3Execute(Sender: TObject);
     procedure aClearGetSetFramesExecute(Sender: TObject);
     procedure aAddFrameExecute(Sender: TObject);
     procedure pmiGSRemoveFrameClick(Sender: TObject);
     procedure aSaveAsFrameListExecute(Sender: TObject);
     procedure aSelectFrameListExecute(Sender: TObject);
-    procedure AfterCheckBoxClick(Sender: TObject);
-    procedure BeforeCheckBoxClick(Sender: TObject);
     procedure JvStandardPage1Hide(Sender: TObject);
     procedure JvStandardPage1Show(Sender: TObject);
     procedure JvStandardPage3Show(Sender: TObject);
@@ -267,7 +306,41 @@ type
     procedure aPage4Execute(Sender: TObject);
     procedure JvStandardPage4Show(Sender: TObject);
     procedure SetStayOnTopB(LocalStayOnTopB: Boolean);
-    procedure aHelpExecute(Sender: TObject);
+    procedure aContentsExecute(Sender: TObject);
+    procedure aOIFormExecuteExecute(Sender: TObject);
+    procedure VSTClick(Sender: TObject);
+    procedure JvStandardPage2Show(Sender: TObject);
+    procedure ApplyBtnClick(Sender: TObject);
+    procedure ALCenterBtnClick(Sender: TObject);
+    procedure ALHorizontalCenterBtnClick(Sender: TObject);
+    procedure ALVerticleCenterBtnClick(Sender: TObject);
+    procedure WLRTimerTimer(Sender: TObject);
+    procedure ALCenterSpeedButtonClick(Sender: TObject);
+    procedure ALCornersSpeedButtonClick(Sender: TObject);
+    procedure ALSidesSpeedButtonClick(Sender: TObject);
+    procedure ALTopLeftBtnClick(Sender: TObject);
+    procedure ALTopRightBtnClick(Sender: TObject);
+    procedure ALBottomLeftBtnClick(Sender: TObject);
+    procedure ALBottomRightBtnClick(Sender: TObject);
+    procedure ALLeftSideBtnClick(Sender: TObject);
+    procedure ALRightSideBtnClick(Sender: TObject);
+    procedure ALMTopLeftBtnClick(Sender: TObject);
+    procedure ALMCenterLeftBtnClick(Sender: TObject);
+    procedure ALMBottomLeftBtnClick(Sender: TObject);
+    procedure ALMTopCenterBtnClick(Sender: TObject);
+    procedure ALMCenterBtnClick(Sender: TObject);
+    procedure ALMBottomCenterBtnClick(Sender: TObject);
+    procedure ALMoveSpeedButtonClick(Sender: TObject);
+    procedure ALMTopRightBtnClick(Sender: TObject);
+    procedure ALMCenterRightBtnClick(Sender: TObject);
+    procedure ALMBottomRightBtnClick(Sender: TObject);
+    procedure RefreshApplicationListSpdBtnClick(Sender: TObject);
+    procedure VSTGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+      var HintText: string);
+    procedure ALCenterPercentBtnClick(Sender: TObject);
+    procedure aWhatsNewExecute(Sender: TObject);
+    procedure aResetLastVerNumExecute(Sender: TObject);
   private
     HotKey1: NativeUInt;
     function FindMenuItemByHint(AMainMenu: TMainMenu; const Hint: String): TMenuItem;
@@ -286,8 +359,6 @@ type
     procedure RestoreMainFormPositionAndSize;
     procedure SaveSettings;
     procedure UnCheckStyles(Menu: TMenuItem);
-    procedure LoadVST(lclAppLst: TStringList);
-    function StrLstToTreeData(lclAppStr: String): TTreeData;
     function GetDataByColumn(Data: TTreeData; Column: Integer): String;
     procedure ClearGetSetFrames;
     function ExtractValue(SearchString, SubjectString: String): String;
@@ -298,15 +369,21 @@ type
     procedure RestoreForm;
     procedure WMHotKey(var Msg: TWMHotKey); message WM_HOTKEY;
     procedure OpenAboutBox;
+    procedure RefreshApplicationList;
+    procedure LoadApplicationList;
+    procedure ShowWhatsNewForm;
+    function VToV3(InStr: String): String;
     { Private declarations }
   public
+    procedure SetConfirmBefore(Checked: Boolean);
+    procedure SetConfirmAfter(Checked: Boolean);
     procedure WndProc(var Message: TMessage); override;
     { Public declarations }
   end;
 
 var
   APSMainForm: TAPSMainForm;
-  ExeDir, TmpDir, LstDir, KeyDir, StyleStr: String;
+  ExeDir, TmpDir, LstDir, KeyDir, StyleStr, VerNum, LastVerNum: String;
   MainFormDefaultRect, MainFormRect: TTopLeftHeightWidth;
   SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB, PagesMM, Page1, Page2, Page3, Page4: Boolean;
   HotKey1AltB, HotKey1CtrlB,HotKey1ShftB: Boolean;
@@ -317,7 +394,8 @@ implementation
 uses
   JclSecurity, ShellApi, ClipBrd, JclSysInfo, IniFiles, JclFileUtils,
   SelectFileUnit, SetUnit, JclAnsiStrings, System.IOUtils, Winapi.PsAPI,
-  System.RegularExpressions, System.RegularExpressionsCore, IMUnit;
+  System.RegularExpressions, System.RegularExpressionsCore, IMUnit, OIUnit,
+  WNUnit;
 
 var
   FInitialized, AutoElevateDoNotSave: Boolean;
@@ -412,6 +490,11 @@ procedure TAPSMainForm.JvStandardPage1Show(Sender: TObject);
 begin
   mmiBounds.Visible := True;
   RightMenu(mmiVersionAbout); // Run after change to MainMenu
+end;
+
+procedure TAPSMainForm.JvStandardPage2Show(Sender: TObject);
+begin
+  WLRTimer.Enabled := True;
 end;
 
 procedure TAPSMainForm.JvStandardPage3Hide(Sender: TObject);
@@ -649,10 +732,10 @@ begin
   HeightSpinEdit.Value := JvCsvDataSet.FieldByName('Height').AsInteger;
 end;
 
-procedure TAPSMainForm.AfterCheckBoxClick(Sender: TObject);
+procedure TAPSMainForm.SetConfirmAfter(Checked: Boolean);
 begin
-  ABConfirmAfter := AfterCheckBox.Checked;
-  GSConfirmAfter := AfterCheckBox.Checked;
+  ABConfirmAfter := Checked;
+  GSConfirmAfter := Checked;
 end;
 
 procedure TAPSMainForm.aFullMinus5Execute(Sender: TObject);
@@ -687,7 +770,7 @@ begin
   end;
 end;
 
-procedure TAPSMainForm.aHelpExecute(Sender: TObject);
+procedure TAPSMainForm.aContentsExecute(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', PChar(ExeDir + 'APS.chm'), nil, nil, SW_SHOWNORMAL);
 end;
@@ -715,6 +798,33 @@ begin
     end;
   end;
   InfoMemoForm.Show;
+end;
+
+procedure TAPSMainForm.aOIFormExecuteExecute(Sender: TObject);
+begin
+  OIForm.Top := APSMainForm.Top; OIForm.Left := APSMainForm.Left + APSMainForm.Width;
+
+  if APSMainForm.Left + APSMainForm.Width + OIForm.Width < Screen.WorkAreaWidth then
+  begin
+    OIForm.Position := poDesigned;
+    OIForm.Top := APSMainForm.Top;
+    OIForm.Left := APSMainForm.Left + APSMainForm.Width;
+  end
+  else
+  begin
+    if APSMainForm.Top + APSMainForm.Height + OIForm.Height < Screen.WorkAreaHeight then
+    begin
+      OIForm.Position := poDesigned;
+      OIForm.Top := APSMainForm.Top + APSMainForm.Height;
+      OIForm.Left := APSMainForm.Left;
+    end
+    else
+    begin
+      OIForm.Position := poDesktopCenter;
+    end;
+  end;
+
+  OIForm.Show;
 end;
 
 procedure TAPSMainForm.aOpenDBExecute(Sender: TObject);
@@ -774,6 +884,11 @@ end;
 procedure TAPSMainForm.aPage4Execute(Sender: TObject);
 begin
   JvPageList.ActivePage := JvStandardPage4;
+end;
+
+procedure TAPSMainForm.aResetLastVerNumExecute(Sender: TObject);
+begin
+  LastVerNum := '0.0.0.0';
 end;
 
 procedure TAPSMainForm.aRestartElevatedExecute(Sender: TObject);
@@ -982,15 +1097,6 @@ begin
   SetStayOnTopStatus;
 end;
 
-procedure TAPSMainForm.aListProcsExecute(Sender: TObject);
-begin
-  AppLst2 := TStringList.Create;
-  AppLst2.Clear;
-  EnumWindows(@EnumWindowsProc, 0);
-  P2Memo.Text := AppLst2.Text;
-  AppLst2.Free;
-end;
-
 procedure TAPSMainForm.aLoadListFileExecute(Sender: TObject);
 begin
   OpenDialog.InitialDir := LstDir;
@@ -1082,78 +1188,16 @@ begin
   SettingsForm.Show;
 end;
 
-function TAPSMainForm.StrLstToTreeData(lclAppStr: String): TTreeData;
-var
-  Words: TStringList;
-begin
-  Words := TStringList.Create;
-  Parse(lclAppStr, '|', Words);
-
-  if Words[0] = '---' then
-  begin
-    Result.FFileDescription := Words[6];
-  end
-  else
-  begin
-    Result.FFileDescription := Words[0];
-  end;
-  Result.FLeft := StrToInt(Words[1]);
-  Result.FTop := StrToInt(Words[2]);
-  Result.FWidth := StrToInt(Words[3]);
-  Result.FHeight := StrToInt(Words[4]);
-  Result.AppHandle := StrToInt(Words[5]);
-
-  Words.Free;
-end;
-
 procedure TAPSMainForm.TrayIconDblClick(Sender: TObject);
 begin
   RestoreForm;
 end;
 
-procedure TAPSMainForm.LoadVST(lclAppLst: TStringList);
-var
-  Data: PTreeData;
-  Node: PVirtualNode;
-  i: Integer;
+function InSkipList(Str2Chk: String): Boolean;
 begin
-  VST.Header.SortColumn := NoColumn;
-  VST.NodeDataSize := SizeOf(TTreeData);
-  VST.BeginUpdate;
-  VST.Clear;
-  for i := 0 to lclAppLst.Count - 1 do
-  begin
-    Node := VST.AddChild(nil);
-    Data := VST.GetNodeData(Node);
-    VST.ValidateNode(Node, False);
-    Data^ := StrLstToTreeData(lclAppLst[i]);
-  end;
-  VST.EndUpdate;
-end;
-
-procedure TAPSMainForm.aTestExecute(Sender: TObject);
-var
-  Filename: String;
-  FileVersionInfo: TJclFileVersionInfo;
-begin
-{
-  P2Memo.Clear;
-//  Filename := 'c:\TMP\Delphi.Win32\APS\APS.EXE';
-  Filename := 'c:\HOLD\totalcmd\TOTALCMD.EXE';
-  FileVersionInfo := TJclFileVersionInfo.Create(FileName);
-  try
-    P2Memo.Lines.Append(FileVersionInfo.FileDescription);
-  finally
-    FileVersionInfo.Free;
-  end;
-}
-  AppLst3 := TStringList.Create;
-  AppLst3.Clear;
-  EnumWindows(@EnumWindowsProc, 0);
-  P2Memo.Text := AppLst3.Text;
-  LoadVST(AppLst3);
-  AppLst3.Free;
-
+  Result := False;
+  if Str2Chk = 'ApplicationFrameWindow' then Result := True;
+  if Str2Chk = 'Windows.UI.Core.CoreWindow' then Result := True;
 end;
 
 procedure TAPSMainForm.aToDBExecute(Sender: TObject);
@@ -1168,10 +1212,209 @@ begin
   JvCsvDataSet.Post;
 end;
 
-procedure TAPSMainForm.BeforeCheckBoxClick(Sender: TObject);
+procedure TAPSMainForm.aWhatsNewExecute(Sender: TObject);
 begin
-  ABConfirmBefore := BeforeCheckBox.Checked;
-  GSConfirmBefore := BeforeCheckBox.Checked;
+  ShowWhatsNewForm;
+end;
+
+procedure TAPSMainForm.ALCenterPercentBtnClick(Sender: TObject);
+begin
+  // Center Percent
+  ALLeftSpinEdit.Value := Monitor.Left + (Round((Monitor.WorkareaRect.Width / 2) - ((Monitor.WorkareaRect.Width / 2) * (ALCenterPercentSpinEdit.Value / 100))));
+  ALTopSpinEdit.Value := Monitor.Top + (Round((Monitor.WorkareaRect.Height / 2) - ((Monitor.WorkareaRect.Height / 2) * (ALCenterPercentSpinEdit.Value / 100))));
+  ALWidthSpinEdit.Value := Round(((Monitor.WorkareaRect.Width / 2) * (ALCenterPercentSpinEdit.Value / 100)) * 2);
+  ALHeightSpinEdit.Value := Round(((Monitor.WorkareaRect.Height / 2) * (ALCenterPercentSpinEdit.Value / 100)) * 2);
+end;
+
+procedure TAPSMainForm.ALBottomLeftBtnClick(Sender: TObject);
+begin
+  // Bottom Left Corner
+  ALLeftSpinEdit.Value := Monitor.WorkareaRect.Left;
+  ALTopSpinEdit.Value := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) + 1);
+  ALWidthSpinEdit.Value := Monitor.WorkareaRect.Width div 2;
+  ALHeightSpinEdit.Value := Monitor.WorkareaRect.Height div 2;
+end;
+
+procedure TAPSMainForm.ALBottomRightBtnClick(Sender: TObject);
+begin
+  // Bottom Right Corner
+  ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) + 1);
+  ALTopSpinEdit.Value := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) + 1);
+  ALWidthSpinEdit.Value := Monitor.WorkareaRect.Width div 2;
+  ALHeightSpinEdit.Value := Monitor.WorkareaRect.Height div 2;
+end;
+
+procedure TAPSMainForm.SetConfirmBefore(Checked: Boolean);
+begin
+  ABConfirmBefore := Checked;
+  GSConfirmBefore := Checked;
+end;
+
+procedure TAPSMainForm.ALCenterBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width div 2));
+    ALTopSpinEdit.Value :=  Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height div 2));
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALCenterSpeedButtonClick(Sender: TObject);
+begin
+  ALPageControl.ActivePageIndex := 0;
+end;
+
+procedure TAPSMainForm.ALCornersSpeedButtonClick(Sender: TObject);
+begin
+  ALPageControl.ActivePageIndex := 1;
+end;
+
+function MyMessageDlg(const Msg: String; DlgType: TMsgDlgType; Button: TMsgDlgButtons;
+  Caption: array of String; DlgCaption: String; DefaultButton: TMsgDlgBtn;
+  const AppRect: TRect): Integer;
+var
+  aMsgDlg: TForm;
+  i: Integer;
+  DlgButton: TButton;
+  CaptionIndex: Integer;
+begin
+  aMsgdlg := CreateMessageDialog(Msg, DlgType, Button, DefaultButton);
+  aMsgdlg.Caption := DlgCaption;
+  aMsgdlg.BorderIcons := aMsgdlg.BorderIcons - [biSystemMenu];
+  aMsgdlg.BorderStyle := bsSingle;
+
+  aMsgdlg.Left := AppRect.Left + (AppRect.Width - aMsgdlg.Width) div 2;
+  aMsgdlg.Top := AppRect.Top + (AppRect.Height - aMsgdlg.Height) div 2;
+
+  CaptionIndex := 0;
+  for i := 0 to aMsgDlg.ComponentCount - 1 Do
+  begin
+    if (aMsgDlg.Components[i] is TButton) then
+    begin
+      DlgButton := TButton(aMsgDlg.Components[i]);
+      if CaptionIndex <= High(Caption) then
+        DlgButton.Caption := Caption[CaptionIndex];
+      inc(CaptionIndex);
+    end;
+  end;
+  Result := aMsgdlg.ShowModal;
+end;
+
+procedure TAPSMainForm.ApplyBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+  SelectedAppHandle: hwnd;
+  WindowRect, PreviousWindowRect: TRect;
+  WindowNameStr: String;
+  OkToChg, AcceptOrRevert: Integer;
+  ChangePending: Boolean;
+begin
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    SelectedAppHandle := WindowList.Windows[NodeData^.WindowListNo].WinHandle;
+    if IsWindow(SelectedAppHandle) then
+    begin
+      WindowNameStr := WindowList.Windows[NodeData^.WindowListNo].WinCaption;
+      if GSConfirmBefore then
+      begin
+        if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+        OkToChg := MyMessageDlg('What do you want to do with' + #10#13 + '"' + WindowNameStr + '" ?', mtConfirmation, [mbYes, mbOk, mbRetry, mbNo], ['Position/Size', 'Position', 'Size', 'Cancel'], 'Confirmation', mbRetry, GSAppRect);
+        if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+      end
+      else
+      begin
+        OkToChg := 6;
+      end;
+
+    // 6	mbYes		Position/Size
+    // 7	mbOk		Position
+    // 1	mbRetry		Size
+    // 4	mbNo		Cancel
+
+      if OkToChg in [6, 7, 1] then
+      begin
+        if SelectedAppHandle <> 0 then
+        begin
+          GetWindowRect(SelectedAppHandle, PreviousWindowRect);
+          ChangePending := False;
+
+          case OkToChg of
+            6: begin
+                 WindowRect.Left := ALLeftSpinEdit.Value;
+                 WindowRect.Top := ALTopSpinEdit.Value;
+                 WindowRect.Width := ALWidthSpinEdit.Value;
+                 WindowRect.Height := ALHeightSpinEdit.Value;
+                 ChangePending := True;
+               end;
+            7: begin
+                 WindowRect.Left := ALLeftSpinEdit.Value;
+                 WindowRect.Top := ALTopSpinEdit.Value;
+                 WindowRect.Width := PreviousWindowRect.Width;
+                 WindowRect.Height := PreviousWindowRect.Height;
+                 ChangePending := True;
+               end;
+            1: begin
+                 WindowRect.Left := PreviousWindowRect.Left;
+                 WindowRect.Top := PreviousWindowRect.Top;
+                 WindowRect.Width := ALWidthSpinEdit.Value;
+                 WindowRect.Height := ALHeightSpinEdit.Value;
+                 ChangePending := True;
+               end;
+          end;
+        end;
+
+        if ChangePending then
+        begin
+          if SetWindowPos(SelectedAppHandle, HWND_TOP,
+              WindowRect.Left,
+              WindowRect.Top,
+              WindowRect.Width,
+              WindowRect.Height, 0) then
+          begin
+            // Put APS back on top
+            SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+            if GSConfirmAfter then
+            begin
+              if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+              AcceptOrRevert := MyMessageDlg('Accept or Revert', mtConfirmation, [mbYes, mbNo], ['Accept','Revert'], 'Confirmation', mbNo, GSAppRect);
+              if GSStayOnTopB then SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+              if AcceptOrRevert = 7 then
+              begin
+                SetWindowPos(SelectedAppHandle, HWND_TOP,
+                  PreviousWindowRect.Left,
+                  PreviousWindowRect.Top,
+                  PreviousWindowRect.Width,
+                  PreviousWindowRect.Height, 0);
+                  // Put APS back on top
+                  SetWindowPos(Application.MainForm.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+                  SetWindowPos(Application.MainForm.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NoMove or SWP_NoSize);
+              end;
+            end;
+            LoadApplicationList;
+          end
+          else
+          begin
+            MyMessageDlg('Failed to adjust!' + #13#10 + 'APS may need to be elevated', mtWarning, [mbOk], ['Ok'], 'Warning', mbOk, GSAppRect);
+          end;
+        end;
+      end;
+    end
+    else
+    begin
+      MyMessageDlg('Application not found!' + #13#10 + 'Please refresh application list.', mtWarning, [mbOk], ['Ok'], 'Warning', mbOk, GSAppRect);
+    end;
+  end;
 end;
 
 procedure TAPSMainForm.OpenDirectory(DirectoryName: String);
@@ -1188,33 +1431,6 @@ end;
 procedure TAPSMainForm.pmiAboutClick(Sender: TObject);
 begin
   OpenAboutBox;
-end;
-
-procedure TAPSMainForm.pmiGetClick(Sender: TObject);
-var
-  SelectedNode: PVirtualNode;
-  NodeData: PTreeData;
-  SelectedAppHandle: hwnd;
-  WindowRect: TRect;
-begin
-  P2Memo.Clear;
-  SelectedNode := VST.GetFirstSelected(False);
-  if Assigned(SelectedNode) then
-  begin
-    NodeData := VST.GetNodeData(SelectedNode);
-    P2Memo.Lines.Append(NodeData^.FFileDescription);
-
-    SelectedAppHandle := NodeData^.AppHandle;
-    if SelectedAppHandle <> 0 then
-    begin
-      GetWindowRect(SelectedAppHandle, WindowRect);
-      P2Memo.Lines.Append('Left: ' + IntToStr(WindowRect.Left) +
-      ' Top: ' + IntToStr(WindowRect.Top) +
-      ' Width: ' + IntToStr(WindowRect.Width) +
-      ' Height: ' + IntToStr(WindowRect.Height));
-    end;
-
-  end;
 end;
 
 procedure TAPSMainForm.pmiGSRemoveFrameClick(Sender: TObject);
@@ -1267,6 +1483,190 @@ begin
   TrayIcon.Visible := True;
 end;
 
+procedure TAPSMainForm.ALHorizontalCenterBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  //  Horizontal Center
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width div 2));
+    ALTopSpinEdit.Value :=  WindowList.Windows[NodeData^.WindowListNo].WindowRect.Top;
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALLeftSideBtnClick(Sender: TObject);
+begin
+  // Left Side
+  ALLeftSpinEdit.Value := Monitor.WorkareaRect.Left;
+  ALTopSpinEdit.Value := Monitor.WorkareaRect.Top;
+  ALWidthSpinEdit.Value := Monitor.WorkareaRect.Width div 2;
+  ALHeightSpinEdit.Value := Monitor.WorkareaRect.Height;
+end;
+
+procedure TAPSMainForm.ALMBottomCenterBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Bottom Center
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width div 2));
+    ALTopSpinEdit.Value := Monitor.Top + (Monitor.WorkareaRect.Height - WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height);
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMBottomLeftBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Bottom Left
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.WorkareaRect.Left;
+    ALTopSpinEdit.Value := Monitor.Top + (Monitor.WorkareaRect.Height - WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height);
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMBottomRightBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Bottom Right
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + (Monitor.WorkareaRect.Width - WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width);
+    ALTopSpinEdit.Value := Monitor.Top + (Monitor.WorkareaRect.Height - WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height);
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMCenterBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Center
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width div 2));
+    ALTopSpinEdit.Value := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height div 2));
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMCenterLeftBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Center Left
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.WorkareaRect.Left;
+    ALTopSpinEdit.Value := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height div 2));
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMCenterRightBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Center Right
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + (Monitor.WorkareaRect.Width - WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width);
+    ALTopSpinEdit.Value := Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height div 2));
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMoveSpeedButtonClick(Sender: TObject);
+begin
+  ALPageControl.ActivePageIndex := 3;
+end;
+
+procedure TAPSMainForm.ALMTopCenterBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    // Move Top Center
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width div 2));
+    ALTopSpinEdit.Value := Monitor.WorkareaRect.Top;
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMTopLeftBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Top Left
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.WorkareaRect.Left;
+    ALTopSpinEdit.Value := Monitor.WorkareaRect.Top;
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.ALMTopRightBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Move Top Right
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := Monitor.Left + (Monitor.WorkareaRect.Width - WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width);
+    ALTopSpinEdit.Value := Monitor.WorkareaRect.Top;
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
 procedure TAPSMainForm.pmiQuitClick(Sender: TObject);
 begin
   Close;
@@ -1303,6 +1703,74 @@ begin
   end
   else
     inherited;
+end;
+
+procedure TAPSMainForm.ShowWhatsNewForm;
+begin
+  // Center WhatsNewForm to 75 Percent
+  WhatsNewForm.Left := Monitor.Left + (Round((Monitor.WorkareaRect.Width / 2) - ((Monitor.WorkareaRect.Width / 2) * (75 / 100))));
+  WhatsNewForm.Top := Monitor.Top + (Round((Monitor.WorkareaRect.Height / 2) - ((Monitor.WorkareaRect.Height / 2) * (75 / 100))));
+  //  WhatsNewForm.Width := Round(((Monitor.WorkareaRect.Width / 2) * (75 / 100)) * 2);
+  WhatsNewForm.Width := 1200;
+  WhatsNewForm.Height := Round(((Monitor.WorkareaRect.Height / 2) * (75 / 100)) * 2);
+  WhatsNewForm.Show;
+end;
+
+procedure TAPSMainForm.LoadApplicationList;
+begin
+  if JvPageList.ActivePage = JvStandardPage2 then
+  begin
+    MsgPnl.Visible := True;
+    RefreshApplicationList;
+    VST.BeginUpdate;
+    VST.Header.AutoFitColumns(True);
+    VST.EndUpdate;
+    MsgPnl.Visible := False;
+  end;
+end;
+
+procedure TAPSMainForm.RefreshApplicationList;
+var
+  i: Integer;
+  IsAppMainWin: Boolean;
+  Node: PVirtualNode;
+  Data: PTreeData;
+begin
+  VST.Header.SortColumn := NoColumn;
+  VST.NodeDataSize := SizeOf(TTreeData);
+  VST.BeginUpdate;
+  VST.Clear;
+  Application.ProcessMessages;
+  WindowList.Refresh;
+  for i := 0 to WindowList.Count - 1 do
+  begin
+    // Check if the window is a visible application main window.
+    IsAppMainWin := IsWindowVisible(WindowList.Windows[i].WinHandle) and // Visible
+    (GetWindow(WindowList.Windows[i].WinHandle, GW_OWNER) = 0) and // Not owned by other windows
+    (GetParent(WindowList.Windows[i].WinHandle) = 0) and // Does not have any parent
+    (GetWindowLong(WindowList.Windows[i].WinHandle, GWL_EXSTYLE) and WS_EX_TOOLWINDOW = 0);
+    // Not a tool window
+    if IsAppMainWin and (not InSkipList(WindowList.Windows[i].WinClass)) then
+    begin
+      Node := VST.AddChild(nil);
+      Data := VST.GetNodeData(Node);
+      VST.ValidateNode(Node, False);
+      Data^.FFileDescription := WindowList.Windows[i].ExeDesc;
+      Data^.FLeft := WindowList.Windows[i].WindowRect.Left;
+      Data^.FTop := WindowList.Windows[i].WindowRect.Top;
+      Data^.FWidth := WindowList.Windows[i].WindowRect.Width;
+      Data^.FHeight := WindowList.Windows[i].WindowRect.Height;
+      Data^.WindowListNo := i;
+    end;
+  end;
+  VST.EndUpdate;
+end;
+
+procedure TAPSMainForm.RefreshApplicationListSpdBtnClick(Sender: TObject);
+begin
+  RefreshApplicationListSpdBtn.Enabled := False;
+  LoadApplicationList;
+  RefreshApplicationListSpdBtn.Enabled := True;
 end;
 
 procedure TAPSMainForm.OpenAboutBox;
@@ -1504,7 +1972,8 @@ begin
     SettingsForm.LstDirLbl.Caption := LstDir;
     SettingsForm.TmpDirLbl.Caption := TmpDir;
     KeyDir := DtaDir + 'KEY\'; ForceDirectories(KeyDir);
-    VerStr := PgmName + '-v' + GetVersionInfoStr(ParamStr(0));
+    VerNum := GetVersionInfoStr(ParamStr(0));
+    VerStr := PgmName + '-v' + VerNum;
     MostRecentFiles.IniFile := DtaDir + 'LoadFile-MRU.INI';
 
     LoadSettingsFromFormActivate;
@@ -1513,7 +1982,7 @@ begin
     AddStylesToMainMenu('Styles');
     Item := FindMenuItemByHint(MainMenu, StyleStr);
     if Assigned(Item) then Item.Checked := True;
-    if FileExists(ExeDir + 'APS.chm') then aHelp.Visible := True;
+    if FileExists(ExeDir + 'APS.chm') then aContents.Visible := True;
     RightMenu(mmiVersionAbout); // Run after change to MainMenu
 
     if mmiAutoStartElevated.Checked then
@@ -1555,7 +2024,23 @@ begin
     GSAppRect.Height := APSMainForm.Height;
     GSAppRect.Width := APSMainForm.Width;
 
+    if VToV3(LastVerNum) < VToV3(VerNum) then
+    begin
+      LastVerNum := VerNum;
+      ShowWhatsNewForm;
+    end;
+
   end;
+end;
+
+function TAPSMainForm.VToV3(InStr: String): String;
+var
+  Words: TStringList;
+begin
+  Words := TStringList.Create;
+  Parse(Utf8ToAnsi(InStr), '.', Words);
+  Result := LPad(Words[0], 3, '0') + LPad(Words[1], 3, '0') + LPad(Words[2], 3, '0') + LPad(Words[3], 3, '0');
+  Words.Free;
 end;
 
 procedure TAPSMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1590,6 +2075,24 @@ begin
 
 end;
 
+procedure TAPSMainForm.ALTopLeftBtnClick(Sender: TObject);
+begin
+  // Top Left Corner
+  ALLeftSpinEdit.Value := Monitor.WorkareaRect.Left;
+  ALTopSpinEdit.Value := Monitor.WorkareaRect.Top;
+  ALWidthSpinEdit.Value := Monitor.WorkareaRect.Width div 2;
+  ALHeightSpinEdit.Value := Monitor.WorkareaRect.Height div 2;
+end;
+
+procedure TAPSMainForm.ALTopRightBtnClick(Sender: TObject);
+begin
+  // Top Right Corner
+  ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) + 1);
+  ALTopSpinEdit.Value := Monitor.WorkareaRect.Top;
+  ALWidthSpinEdit.Value := Monitor.WorkareaRect.Width div 2;
+  ALHeightSpinEdit.Value := Monitor.WorkareaRect.Height div 2;
+end;
+
 function TAPSMainForm.GetDataByColumn(Data: TTreeData; Column: Integer): String;
 begin
   case Column of
@@ -1613,6 +2116,63 @@ begin
     GetSetFrameA[i] := nil;
   end;
   SetLength(GetSetFrameA, 0);
+end;
+
+procedure TAPSMainForm.ALRightSideBtnClick(Sender: TObject);
+begin
+  // Right Side
+  ALLeftSpinEdit.Value := Monitor.Left + ((Monitor.WorkareaRect.Width div 2) + 1);
+  ALTopSpinEdit.Value := Monitor.WorkareaRect.Top;
+  ALWidthSpinEdit.Value := Monitor.WorkareaRect.Width div 2;
+  ALHeightSpinEdit.Value := Monitor.WorkareaRect.Height;
+end;
+
+procedure TAPSMainForm.ALSidesSpeedButtonClick(Sender: TObject);
+begin
+  ALPageControl.ActivePageIndex := 2;
+end;
+
+procedure TAPSMainForm.ALVerticleCenterBtnClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  // Vertical Center
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Left;
+    ALTopSpinEdit.Value :=  Monitor.Top + ((Monitor.WorkareaRect.Height div 2) - (WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height div 2));
+    ALWidthSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Width;
+    ALHeightSpinEdit.Value := WindowList.Windows[NodeData^.WindowListNo].WindowRect.Height;
+  end;
+end;
+
+procedure TAPSMainForm.VSTClick(Sender: TObject);
+var
+  SelectedNode: PVirtualNode;
+  NodeData: PTreeData;
+begin
+  SelectedNode := VST.GetFirstSelected(False);
+  if Assigned(SelectedNode) then
+  begin
+    NodeData := VST.GetNodeData(SelectedNode);
+    ALLeftSpinEdit.Value := NodeData^.FLeft;
+    ALTopSpinEdit.Value := NodeData^.FTop;
+    ALWidthSpinEdit.Value := NodeData^.FWidth;
+    ALHeightSpinEdit.Value := NodeData^.FHeight;
+  end;
+end;
+
+procedure TAPSMainForm.VSTGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
+  var HintText: string);
+var
+  NodeData: PTreeData;
+begin
+  NodeData := Sender.GetNodeData(Node);
+  HintText := WindowList.Windows[NodeData^.WindowListNo].WinCaption;
 end;
 
 procedure TAPSMainForm.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
@@ -1643,6 +2203,12 @@ begin
   begin
     WindowNameEdit.Text := Reticle.AncestorCaption;
   end;
+end;
+
+procedure TAPSMainForm.WLRTimerTimer(Sender: TObject);
+begin
+  WLRTimer.Enabled := False;
+  LoadApplicationList;
 end;
 
 procedure TAPSMainForm.LoadSettingsFromFormCreate;
@@ -1683,7 +2249,7 @@ begin
 
     PagesMM := RegIniFile.ReadBool('Section-Page', 'PagesMM', True);
     Page1 := RegIniFile.ReadBool('Section-Page', 'Page1', False);
-    Page2 := RegIniFile.ReadBool('Section-Page', 'Page2', False);
+    Page2 := RegIniFile.ReadBool('Section-Page', 'Page2', True);
     Page3 := RegIniFile.ReadBool('Section-Page', 'Page3', True);
     Page4 := RegIniFile.ReadBool('Section-Page', 'Page4', True);
 
@@ -1732,18 +2298,22 @@ begin
 
     SettingsForm.JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Settings', 'CurrentPage', 0);
 
-    AfterCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmAfter', True);
-    ABConfirmAfter := AfterCheckBox.Checked;
-    GSConfirmAfter := AfterCheckBox.Checked;
-    BeforeCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmBefore', True);
-    ABConfirmBefore := BeforeCheckBox.Checked;
-    GSConfirmBefore := BeforeCheckBox.Checked;
+    SettingsForm.ConfirmBeforeCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmBefore', True);
+    ABConfirmBefore := SettingsForm.ConfirmBeforeCheckBox.Checked;
+    GSConfirmBefore := SettingsForm.ConfirmBeforeCheckBox.Checked;
+
+    SettingsForm.ConfirmAfterCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmAfter', True);
+    ABConfirmAfter := SettingsForm.ConfirmAfterCheckBox.Checked;
+    GSConfirmAfter := SettingsForm.ConfirmAfterCheckBox.Checked;
 
     ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-ABPage', 'CurrentPage', 3);
 
     SettingsForm.SaveCenterPercentCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'SaveCenterPercent', True);
-    if SettingsForm.SaveCenterPercentCheckBox.Checked then
-      ApplicationBoundsFrame.CenterPercentSpinEdit.Value := RegIniFile.ReadInteger('Section-Options', 'SaveCenterPercentValue', 75);
+    if SettingsForm.SaveCenterPercentCheckBox.Checked then RegIniFile.ReadBool('Section-Options', 'SaveCenterPercent', True);
+    ApplicationBoundsFrame.CenterPercentSpinEdit.Value := RegIniFile.ReadInteger('Section-Options', 'SaveCenterPercentValue', 85);
+    ALCenterPercentSpinEdit.Value := RegIniFile.ReadInteger('Section-Options', 'ALSaveCenterPercentValue', 85);
+
+    LastVerNum := RegIniFile.ReadString('Section-Misc', 'LastVerNum', '0.0.0.0');
 
   finally
     RegIniFile.Free;
@@ -1814,8 +2384,8 @@ begin
     RegIniFile.WriteBool('Section-Page', 'Page3', Page3);
     RegIniFile.WriteBool('Section-Page', 'Page4', Page4);
 
-    RegIniFile.WriteBool('Section-Options', 'ConfirmAfter', AfterCheckBox.Checked);
-    RegIniFile.WriteBool('Section-Options', 'ConfirmBefore', BeforeCheckBox.Checked);
+    RegIniFile.WriteBool('Section-Options', 'ConfirmBefore', SettingsForm.ConfirmBeforeCheckBox.Checked);
+    RegIniFile.WriteBool('Section-Options', 'ConfirmAfter', SettingsForm.ConfirmAfterCheckBox.Checked);
 
     RegIniFile.WriteInteger('Section-ABPage', 'CurrentPage', ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex);
 
@@ -1826,7 +2396,12 @@ begin
 
     RegIniFile.WriteBool('Section-Options', 'SaveCenterPercent', SettingsForm.SaveCenterPercentCheckBox.Checked);
     if SettingsForm.SaveCenterPercentCheckBox.Checked then
+    begin
       RegIniFile.WriteInteger('Section-Options', 'SaveCenterPercentValue', ApplicationBoundsFrame.CenterPercentSpinEdit.Value);
+      RegIniFile.WriteInteger('Section-Options', 'ALSaveCenterPercentValue', ALCenterPercentSpinEdit.Value);
+    end;
+
+    RegIniFile.WriteString('Section-Misc', 'LastVerNum', LastVerNum);
 
   finally
     RegIniFile.Free;

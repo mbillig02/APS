@@ -21,7 +21,7 @@ object APSMainForm: TAPSMainForm
     Top = 0
     Width = 559
     Height = 185
-    ActivePage = JvStandardPage3
+    ActivePage = JvStandardPage2
     PropagateEnable = False
     Align = alClient
     object JvStandardPage1: TJvStandardPage
@@ -32,8 +32,6 @@ object APSMainForm: TAPSMainForm
       Caption = 'JvStandardPage1'
       OnHide = JvStandardPage1Hide
       OnShow = JvStandardPage1Show
-      ExplicitWidth = 563
-      ExplicitHeight = 186
       object WindowNameEdit: TEdit
         Left = 0
         Top = 0
@@ -43,7 +41,7 @@ object APSMainForm: TAPSMainForm
         Alignment = taCenter
         TabOrder = 0
         Text = 'WindowName'
-        ExplicitWidth = 563
+        ExplicitWidth = 555
       end
       object BottomPanel: TPanel
         Left = 0
@@ -52,8 +50,6 @@ object APSMainForm: TAPSMainForm
         Height = 164
         Align = alClient
         TabOrder = 1
-        ExplicitWidth = 563
-        ExplicitHeight = 165
         object InfoMemo: TMemo
           Left = 8
           Top = 20
@@ -73,7 +69,7 @@ object APSMainForm: TAPSMainForm
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
-          ExplicitHeight = 163
+          ExplicitHeight = 161
           object HeightLbl: TLabel
             Left = 163
             Top = 1
@@ -200,13 +196,14 @@ object APSMainForm: TAPSMainForm
           end
           object FileNameEdit: TEdit
             Left = 1
-            Top = 141
+            Top = 140
             Width = 218
             Height = 21
             Align = alBottom
             Alignment = taCenter
             TabOrder = 11
             Text = 'APS.csv'
+            ExplicitTop = 139
           end
         end
         object RightPanel: TPanel
@@ -216,15 +213,17 @@ object APSMainForm: TAPSMainForm
           Height = 162
           Align = alClient
           TabOrder = 1
-          ExplicitWidth = 341
-          ExplicitHeight = 163
+          ExplicitWidth = 333
+          ExplicitHeight = 161
           object RightBottomPanel: TPanel
             Left = 1
-            Top = 133
-            Width = 339
+            Top = 132
+            Width = 335
             Height = 29
             Align = alBottom
             TabOrder = 0
+            ExplicitTop = 131
+            ExplicitWidth = 331
             object DBNavigator: TDBNavigator
               Left = 44
               Top = 2
@@ -237,8 +236,8 @@ object APSMainForm: TAPSMainForm
           object DBGrid: TDBGrid
             Left = 1
             Top = 1
-            Width = 339
-            Height = 132
+            Width = 335
+            Height = 131
             Align = alClient
             DataSource = JvDataSource
             TabOrder = 1
@@ -305,66 +304,449 @@ object APSMainForm: TAPSMainForm
       Width = 559
       Height = 185
       Caption = 'JvStandardPage2'
-      ExplicitWidth = 563
-      ExplicitHeight = 186
+      OnShow = JvStandardPage2Show
       object P2LeftPanel: TPanel
         Left = 0
         Top = 0
         Width = 121
-        Height = 186
+        Height = 185
         Align = alLeft
         TabOrder = 0
-        object Button3: TButton
-          Left = 24
-          Top = 144
-          Width = 75
+        object ApplyBtn: TButton
+          Left = 1
+          Top = 159
+          Width = 119
           Height = 25
-          Action = aListProcs
+          Align = alBottom
+          Caption = 'Apply'
           TabOrder = 0
+          OnClick = ApplyBtnClick
+          ExplicitTop = 158
         end
-        object Button1: TButton
-          Left = 24
-          Top = 24
-          Width = 75
-          Height = 25
-          Action = aTest
+        object ALButtonPanel: TPanel
+          Left = 1
+          Top = 26
+          Width = 119
+          Height = 24
+          Align = alTop
+          BevelOuter = bvNone
+          ParentShowHint = False
+          ShowCaption = False
+          ShowHint = True
           TabOrder = 1
+          object ALCenterSpeedButton: TSpeedButton
+            Left = 0
+            Top = 0
+            Width = 23
+            Height = 24
+            Hint = 'Center'
+            Align = alLeft
+            Glyph.Data = {
+              36090000424D3609000000000000360000002800000018000000180000000100
+              2000000000000009000000000000000000000000000000000000FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              00000000000000000000000000000000000000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000000000
+              0000000000000000000000000000FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000
+              00000000000000000000FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF0000000000FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00000000000000
+              0000000000000000000000000000FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF0000000000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF0000000000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF0000000000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF0000000000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF0000000000FF00FF00FF00FF000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              0000000000000000000000000000000000000000000000000000000000000000
+              00000000000000000000000000000000000000000000FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+              FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
+            OnClick = ALCenterSpeedButtonClick
+            ExplicitLeft = 8
+          end
+          object ALCornersSpeedButton: TSpeedButton
+            Left = 23
+            Top = 0
+            Width = 24
+            Height = 24
+            Hint = 'Corners'
+            Align = alLeft
+            ImageIndex = 1
+            Images = ApplicationBoundsFrame.ImageList24
+            OnClick = ALCornersSpeedButtonClick
+            ExplicitLeft = 40
+          end
+          object ALSidesSpeedButton: TSpeedButton
+            Left = 47
+            Top = 0
+            Width = 24
+            Height = 24
+            Hint = 'Sides'
+            Align = alLeft
+            ImageIndex = 2
+            Images = ApplicationBoundsFrame.ImageList24
+            OnClick = ALSidesSpeedButtonClick
+            ExplicitLeft = 48
+          end
+          object ALMoveSpeedButton: TSpeedButton
+            Left = 71
+            Top = 0
+            Width = 24
+            Height = 24
+            Hint = 'Move'
+            Align = alLeft
+            ImageIndex = 3
+            Images = ApplicationBoundsFrame.ImageList24
+            OnClick = ALMoveSpeedButtonClick
+            ExplicitLeft = 72
+          end
+        end
+        object ALPageControl: TPageControl
+          Left = 1
+          Top = 50
+          Width = 119
+          Height = 109
+          ActivePage = ALCenterTabSheet
+          Align = alClient
+          TabOrder = 2
+          object ALCenterTabSheet: TTabSheet
+            Caption = 'ALCenterTabSheet'
+            TabVisible = False
+            object ALCenterBtn: TButton
+              Left = 5
+              Top = 33
+              Width = 60
+              Height = 25
+              Caption = 'Center'
+              TabOrder = 0
+              OnClick = ALCenterBtnClick
+            end
+            object ALHorizontalCenterBtn: TButton
+              Left = 5
+              Top = 65
+              Width = 60
+              Height = 25
+              Hint = 'Horizontal Center'
+              Caption = '| - + - |'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -8
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 1
+              OnClick = ALHorizontalCenterBtnClick
+            end
+            object ALVerticleCenterBtn: TButton
+              Left = 77
+              Top = 34
+              Width = 25
+              Height = 56
+              Hint = 'Verticle Center'
+              Caption = '--'#13#10'|'#13#10'-'#13#10'|'#13#10'--'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -8
+              Font.Name = 'Tahoma'
+              Font.Style = []
+              ParentFont = False
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 2
+              WordWrap = True
+              OnClick = ALVerticleCenterBtnClick
+            end
+            object ALCenterPercentBtn: TButton
+              Left = 5
+              Top = 3
+              Width = 60
+              Height = 25
+              Hint = 'Center Percent'
+              Caption = 'Center %'
+              ParentShowHint = False
+              ShowHint = True
+              TabOrder = 3
+              OnClick = ALCenterPercentBtnClick
+            end
+            object ALCenterPercentSpinEdit: TSpinEdit
+              Left = 70
+              Top = 5
+              Width = 40
+              Height = 22
+              Increment = 5
+              MaxValue = 100
+              MinValue = 50
+              TabOrder = 4
+              Value = 85
+            end
+          end
+          object ALCornersTabSheet: TTabSheet
+            Caption = 'ALCornersTabSheet'
+            ImageIndex = 1
+            TabVisible = False
+            object ALTopLeftBtn: TButton
+              Left = 0
+              Top = 0
+              Width = 55
+              Height = 49
+              Caption = 'Top'#13#10'Left'
+              TabOrder = 0
+              WordWrap = True
+              OnClick = ALTopLeftBtnClick
+            end
+            object ALBottomLeftBtn: TButton
+              Left = 0
+              Top = 50
+              Width = 55
+              Height = 49
+              Caption = 'Bottom'#13#10'Left'
+              TabOrder = 1
+              WordWrap = True
+              OnClick = ALBottomLeftBtnClick
+            end
+            object ALTopRightBtn: TButton
+              Left = 56
+              Top = 0
+              Width = 55
+              Height = 49
+              Caption = 'Top'#13#10'Right'
+              TabOrder = 2
+              WordWrap = True
+              OnClick = ALTopRightBtnClick
+            end
+            object ALBottomRightBtn: TButton
+              Left = 56
+              Top = 50
+              Width = 55
+              Height = 49
+              Caption = 'Bottom'#13#10'Right'
+              TabOrder = 3
+              WordWrap = True
+              OnClick = ALBottomRightBtnClick
+            end
+          end
+          object ALSidesTabSheet: TTabSheet
+            Caption = 'ALSidesTabSheet'
+            ImageIndex = 2
+            TabVisible = False
+            object ALLeftSideBtn: TButton
+              Left = 0
+              Top = 0
+              Width = 55
+              Height = 99
+              Align = alLeft
+              Caption = 'Left'#13#10'Side'
+              TabOrder = 0
+              WordWrap = True
+              OnClick = ALLeftSideBtnClick
+            end
+            object ALRightSideBtn: TButton
+              Left = 56
+              Top = 0
+              Width = 55
+              Height = 99
+              Align = alRight
+              Caption = 'Right'#13#10'Side'
+              TabOrder = 1
+              WordWrap = True
+              OnClick = ALRightSideBtnClick
+            end
+          end
+          object ALMoveTabSheet: TTabSheet
+            Caption = 'ALMoveTabSheet'
+            ImageIndex = 3
+            ParentShowHint = False
+            ShowHint = True
+            TabVisible = False
+            object ALMTopLeftBtn: TButton
+              Left = 0
+              Top = 0
+              Width = 33
+              Height = 33
+              Hint = 'Move Top Left'
+              Caption = 'TL'
+              TabOrder = 0
+              OnClick = ALMTopLeftBtnClick
+            end
+            object ALMCenterLeftBtn: TButton
+              Left = 0
+              Top = 34
+              Width = 33
+              Height = 33
+              Hint = 'Move Center Left'
+              Caption = 'CL'
+              TabOrder = 1
+              OnClick = ALMCenterLeftBtnClick
+            end
+            object ALMBottomLeftBtn: TButton
+              Left = 0
+              Top = 68
+              Width = 33
+              Height = 33
+              Hint = 'Move Bottom Left'
+              Caption = 'BL'
+              TabOrder = 2
+              OnClick = ALMBottomLeftBtnClick
+            end
+            object ALMTopCenterBtn: TButton
+              Left = 34
+              Top = 0
+              Width = 33
+              Height = 33
+              Hint = 'Move Top Center'
+              Caption = 'TC'
+              TabOrder = 3
+              OnClick = ALMTopCenterBtnClick
+            end
+            object ALMCenterBtn: TButton
+              Left = 34
+              Top = 34
+              Width = 33
+              Height = 33
+              Hint = 'Move Center'
+              Caption = 'C'
+              TabOrder = 4
+              OnClick = ALMCenterBtnClick
+            end
+            object ALMBottomCenterBtn: TButton
+              Left = 34
+              Top = 68
+              Width = 33
+              Height = 33
+              Hint = 'Move Bottom Center'
+              Caption = 'BC'
+              TabOrder = 5
+              OnClick = ALMBottomCenterBtnClick
+            end
+            object ALMTopRightBtn: TButton
+              Left = 68
+              Top = 0
+              Width = 33
+              Height = 33
+              Hint = 'Move Top Right'
+              Caption = 'TR'
+              TabOrder = 6
+              OnClick = ALMTopRightBtnClick
+            end
+            object ALMCenterRightBtn: TButton
+              Left = 68
+              Top = 34
+              Width = 33
+              Height = 33
+              Hint = 'Move Center Right'
+              Caption = 'CR'
+              TabOrder = 7
+              OnClick = ALMCenterRightBtnClick
+            end
+            object ALMBottomRightBtn: TButton
+              Left = 68
+              Top = 68
+              Width = 33
+              Height = 33
+              Hint = 'Move Bottom Right'
+              Caption = 'BR'
+              TabOrder = 8
+              OnClick = ALMBottomRightBtnClick
+            end
+          end
+        end
+        object RefreshApplicationListPnl: TPanel
+          Left = 1
+          Top = 1
+          Width = 119
+          Height = 25
+          Align = alTop
+          Color = clAqua
+          ParentBackground = False
+          TabOrder = 3
+          object RefreshApplicationListSpdBtn: TSpeedButton
+            Left = 1
+            Top = 1
+            Width = 117
+            Height = 23
+            Align = alClient
+            Caption = 'Refresh App List'
+            Flat = True
+            OnClick = RefreshApplicationListSpdBtnClick
+            ExplicitLeft = -2
+            ExplicitTop = -4
+          end
         end
       end
       object P2RightPanel: TPanel
         Left = 121
         Top = 0
-        Width = 442
-        Height = 186
+        Width = 438
+        Height = 185
         Align = alClient
         Caption = 'P2RightPanel'
         TabOrder = 1
-        object Splitter1: TSplitter
-          Left = 1
-          Top = 85
-          Width = 440
-          Height = 3
-          Cursor = crVSplit
-          Align = alBottom
-          ExplicitTop = 1
-          ExplicitWidth = 83
-        end
-        object P2Memo: TMemo
-          Left = 1
-          Top = 1
-          Width = 440
-          Height = 84
-          Align = alClient
-          ScrollBars = ssBoth
-          TabOrder = 0
-        end
+        ExplicitWidth = 434
+        ExplicitHeight = 184
         object VST: TVirtualStringTree
           Left = 1
-          Top = 87
+          Top = 1
           Width = 436
-          Height = 97
+          Height = 151
           AccessibleName = 'Title'
-          Align = alBottom
+          Align = alClient
           Colors.BorderColor = 15987699
           Colors.DisabledColor = clGray
           Colors.DropMarkColor = 15385233
@@ -372,7 +754,7 @@ object APSMainForm: TAPSMainForm
           Colors.DropTargetBorderColor = 15385233
           Colors.FocusedSelectionColor = 15385233
           Colors.FocusedSelectionBorderColor = 15385233
-          Colors.GridLineColor = 15987699
+          Colors.GridLineColor = clBlack
           Colors.HeaderHotColor = clBlack
           Colors.HotColor = clBlack
           Colors.SelectionRectangleBlendColor = 15385233
@@ -383,20 +765,30 @@ object APSMainForm: TAPSMainForm
           Colors.UnfocusedSelectionColor = 13421772
           Colors.UnfocusedSelectionBorderColor = 13421772
           Header.AutoSizeIndex = 0
-          Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
-          PopupMenu = VSTPopupMenu
-          TabOrder = 1
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -12
+          Header.Font.Name = 'Tahoma'
+          Header.Font.Style = [fsBold]
+          Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoAutoResizeInclCaption]
+          Header.ParentFont = False
+          HintMode = hmHintAndDefault
+          Indent = 0
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toFullRowSelect]
+          OnClick = VSTClick
           OnGetText = VSTGetText
+          OnGetHint = VSTGetHint
           OnMouseDown = VSTMouseDown
           Touch.InteractiveGestures = [igPan, igPressAndTap]
           Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
-          ExplicitTop = 88
-          ExplicitWidth = 440
           Columns = <
             item
               Position = 0
-              Text = 'File Description'
+              Text = 'Application Name'
               Width = 236
             end
             item
@@ -415,6 +807,102 @@ object APSMainForm: TAPSMainForm
               Position = 4
               Text = 'Height'
             end>
+        end
+        object BottomPnl: TPanel
+          Left = 1
+          Top = 152
+          Width = 436
+          Height = 32
+          Align = alBottom
+          TabOrder = 1
+          ExplicitTop = 151
+          ExplicitWidth = 432
+          object ALHeightLbl: TLabel
+            Left = 282
+            Top = 9
+            Width = 35
+            Height = 13
+            Caption = 'Height:'
+          end
+          object ALLeftLbl: TLabel
+            Left = 10
+            Top = 9
+            Width = 23
+            Height = 13
+            Caption = 'Left:'
+          end
+          object ALTopLbl: TLabel
+            Left = 98
+            Top = 9
+            Width = 22
+            Height = 13
+            Caption = 'Top:'
+          end
+          object ALWidthLbl: TLabel
+            Left = 185
+            Top = 9
+            Width = 32
+            Height = 13
+            Caption = 'Width:'
+          end
+          object ALHeightSpinEdit: TSpinEdit
+            Left = 322
+            Top = 6
+            Width = 50
+            Height = 22
+            MaxValue = 0
+            MinValue = 0
+            TabOrder = 0
+            Value = 0
+          end
+          object ALLeftSpinEdit: TSpinEdit
+            Left = 38
+            Top = 6
+            Width = 50
+            Height = 22
+            MaxValue = 0
+            MinValue = 0
+            TabOrder = 1
+            Value = 0
+          end
+          object ALTopSpinEdit: TSpinEdit
+            Left = 125
+            Top = 6
+            Width = 50
+            Height = 22
+            MaxValue = 0
+            MinValue = 0
+            TabOrder = 2
+            Value = 0
+          end
+          object ALWidthSpinEdit: TSpinEdit
+            Left = 222
+            Top = 6
+            Width = 50
+            Height = 22
+            MaxValue = 0
+            MinValue = 0
+            TabOrder = 3
+            Value = 0
+          end
+        end
+        object MsgPnl: TPanel
+          Left = 1
+          Top = 1
+          Width = 436
+          Height = 151
+          Align = alClient
+          Caption = 'Loading application list'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -28
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 2
+          Visible = False
+          ExplicitWidth = 432
+          ExplicitHeight = 150
         end
       end
     end
@@ -440,31 +928,7 @@ object APSMainForm: TAPSMainForm
           Width = 178
           Height = 40
           Align = alBottom
-          Caption = 'Confirm Set'
           TabOrder = 0
-          ExplicitTop = 143
-          object BeforeCheckBox: TCheckBox
-            Left = 21
-            Top = 15
-            Width = 55
-            Height = 17
-            Caption = 'Before'
-            Checked = True
-            State = cbChecked
-            TabOrder = 0
-            OnClick = BeforeCheckBoxClick
-          end
-          object AfterCheckBox: TCheckBox
-            Left = 98
-            Top = 15
-            Width = 55
-            Height = 17
-            Caption = 'After'
-            Checked = True
-            State = cbChecked
-            TabOrder = 1
-            OnClick = AfterCheckBoxClick
-          end
         end
         inline ApplicationBoundsFrame: TApplicationBoundsFrame
           Left = 1
@@ -478,39 +942,76 @@ object APSMainForm: TAPSMainForm
           ExplicitWidth = 178
           ExplicitHeight = 143
           inherited ApplicationBounsJvPageList: TJvPageList
+            ActivePage = ApplicationBoundsFrame.GetSetPage
+            inherited CenterPercentPage: TJvStandardPage
+              inherited CenterPercentGroupBox: TGroupBox
+                inherited CenterPercentSpinEdit: TSpinEdit
+                  Height = 22
+                  ExplicitHeight = 22
+                end
+              end
+            end
             inherited GetSetPage: TJvStandardPage
               inherited GetSetGroupBox: TGroupBox
                 inherited LeftLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 2
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 23
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
                 end
                 inherited TopLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 45
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 22
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
                 end
                 inherited WidthLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Width = 32
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 88
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 32
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
                 end
                 inherited HeightLabeledEdit: TLabeledEdit
+                  Height = 21
                   EditLabel.Width = 35
                   EditLabel.Height = 13
                   EditLabel.ExplicitLeft = 131
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 35
                   EditLabel.ExplicitHeight = 13
+                  ExplicitHeight = 21
                 end
               end
+            end
+            inherited SizePage: TJvStandardPage
+              inherited SizeGroupBox: TGroupBox
+                inherited SizeRightPanel: TPanel
+                  Top = 15
+                  Height = 94
+                  ExplicitTop = 15
+                  ExplicitHeight = 94
+                end
+                inherited SizeScrollBox: TScrollBox
+                  Top = 15
+                  Height = 94
+                  ExplicitTop = 15
+                  ExplicitHeight = 94
+                end
+              end
+            end
+            inherited HorizontalVerticalCenterPage: TJvStandardPage
+              ExplicitWidth = 174
+              ExplicitHeight = 111
             end
           end
           inherited ButtonPanel: TPanel
@@ -527,8 +1028,6 @@ object APSMainForm: TAPSMainForm
         Align = alClient
         PopupMenu = FrameScrollPopupMenu
         TabOrder = 1
-        ExplicitWidth = 375
-        ExplicitHeight = 184
       end
     end
     object JvStandardPage4: TJvStandardPage
@@ -648,15 +1147,16 @@ object APSMainForm: TAPSMainForm
     object mmiPages: TMenuItem
       Caption = 'Pages'
       Visible = False
+      object mmiPage2: TMenuItem
+        Action = aPage2
+        Caption = 'Application List'
+      end
       object mmiPage3: TMenuItem
         Action = aPage3
         Caption = 'Get Set'
       end
       object mmiPage1: TMenuItem
         Action = aPage1
-      end
-      object mmiPage2: TMenuItem
-        Action = aPage2
       end
       object mmiPage4: TMenuItem
         Action = aPage4
@@ -742,6 +1242,12 @@ object APSMainForm: TAPSMainForm
         object mmiInfoMemo: TMenuItem
           Action = aInfoMemo
         end
+        object mmiObjectInspector: TMenuItem
+          Action = aOIFormExecute
+        end
+        object mmiResetLastVerNum: TMenuItem
+          Action = aResetLastVerNum
+        end
       end
     end
     object mmiSettings: TMenuItem
@@ -754,7 +1260,13 @@ object APSMainForm: TAPSMainForm
       Action = aRestartElevated
     end
     object mmiHelp: TMenuItem
-      Action = aHelp
+      Caption = 'Help'
+      object mmiContents: TMenuItem
+        Action = aContents
+      end
+      object mmiWhatsNew: TMenuItem
+        Action = aWhatsNew
+      end
     end
     object mmiVersionAbout: TMenuItem
       Caption = 'About'
@@ -924,11 +1436,6 @@ object APSMainForm: TAPSMainForm
     end
     object aListProcs: TAction
       Caption = 'List Procs'
-      OnExecute = aListProcsExecute
-    end
-    object aTest: TAction
-      Caption = 'Test'
-      OnExecute = aTestExecute
     end
     object aPage3: TAction
       Category = 'Page'
@@ -969,10 +1476,22 @@ object APSMainForm: TAPSMainForm
       Caption = 'Realtime'
       OnExecute = aPage4Execute
     end
-    object aHelp: TAction
-      Caption = 'Help'
+    object aContents: TAction
+      Caption = 'Contents'
       Visible = False
-      OnExecute = aHelpExecute
+      OnExecute = aContentsExecute
+    end
+    object aOIFormExecute: TAction
+      Caption = 'Object Inspector'
+      OnExecute = aOIFormExecuteExecute
+    end
+    object aWhatsNew: TAction
+      Caption = 'What'#39's New'
+      OnExecute = aWhatsNewExecute
+    end
+    object aResetLastVerNum: TAction
+      Caption = 'Reset LastVerNum'
+      OnExecute = aResetLastVerNumExecute
     end
   end
   object MostRecentFiles: TMostRecentFiles
@@ -1003,14 +1522,6 @@ object APSMainForm: TAPSMainForm
     DataSet = JvCsvDataSet
     Left = 216
     Top = 80
-  end
-  object VSTPopupMenu: TPopupMenu
-    Left = 289
-    Top = 80
-    object pmiGet: TMenuItem
-      Caption = 'Get'
-      OnClick = pmiGetClick
-    end
   end
   object GSFramePopupMenu: TPopupMenu
     Left = 48
@@ -35506,5 +36017,16 @@ object APSMainForm: TAPSMainForm
       Caption = 'Quit'
       OnClick = pmiQuitClick
     end
+  end
+  object WindowList: TWindowList
+    Left = 489
+    Top = 16
+  end
+  object WLRTimer: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = WLRTimerTimer
+    Left = 297
+    Top = 80
   end
 end

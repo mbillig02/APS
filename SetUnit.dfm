@@ -19,7 +19,7 @@ object SettingsForm: TSettingsForm
     Top = 0
     Width = 355
     Height = 325
-    ActivePage = JvStandardPageAdmin
+    ActivePage = JvStandardPageMisc
     PropagateEnable = False
     Align = alClient
     ExplicitWidth = 351
@@ -158,13 +158,22 @@ object SettingsForm: TSettingsForm
           end
           object ShowMissingLinksCheckBox: TCheckBox
             Left = 8
-            Top = 81
+            Top = 106
             Width = 57
             Height = 41
             Caption = 'Show Missing Links'
             TabOrder = 3
             WordWrap = True
             OnClick = ShowMissingLinksCheckBoxClick
+          end
+          object ColorChgBtn: TButton
+            Left = 0
+            Top = 75
+            Width = 75
+            Height = 25
+            Caption = 'Color Change'
+            TabOrder = 4
+            OnClick = ColorChgBtnClick
           end
         end
         inline RunAsFrame: TRunAsFrame
@@ -620,8 +629,6 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = 'JvStandardPagePages'
-      ExplicitWidth = 351
-      ExplicitHeight = 324
       object MiscMainMenuGroupBox: TGroupBox
         Left = 6
         Top = 3
@@ -650,9 +657,9 @@ object SettingsForm: TSettingsForm
         object Page2CheckBox: TCheckBox
           Left = 16
           Top = 65
-          Width = 129
+          Width = 144
           Height = 17
-          Caption = 'Page 2 (Test)'
+          Caption = 'Page 2 (Application List)'
           TabOrder = 2
           OnClick = Page2CheckBoxClick
         end
@@ -682,8 +689,7 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = 'JvStandardPageMisc'
-      ExplicitWidth = 351
-      ExplicitHeight = 324
+      ExplicitLeft = 5
       object SaveCenterPercentCheckBox: TCheckBox
         Left = 16
         Top = 9
@@ -691,6 +697,28 @@ object SettingsForm: TSettingsForm
         Height = 17
         Caption = 'Save Center Percent'
         TabOrder = 0
+      end
+      object ConfirmBeforeCheckBox: TCheckBox
+        Left = 16
+        Top = 51
+        Width = 145
+        Height = 17
+        Caption = 'Confirm Before'
+        Checked = True
+        State = cbChecked
+        TabOrder = 1
+        OnClick = ConfirmBeforeCheckBoxClick
+      end
+      object ConfirmAfterCheckBox: TCheckBox
+        Left = 16
+        Top = 74
+        Width = 145
+        Height = 17
+        Caption = 'Confirm After'
+        Checked = True
+        State = cbChecked
+        TabOrder = 2
+        OnClick = ConfirmAfterCheckBoxClick
       end
     end
   end
@@ -784,5 +812,9 @@ object SettingsForm: TSettingsForm
   object LstDirJvBalloonHint: TJvBalloonHint
     Left = 360
     Top = 176
+  end
+  object ColorDialog: TColorDialog
+    Left = 219
+    Top = 164
   end
 end

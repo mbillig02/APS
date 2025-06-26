@@ -87,6 +87,10 @@ type
     JvStandardPageMisc: TJvStandardPage;
     MiscBtn: TButton;
     SaveCenterPercentCheckBox: TCheckBox;
+    ColorChgBtn: TButton;
+    ColorDialog: TColorDialog;
+    ConfirmBeforeCheckBox: TCheckBox;
+    ConfirmAfterCheckBox: TCheckBox;
     procedure SetDefaultScreenBtnClick(Sender: TObject);
     procedure SetAlomstFullScreenBtnClick(Sender: TObject);
     procedure SavFrmSizChkBoxClick(Sender: TObject);
@@ -135,6 +139,9 @@ type
     procedure Page3CheckBoxClick(Sender: TObject);
     procedure Page4CheckBoxClick(Sender: TObject);
     procedure MiscBtnClick(Sender: TObject);
+    procedure ColorChgBtnClick(Sender: TObject);
+    procedure ConfirmAfterCheckBoxClick(Sender: TObject);
+    procedure ConfirmBeforeCheckBoxClick(Sender: TObject);
   private
     procedure OpenDirectory(DirectoryName: String);
     procedure ListToForm(PositionB, SizeB: Boolean);
@@ -424,6 +431,11 @@ begin
     RegIniFile.WriteString('TotalCmd', 'UserDesktop', '\TotalCmd.lnk');
     RegIniFile.WriteString('TotalCmd', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\TotalCmd.lnk');
     RegIniFile.WriteString('TotalCmd', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\TotalCmd.lnk');
+    RegIniFile.WriteString('TotalCmd64', 'PublicDesktop', 'C:\Users\Public\Desktop\Total Commander 64 bit.lnk');
+    RegIniFile.WriteString('TotalCmd64', 'PublicStartMenu', 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\ProxyEnable\Total Commander 64 bit.lnk');
+    RegIniFile.WriteString('TotalCmd64', 'UserDesktop', '\Total Commander 64 bit.lnk');
+    RegIniFile.WriteString('TotalCmd64', 'UserTaskbar', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\Total Commander 64 bit.lnk');
+    RegIniFile.WriteString('TotalCmd64', 'UserTaskbarBins', '\Microsoft\Internet Explorer\Quick Launch\User Pinned\Bins\Total Commander 64 bit.lnk');
   finally
     RegIniFile.Free;
   end;
@@ -545,6 +557,21 @@ procedure TSettingsForm.Page4CheckBoxClick(Sender: TObject);
 begin
   Page4 := Page4CheckBox.Checked;
   APSMainForm.mmiPage4.Visible := Page4;
+end;
+
+procedure TSettingsForm.ColorChgBtnClick(Sender: TObject);
+begin
+  if ColorDialog.Execute then RunAsFrame.RunAsCheckListBox.Color := ColorDialog.Color;
+end;
+
+procedure TSettingsForm.ConfirmAfterCheckBoxClick(Sender: TObject);
+begin
+  APSMainForm.SetConfirmAfter((Sender as TCheckBox).Checked);
+end;
+
+procedure TSettingsForm.ConfirmBeforeCheckBoxClick(Sender: TObject);
+begin
+  APSMainForm.SetConfirmBefore((Sender as TCheckBox).Checked);
 end;
 
 procedure TSettingsForm.CreateIniBtnClick(Sender: TObject);
