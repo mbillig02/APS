@@ -1710,9 +1710,9 @@ begin
   // Center WhatsNewForm to 75 Percent
   WhatsNewForm.Left := Monitor.Left + (Round((Monitor.WorkareaRect.Width / 2) - ((Monitor.WorkareaRect.Width / 2) * (75 / 100))));
   WhatsNewForm.Top := Monitor.Top + (Round((Monitor.WorkareaRect.Height / 2) - ((Monitor.WorkareaRect.Height / 2) * (75 / 100))));
-  //  WhatsNewForm.Width := Round(((Monitor.WorkareaRect.Width / 2) * (75 / 100)) * 2);
-  WhatsNewForm.Width := 1200;
-  WhatsNewForm.Height := Round(((Monitor.WorkareaRect.Height / 2) * (75 / 100)) * 2);
+//  WhatsNewForm.Width := Round(((Monitor.WorkareaRect.Width / 2) * (50 / 100)) * 2);
+  WhatsNewForm.Width := 900;
+  WhatsNewForm.Height := Round(((Monitor.WorkareaRect.Height / 2) * (65 / 100)) * 2);
   WhatsNewForm.Show;
 end;
 
@@ -1723,7 +1723,7 @@ begin
     MsgPnl.Visible := True;
     RefreshApplicationList;
     VST.BeginUpdate;
-    VST.Header.AutoFitColumns(True);
+    VST.Header.AutoFitColumns(False);
     VST.EndUpdate;
     MsgPnl.Visible := False;
   end;
@@ -2208,7 +2208,7 @@ end;
 procedure TAPSMainForm.WLRTimerTimer(Sender: TObject);
 begin
   WLRTimer.Enabled := False;
-  LoadApplicationList;
+  if SettingsForm.AutoLoadApplicationListChkBox.Checked then LoadApplicationList;
 end;
 
 procedure TAPSMainForm.LoadSettingsFromFormCreate;
@@ -2294,7 +2294,7 @@ begin
     WidthSpinEdit.Value := RegIniFile.ReadInteger('Section-Bounds', 'Width', 500);
     HeightSpinEdit.Value := RegIniFile.ReadInteger('Section-Bounds', 'Height', 500);
 
-    JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Page', 'CurrentPage', 2);
+    JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Page', 'CurrentPage', 1);
 
     SettingsForm.JvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-Settings', 'CurrentPage', 0);
 
@@ -2305,6 +2305,8 @@ begin
     SettingsForm.ConfirmAfterCheckBox.Checked := RegIniFile.ReadBool('Section-Options', 'ConfirmAfter', True);
     ABConfirmAfter := SettingsForm.ConfirmAfterCheckBox.Checked;
     GSConfirmAfter := SettingsForm.ConfirmAfterCheckBox.Checked;
+
+    SettingsForm.AutoLoadApplicationListChkBox.Checked := RegIniFile.ReadBool('Section-Options', 'AutoLoadApplicationList', True);
 
     ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex := RegIniFile.ReadInteger('Section-ABPage', 'CurrentPage', 3);
 
@@ -2386,6 +2388,8 @@ begin
 
     RegIniFile.WriteBool('Section-Options', 'ConfirmBefore', SettingsForm.ConfirmBeforeCheckBox.Checked);
     RegIniFile.WriteBool('Section-Options', 'ConfirmAfter', SettingsForm.ConfirmAfterCheckBox.Checked);
+
+    RegIniFile.WriteBool('Section-Options', 'AutoLoadApplicationList', SettingsForm.AutoLoadApplicationListChkBox.Checked);
 
     RegIniFile.WriteInteger('Section-ABPage', 'CurrentPage', ApplicationBoundsFrame.ApplicationBounsJvPageList.ActivePageIndex);
 

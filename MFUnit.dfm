@@ -41,7 +41,6 @@ object APSMainForm: TAPSMainForm
         Alignment = taCenter
         TabOrder = 0
         Text = 'WindowName'
-        ExplicitWidth = 555
       end
       object BottomPanel: TPanel
         Left = 0
@@ -69,7 +68,6 @@ object APSMainForm: TAPSMainForm
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
-          ExplicitHeight = 161
           object HeightLbl: TLabel
             Left = 163
             Top = 1
@@ -203,7 +201,6 @@ object APSMainForm: TAPSMainForm
             Alignment = taCenter
             TabOrder = 11
             Text = 'APS.csv'
-            ExplicitTop = 139
           end
         end
         object RightPanel: TPanel
@@ -213,8 +210,6 @@ object APSMainForm: TAPSMainForm
           Height = 162
           Align = alClient
           TabOrder = 1
-          ExplicitWidth = 333
-          ExplicitHeight = 161
           object RightBottomPanel: TPanel
             Left = 1
             Top = 132
@@ -222,8 +217,6 @@ object APSMainForm: TAPSMainForm
             Height = 29
             Align = alBottom
             TabOrder = 0
-            ExplicitTop = 131
-            ExplicitWidth = 331
             object DBNavigator: TDBNavigator
               Left = 44
               Top = 2

@@ -91,6 +91,7 @@ type
     ColorDialog: TColorDialog;
     ConfirmBeforeCheckBox: TCheckBox;
     ConfirmAfterCheckBox: TCheckBox;
+    AutoLoadApplicationListChkBox: TCheckBox;
     procedure SetDefaultScreenBtnClick(Sender: TObject);
     procedure SetAlomstFullScreenBtnClick(Sender: TObject);
     procedure SavFrmSizChkBoxClick(Sender: TObject);

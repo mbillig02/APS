@@ -2,32 +2,36 @@
 File_0=TSourceModule,'C:\TMP\Delphi.Win32\APS\WNUnit.pas',0,1,32,6,34,0,0,,
 File_1=TSourceModule,'C:\Tmp\Delphi.Win32\APS\MFUnit.dfm',0,1,1,1,1,0,0,,
 File_2=TSourceModule,'C:\TMP\Delphi.Win32\APS\MFUnit.pas',0,1,1,1,1,0,0,,{0
-File_3=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.pas',0,1,563,25,576,0,0,,
-File_4=TSourceModule,'C:\TMP\Delphi.Win32\APS\WindowList.pas',0,1,106,1,124,0,0,,
-File_5=TSourceModule,'C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas',0,1,36,1,69,0,0,,
-File_6=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.Windows.pas',0,1,41960,1,41979,0,0,,
-File_7=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.dfm',0,1,1,1,1,0,0,,
-File_8=TSourceModule,'C:\TMP\Delphi.Win32\APS\OIUnit.pas',0,1,1,1,1,0,0,,
-File_9=TSourceModule,'C:\TMP\Delphi.Win32\APS\About.pas',0,1,108,1,133,0,0,,
-File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,98,12,116,0,0,,
-File_11=TSourceModule,'C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.dfm',0,1,1,1,1,0,0,,
-File_12=TSourceModule,'C:\TMP\Delphi.Win32\APS\AboutFtpUnit.pas',0,1,1,52,7,0,0,,
-File_13=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,41169,1,41192,0,0,,
-File_14=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,2627,1,2650,0,0,,
+File_3=TSourceModule,'C:\TMP\Delphi.Win32\APS\WindowList.pas',0,1,106,1,124,0,0,,
+File_4=TSourceModule,'C:\TMP\Delphi.Win32\APS\GSFrameUnit.pas',0,1,36,1,69,0,0,,
+File_5=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\source\rtl\win\Winapi.Windows.pas',0,1,41960,1,41979,0,0,,
+File_6=TSourceModule,'C:\TMP\Delphi.Win32\APS\SetUnit.dfm',0,1,1,1,1,0,0,,
+File_7=TSourceModule,'C:\TMP\Delphi.Win32\APS\OIUnit.pas',0,1,1,1,1,0,0,,
+File_8=TSourceModule,'C:\TMP\Delphi.Win32\APS\About.pas',0,1,108,1,133,0,0,,
+File_9=TSourceModule,'c:\program files (x86)\embarcadero\studio\22.0\SOURCE\VCL\Vcl.Dialogs.pas',0,1,98,12,116,0,0,,
+File_10=TSourceModule,'C:\TMP\Delphi.Win32\APS\RealtimeFrameUnit.dfm',0,1,1,1,1,0,0,,
+File_11=TSourceModule,'C:\TMP\Delphi.Win32\APS\AboutFtpUnit.pas',0,1,1,52,7,0,0,,
+File_12=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\source\rtl\win\Winapi.Windows.pas',0,1,41169,1,41192,0,0,,
+File_13=TSourceModule,'c:\program files (x86)\embarcadero\studio\21.0\SOURCE\VCL\Vcl.Controls.pas',0,1,2627,1,2650,0,0,,
 
 [Modules]
-Module0=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
-Count=1
+Module0=C:\TMP\Delphi.Win32\APS\SetUnit.pas
+Module1=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
+Count=2
 EditWindowCount=1
+
+[C:\TMP\Delphi.Win32\APS\SetUnit.pas]
+ModuleType=TSourceModule
 
 [C:\Tmp\Delphi.Win32\APS\MFUnit.pas]
 ModuleType=TSourceModule
 
 [EditWindow0]
-ViewCount=2
-CurrentEditView=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
+ViewCount=3
+CurrentEditView=C:\TMP\Delphi.Win32\APS\SetUnit.pas
 View0=0
 View1=1
+View2=2
 PercentageSizes=1
 Create=1
 Visible=1
@@ -44,9 +48,9 @@ ClientHeight=8870
 DockedToMainForm=1
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
-LeftPanelSize=1892
+LeftPanelSize=1939
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000F10E00000000000001640700000000000001000000005D0E000009000000446F636B53697465330100000000921A00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000F10E00000000000001930700000000000001000000005D0E000009000000446F636B53697465330100000000921A00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1998
 RightPanelClients=DockSite2,DockSite4
 RightPanelData=00000800010100000000F10E00000000000001CE0700000000000001000000004512000009000000446F636B53697465320100000000921A000009000000446F636B5369746534FFFFFFFF
@@ -64,13 +68,24 @@ OTAEditViewType=WelcomePage.MainPage
 [View1]
 CustomEditViewType=TEditView
 Module=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
-CursorX=62
-CursorY=2252
-TopLine=2211
+CursorX=30
+CursorY=1726
+TopLine=1708
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=C:\Tmp\Delphi.Win32\APS\MFUnit.pas
+
+[View2]
+CustomEditViewType=TEditView
+Module=C:\TMP\Delphi.Win32\APS\SetUnit.pas
+CursorX=1
+CursorY=577
+TopLine=564
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=Borland.FormDesignerView
 
 [Watches]
 Count=0
@@ -190,17 +205,17 @@ Docked=1
 State=0
 Left=0
 Top=381
-Width=1892
+Width=1939
 Height=2957
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1892
+ClientWidth=1939
 ClientHeight=2957
-TBDockHeight=8565
-LRDockWidth=1892
+TBDockHeight=9011
+LRDockWidth=1939
 Dockable=1
 StayOnTop=0
-SplitPos=111
+SplitPos=113
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -517,11 +532,11 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1892
+Width=1939
 Height=3446
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1892
+ClientWidth=1939
 ClientHeight=3446
 TBDockHeight=3674
 LRDockWidth=1892
@@ -633,7 +648,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1998
 ClientHeight=4489
-TBDockHeight=8565
+TBDockHeight=9011
 LRDockWidth=1998
 Dockable=1
 StayOnTop=0
@@ -651,14 +666,14 @@ Docked=1
 State=0
 Left=0
 Top=28
-Width=1892
+Width=1939
 Height=3446
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1892
+ClientWidth=1939
 ClientHeight=3446
-TBDockHeight=8565
-LRDockWidth=1892
+TBDockHeight=9011
+LRDockWidth=1939
 Dockable=1
 StayOnTop=0
 TabPosition=1
@@ -681,7 +696,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1998
 ClientHeight=1913
-TBDockHeight=8565
+TBDockHeight=9011
 LRDockWidth=1998
 Dockable=1
 StayOnTop=0

@@ -689,13 +689,16 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = 'JvStandardPageMisc'
-      ExplicitLeft = 5
+      ExplicitWidth = 351
+      ExplicitHeight = 324
       object SaveCenterPercentCheckBox: TCheckBox
         Left = 16
         Top = 9
         Width = 129
         Height = 17
         Caption = 'Save Center Percent'
+        Checked = True
+        State = cbChecked
         TabOrder = 0
       end
       object ConfirmBeforeCheckBox: TCheckBox
@@ -719,6 +722,16 @@ object SettingsForm: TSettingsForm
         State = cbChecked
         TabOrder = 2
         OnClick = ConfirmAfterCheckBoxClick
+      end
+      object AutoLoadApplicationListChkBox: TCheckBox
+        Left = 16
+        Top = 116
+        Width = 153
+        Height = 17
+        Caption = 'Auto Load Application List'
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
       end
     end
   end
