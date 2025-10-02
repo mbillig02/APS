@@ -644,6 +644,11 @@ begin
   TScrPosFrame.SpinEditLeft.Value := APSMainForm.Left;
   TScrPosFrame.SpinEditHeight.Value := APSMainForm.Height;
   TScrPosFrame.SpinEditWidth.Value := APSMainForm.Width;
+
+  SetDefaultScreenBtn.Hint := 'Set Default Screen (' + IntToStr(MainFormDefaultRect.Top) + ',' + IntToStr(MainFormDefaultRect.Left) + ',' + IntToStr(MainFormDefaultRect.Height) + ',' + IntToStr(MainFormDefaultRect.Width) + ')';
+  SetDefaultPosBtn.Hint := 'Set Default Position (' + IntToStr(MainFormDefaultRect.Top) + ',' + IntToStr(MainFormDefaultRect.Left) + ')';
+  SetDefaultSizeBtn.Hint := 'Set Default Size (' + IntToStr(MainFormDefaultRect.Height) + ',' + IntToStr(MainFormDefaultRect.Width) + ')';
+
 end;
 
 procedure TSettingsForm.OpenDirectory(DirectoryName: String);

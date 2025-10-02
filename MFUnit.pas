@@ -46,8 +46,6 @@ type
     mmiSettings: TMenuItem;
     mmiStyles: TMenuItem;
     mmiVersionAbout: TMenuItem;
-    MostRecentFiles: TMostRecentFiles;
-    N1: TMenuItem;
     N2: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
@@ -179,8 +177,7 @@ type
     mmiDirectories: TMenuItem;
     mmiMisc: TMenuItem;
     mmiDebug: TMenuItem;
-    aContents: TAction;
-    mmiContents: TMenuItem;
+    aHelp: TAction;
     aOIFormExecute: TAction;
     mmiObjectInspector: TMenuItem;
     WindowList: TWindowList;
@@ -228,11 +225,10 @@ type
     ALCenterPercentBtn: TButton;
     ALCenterPercentSpinEdit: TSpinEdit;
     MsgPnl: TPanel;
-    aWhatsNew: TAction;
-    mmiWhatsNew: TMenuItem;
     mmiHelp: TMenuItem;
     mmiResetLastVerNum: TMenuItem;
     aResetLastVerNum: TAction;
+    N9: TMenuItem;
     function GetDtaDir: String;
     function GetLstDir: String;
     function GetServiceListFileName: String;
@@ -306,7 +302,7 @@ type
     procedure aPage4Execute(Sender: TObject);
     procedure JvStandardPage4Show(Sender: TObject);
     procedure SetStayOnTopB(LocalStayOnTopB: Boolean);
-    procedure aContentsExecute(Sender: TObject);
+    procedure aHelpExecute(Sender: TObject);
     procedure aOIFormExecuteExecute(Sender: TObject);
     procedure VSTClick(Sender: TObject);
     procedure JvStandardPage2Show(Sender: TObject);
@@ -339,7 +335,6 @@ type
       Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle;
       var HintText: string);
     procedure ALCenterPercentBtnClick(Sender: TObject);
-    procedure aWhatsNewExecute(Sender: TObject);
     procedure aResetLastVerNumExecute(Sender: TObject);
   private
     HotKey1: NativeUInt;
@@ -371,7 +366,6 @@ type
     procedure OpenAboutBox;
     procedure RefreshApplicationList;
     procedure LoadApplicationList;
-    procedure ShowWhatsNewForm;
     function VToV3(InStr: String): String;
     { Private declarations }
   public
@@ -383,7 +377,7 @@ type
 
 var
   APSMainForm: TAPSMainForm;
-  ExeDir, TmpDir, LstDir, KeyDir, StyleStr, VerNum, LastVerNum: String;
+  ExeDir, TmpDir, LstDir, FrmDir, StyleStr, VerNum, LastVerNum, CsvDir, BtnDir: String;
   MainFormDefaultRect, MainFormRect: TTopLeftHeightWidth;
   SaveFormSize, SaveFormPosition, StylesMM, StylesEnabled, StayOnTopB, PagesMM, Page1, Page2, Page3, Page4: Boolean;
   HotKey1AltB, HotKey1CtrlB,HotKey1ShftB: Boolean;
@@ -394,8 +388,7 @@ implementation
 uses
   JclSecurity, ShellApi, ClipBrd, JclSysInfo, IniFiles, JclFileUtils,
   SelectFileUnit, SetUnit, JclAnsiStrings, System.IOUtils, Winapi.PsAPI,
-  System.RegularExpressions, System.RegularExpressionsCore, IMUnit, OIUnit,
-  WNUnit;
+  System.RegularExpressions, System.RegularExpressionsCore, IMUnit, OIUnit;
 
 var
   FInitialized, AutoElevateDoNotSave: Boolean;
@@ -669,7 +662,7 @@ begin
   AppLst.Clear;
   AppLst.Append('WindowName,Left,Top,Width,Height,Notes');
   EnumWindows(@EnumWindowsProc, 0);
-  AppLst.SaveToFile(LstDir + 'AllApps.csv');
+  AppLst.SaveToFile(CsvDir + 'AllApps.csv');
   AppLst.Free;
 end;
 
@@ -770,7 +763,7 @@ begin
   end;
 end;
 
-procedure TAPSMainForm.aContentsExecute(Sender: TObject);
+procedure TAPSMainForm.aHelpExecute(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', PChar(ExeDir + 'APS.chm'), nil, nil, SW_SHOWNORMAL);
 end;
@@ -832,7 +825,7 @@ var
   TmpStrLst: TStringList;
   TempFileName, TmpFileExt: String;
 begin
-  TempFileName := LstDir + FileNameEdit.Text;
+  TempFileName := CsvDir + FileNameEdit.Text;
   TmpFileExt := ExtractFileExt(TempFileName);
   if LowerCase(TmpFileExt) <> '.csv' then TempFileName := ChangeFileExt(TempFileName, '.csv');
   FileNameEdit.Text := ExtractFileName(TempFileName);
@@ -1035,7 +1028,7 @@ begin
   if FileExists(FileName) then
   begin
     InfoMemo.Lines.LoadFromFile(FileName);
-    MostRecentFiles.AddFile(FileName);
+//    MostRecentFiles.AddFile(FileName);
   end;
 end;
 
@@ -1047,7 +1040,7 @@ begin
   TmpBool := SettingsForm.StayOnTopCheckBox.Checked;
   SettingsForm.StayOnTopCheckBox.Checked := False;
   SetStayOnTopStatus;
-  SelectFileDlg.SelectFileFrame.SetFileListPath(LstDir);
+  SelectFileDlg.SelectFileFrame.SetFileListPath(FrmDir);
   SelectFileDlg.SelectFileFrame.SetFileListMask('*.txt');
   SelectFileDlg.SelectFileFrame.LoadFileList;
   if SelectFileDlg.ShowModal = mrOk then
@@ -1056,7 +1049,7 @@ begin
     begin
       TmpStr := Copy(SelectFileDlg.FileName, 5);
       LoadFrameList(TmpStr);
-      MostRecentFiles.AddFile(TmpStr);
+//      MostRecentFiles.AddFile(TmpStr);
     end;
     if Pos('[E] ', SelectFileDlg.FileName) = 1 then
     begin
@@ -1076,7 +1069,7 @@ begin
   TmpBool := SettingsForm.StayOnTopCheckBox.Checked;
   SettingsForm.StayOnTopCheckBox.Checked := False;
   SetStayOnTopStatus;
-  SelectFileDlg.SelectFileFrame.SetFileListPath(LstDir);
+  SelectFileDlg.SelectFileFrame.SetFileListPath(CsvDir);
   SelectFileDlg.SelectFileFrame.SetFileListMask('*.csv');
   SelectFileDlg.SelectFileFrame.LoadFileList;
   if SelectFileDlg.ShowModal = mrOk then
@@ -1085,7 +1078,7 @@ begin
     begin
       TmpStr := Copy(SelectFileDlg.FileName, 5);
       FileNameEdit.Text := ExtractFileName(TmpStr);
-      MostRecentFiles.AddFile(TmpStr);
+//      MostRecentFiles.AddFile(TmpStr);
     end;
     if Pos('[E] ', SelectFileDlg.FileName) = 1 then
     begin
@@ -1099,7 +1092,7 @@ end;
 
 procedure TAPSMainForm.aLoadListFileExecute(Sender: TObject);
 begin
-  OpenDialog.InitialDir := LstDir;
+  OpenDialog.InitialDir := CsvDir;
   OpenDialog.Filter := 'CSV Files (*.CSV)|*.CSV|All Files (*.*)|*.*';
   if OpenDialog.Execute then FileNameEdit.Text := ExtractFileName(OpenDialog.FileName);
 end;
@@ -1114,7 +1107,7 @@ var
   TempFileName: String;
   OkToSave: Boolean;
 begin
-  SaveDialog.InitialDir := LstDir;
+  SaveDialog.InitialDir := FrmDir;
   SaveDialog.Filter := 'Text Files (*.TXT)|*.TXT|All Files (*.*)|*.*';
   if SaveDialog.Execute then
   begin
@@ -1210,11 +1203,6 @@ begin
   JvCsvDataSet.FieldByName('Height').AsString := IntToStr(HeightSpinEdit.Value);
   JvCsvDataSet.FieldByName('Notes').AsString := '';
   JvCsvDataSet.Post;
-end;
-
-procedure TAPSMainForm.aWhatsNewExecute(Sender: TObject);
-begin
-  ShowWhatsNewForm;
 end;
 
 procedure TAPSMainForm.ALCenterPercentBtnClick(Sender: TObject);
@@ -1705,17 +1693,6 @@ begin
     inherited;
 end;
 
-procedure TAPSMainForm.ShowWhatsNewForm;
-begin
-  // Center WhatsNewForm to 75 Percent
-  WhatsNewForm.Left := Monitor.Left + (Round((Monitor.WorkareaRect.Width / 2) - ((Monitor.WorkareaRect.Width / 2) * (75 / 100))));
-  WhatsNewForm.Top := Monitor.Top + (Round((Monitor.WorkareaRect.Height / 2) - ((Monitor.WorkareaRect.Height / 2) * (75 / 100))));
-//  WhatsNewForm.Width := Round(((Monitor.WorkareaRect.Width / 2) * (50 / 100)) * 2);
-  WhatsNewForm.Width := 900;
-  WhatsNewForm.Height := Round(((Monitor.WorkareaRect.Height / 2) * (65 / 100)) * 2);
-  WhatsNewForm.Show;
-end;
-
 procedure TAPSMainForm.LoadApplicationList;
 begin
   if JvPageList.ActivePage = JvStandardPage2 then
@@ -1971,10 +1948,12 @@ begin
     SettingsForm.DtaDirLbl.Caption := DtaDir;
     SettingsForm.LstDirLbl.Caption := LstDir;
     SettingsForm.TmpDirLbl.Caption := TmpDir;
-    KeyDir := DtaDir + 'KEY\'; ForceDirectories(KeyDir);
+    BtnDir := LstDir + 'BTN\'; ForceDirectories(BtnDir);
+    CsvDir := LstDir + 'CSV\'; ForceDirectories(CsvDir);
+    FrmDir := LstDir + 'FRM\'; ForceDirectories(FrmDir);
     VerNum := GetVersionInfoStr(ParamStr(0));
     VerStr := PgmName + '-v' + VerNum;
-    MostRecentFiles.IniFile := DtaDir + 'LoadFile-MRU.INI';
+//    MostRecentFiles.IniFile := DtaDir + 'LoadFile-MRU.INI';
 
     LoadSettingsFromFormActivate;
 
@@ -1982,7 +1961,7 @@ begin
     AddStylesToMainMenu('Styles');
     Item := FindMenuItemByHint(MainMenu, StyleStr);
     if Assigned(Item) then Item.Checked := True;
-    if FileExists(ExeDir + 'APS.chm') then aContents.Visible := True;
+    if FileExists(ExeDir + 'APS.chm') then aHelp.Visible := True;
     RightMenu(mmiVersionAbout); // Run after change to MainMenu
 
     if mmiAutoStartElevated.Checked then
@@ -2011,8 +1990,8 @@ begin
     AddStylesToListBox;
     SettingsForm.StylesListBox.ItemIndex := SettingsForm.StylesListBox.Items.IndexOf(StyleStr);
 
-    if FileExists(LstDir + 'FrameList.txt') then LoadFrameList(LstDir + 'FrameList.txt');
-    if FileExists(LstDir + 'ButtonList.txt') then ApplicationBoundsFrame.LoadButtonList(LstDir + 'ButtonList.txt');
+    if FileExists(FrmDir + 'FrameList.txt') then LoadFrameList(FrmDir + 'FrameList.txt');
+    if FileExists(BtnDir + 'ButtonList.txt') then ApplicationBoundsFrame.LoadButtonList(BtnDir + 'ButtonList.txt');
 
     ABAppRect.Top := APSMainForm.Top;
     ABAppRect.Left := APSMainForm.Left;
@@ -2023,13 +2002,13 @@ begin
     GSAppRect.Left := APSMainForm.Left;
     GSAppRect.Height := APSMainForm.Height;
     GSAppRect.Width := APSMainForm.Width;
-
+{
     if VToV3(LastVerNum) < VToV3(VerNum) then
     begin
       LastVerNum := VerNum;
       ShowWhatsNewForm;
     end;
-
+}
   end;
 end;
 
@@ -2046,8 +2025,8 @@ end;
 procedure TAPSMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if not AutoElevateDoNotSave then SaveSettings;
-  SaveFramesToFile(LstDir + 'FrameList.txt');
-  ApplicationBoundsFrame.SaveButtonList(LstDir + 'ButtonList.txt');
+  SaveFramesToFile(FrmDir + 'FrameList.txt');
+  ApplicationBoundsFrame.SaveButtonList(BtnDir + 'ButtonList.txt');
 end;
 
 procedure TAPSMainForm.OnMoving(var Msg: TWMMoving);
@@ -2219,8 +2198,8 @@ begin
   try
     MainFormDefaultRect.Top := RegIniFile.ReadInteger('Section-Window', 'DefaultTop', 75);
     MainFormDefaultRect.Left := RegIniFile.ReadInteger('Section-Window', 'DefaultLeft', 75);
-    MainFormDefaultRect.Height := RegIniFile.ReadInteger('Section-Window', 'DefaultHeight', 500);
-    MainFormDefaultRect.Width := RegIniFile.ReadInteger('Section-Window', 'DefaultWidth', 600);
+    MainFormDefaultRect.Height := RegIniFile.ReadInteger('Section-Window', 'DefaultHeight', 362);
+    MainFormDefaultRect.Width := RegIniFile.ReadInteger('Section-Window', 'DefaultWidth', 851);
 
     StayOnTopB := RegIniFile.ReadBool('Section-Options', 'StayOnTop', False);
     GSStayOnTopB := StayOnTopB;

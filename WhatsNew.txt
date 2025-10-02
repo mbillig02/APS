@@ -1,3 +1,16 @@
+25.10.2.0
+  Added hints to Settings-Form default set buttons
+
+25.9.30.0
+  Directory and Menu cleanup and fixes
+
+25.9.29.0
+  Change visibility of mmiFrames to not visible
+  Change mmiHelp to directly load Help.chm
+  Updates to the help file
+  Moved "What's New" to the help file
+  Removed WNUnit
+
 25.7.9.0
   Fixed load application delay.  VST.Header.AutoFitColumns(False);
 

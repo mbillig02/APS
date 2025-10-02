@@ -19,7 +19,7 @@ object SettingsForm: TSettingsForm
     Top = 0
     Width = 355
     Height = 325
-    ActivePage = JvStandardPageMisc
+    ActivePage = JvStandardPageForm
     PropagateEnable = False
     Align = alClient
     ExplicitWidth = 351
@@ -325,12 +325,17 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = ' '
+      ExplicitLeft = 5
+      ExplicitTop = 1
       object SetDefaultScreenBtn: TButton
         Left = 17
         Top = 17
         Width = 121
         Height = 25
+        Hint = 'Set Default Screen'
         Caption = 'Set Default Screen'
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 0
         OnClick = SetDefaultScreenBtnClick
       end
@@ -481,7 +486,10 @@ object SettingsForm: TSettingsForm
         Top = 45
         Width = 55
         Height = 25
+        Hint = 'Default Position'
         Caption = 'Pos'
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 10
         OnClick = SetDefaultPosBtnClick
       end
@@ -490,7 +498,10 @@ object SettingsForm: TSettingsForm
         Top = 45
         Width = 55
         Height = 25
+        Hint = 'Default Size'
         Caption = 'Size'
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 11
         OnClick = SetDefaultSizeBtnClick
       end
@@ -689,8 +700,6 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = 'JvStandardPageMisc'
-      ExplicitWidth = 351
-      ExplicitHeight = 324
       object SaveCenterPercentCheckBox: TCheckBox
         Left = 16
         Top = 9

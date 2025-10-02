@@ -298,6 +298,8 @@ object APSMainForm: TAPSMainForm
       Height = 185
       Caption = 'JvStandardPage2'
       OnShow = JvStandardPage2Show
+      ExplicitWidth = 555
+      ExplicitHeight = 184
       object P2LeftPanel: TPanel
         Left = 0
         Top = 0
@@ -305,6 +307,7 @@ object APSMainForm: TAPSMainForm
         Height = 185
         Align = alLeft
         TabOrder = 0
+        ExplicitHeight = 184
         object ApplyBtn: TButton
           Left = 1
           Top = 159
@@ -457,6 +460,7 @@ object APSMainForm: TAPSMainForm
           ActivePage = ALCenterTabSheet
           Align = alClient
           TabOrder = 2
+          ExplicitHeight = 108
           object ALCenterTabSheet: TTabSheet
             Caption = 'ALCenterTabSheet'
             TabVisible = False
@@ -782,7 +786,7 @@ object APSMainForm: TAPSMainForm
             item
               Position = 0
               Text = 'Application Name'
-              Width = 236
+              Width = 232
             end
             item
               Position = 1
@@ -957,8 +961,8 @@ object APSMainForm: TAPSMainForm
                 end
                 inherited TopLabeledEdit: TLabeledEdit
                   Height = 21
+                  EditLabel.Width = 22
                   EditLabel.Height = 13
-                  EditLabel.ExplicitLeft = 45
                   EditLabel.ExplicitTop = 15
                   EditLabel.ExplicitWidth = 22
                   EditLabel.ExplicitHeight = 13
@@ -1084,19 +1088,6 @@ object APSMainForm: TAPSMainForm
     Top = 16
     object mmiFile: TMenuItem
       Caption = 'File'
-      object mmiSelectListFile: TMenuItem
-        Action = aSelectListFile
-      end
-      object mmiLoadListFile: TMenuItem
-        Action = aLoadListFile
-      end
-      object mmiSaveListFile: TMenuItem
-        Action = aSaveListFile
-        Visible = False
-      end
-      object N1: TMenuItem
-        Caption = '-'
-      end
       object mmiDirectories: TMenuItem
         Caption = 'Directories'
         object mmiOpenDtaDirInExplorer: TMenuItem
@@ -1158,6 +1149,7 @@ object APSMainForm: TAPSMainForm
     end
     object mmiFrames: TMenuItem
       Caption = 'Frames'
+      Visible = False
       object mmiAddFrame: TMenuItem
         Action = aAddFrame
       end
@@ -1177,6 +1169,19 @@ object APSMainForm: TAPSMainForm
     object mmiBounds: TMenuItem
       Caption = 'Bounds'
       Visible = False
+      object mmiSelectListFile: TMenuItem
+        Action = aSelectListFile
+      end
+      object mmiLoadListFile: TMenuItem
+        Action = aLoadListFile
+      end
+      object mmiSaveListFile: TMenuItem
+        Action = aSaveListFile
+        Visible = False
+      end
+      object N9: TMenuItem
+        Caption = '-'
+      end
       object mmiFullScreen: TMenuItem
         Action = aFullScreen
       end
@@ -1253,13 +1258,7 @@ object APSMainForm: TAPSMainForm
       Action = aRestartElevated
     end
     object mmiHelp: TMenuItem
-      Caption = 'Help'
-      object mmiContents: TMenuItem
-        Action = aContents
-      end
-      object mmiWhatsNew: TMenuItem
-        Action = aWhatsNew
-      end
+      Action = aHelp
     end
     object mmiVersionAbout: TMenuItem
       Caption = 'About'
@@ -1469,32 +1468,19 @@ object APSMainForm: TAPSMainForm
       Caption = 'Realtime'
       OnExecute = aPage4Execute
     end
-    object aContents: TAction
-      Caption = 'Contents'
+    object aHelp: TAction
+      Caption = 'Help'
       Visible = False
-      OnExecute = aContentsExecute
+      OnExecute = aHelpExecute
     end
     object aOIFormExecute: TAction
       Caption = 'Object Inspector'
       OnExecute = aOIFormExecuteExecute
     end
-    object aWhatsNew: TAction
-      Caption = 'What'#39's New'
-      OnExecute = aWhatsNewExecute
-    end
     object aResetLastVerNum: TAction
       Caption = 'Reset LastVerNum'
       OnExecute = aResetLastVerNumExecute
     end
-  end
-  object MostRecentFiles: TMostRecentFiles
-    MaxFiles = 8
-    ShowFullPath = True
-    OwnerMenuItem = mmiFile
-    MenuPosition = 3
-    OnMenuClick = MostRecentFilesMenuClick
-    Left = 292
-    Top = 16
   end
   object OpenDialog: TOpenDialog
     Left = 156

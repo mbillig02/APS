@@ -25,8 +25,7 @@ uses
   NewNameForm in 'NewNameForm.pas' {fmNewName},
   IMUnit in 'IMUnit.pas' {InfoMemoForm},
   RealtimeFrameUnit in 'RealtimeFrameUnit.pas' {RealtimeFrame: TFrame},
-  OIUnit in 'OIUnit.pas' {OIForm},
-  WNUnit in 'WNUnit.pas' {WhatsNewForm};
+  OIUnit in 'OIUnit.pas' {OIForm};
 
 {$R *.res}
 
@@ -51,6 +50,5 @@ begin
   Application.CreateForm(TfmNewName, fmNewName);
   Application.CreateForm(TInfoMemoForm, InfoMemoForm);
   Application.CreateForm(TOIForm, OIForm);
-  Application.CreateForm(TWhatsNewForm, WhatsNewForm);
   Application.Run;
 end.
