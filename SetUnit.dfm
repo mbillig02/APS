@@ -22,8 +22,6 @@ object SettingsForm: TSettingsForm
     ActivePage = JvStandardPageForm
     PropagateEnable = False
     Align = alClient
-    ExplicitWidth = 351
-    ExplicitHeight = 324
     object JvStandardPageAdmin: TJvStandardPage
       Left = 0
       Top = 0
@@ -31,6 +29,8 @@ object SettingsForm: TSettingsForm
       Height = 325
       Caption = 'JvStandardPageAdmin'
       OnShow = JvStandardPageAdminShow
+      ExplicitWidth = 549
+      ExplicitHeight = 441
       object PublicDesktopGroupBox: TGroupBox
         Left = 0
         Top = 0
@@ -122,6 +122,8 @@ object SettingsForm: TSettingsForm
         Height = 185
         Align = alClient
         TabOrder = 4
+        ExplicitWidth = 549
+        ExplicitHeight = 301
         object SetAdmBtmRPanel: TPanel
           Left = 278
           Top = 1
@@ -189,8 +191,8 @@ object SettingsForm: TSettingsForm
           TabOrder = 1
           ExplicitLeft = 1
           ExplicitTop = 1
-          ExplicitWidth = 277
-          ExplicitHeight = 183
+          ExplicitWidth = 471
+          ExplicitHeight = 299
           inherited RunAsListBox: TListBox
             Top = 87
             Width = 277
@@ -325,8 +327,6 @@ object SettingsForm: TSettingsForm
       Width = 355
       Height = 325
       Caption = ' '
-      ExplicitLeft = 5
-      ExplicitTop = 1
       object SetDefaultScreenBtn: TButton
         Left = 17
         Top = 17
@@ -751,7 +751,6 @@ object SettingsForm: TSettingsForm
     Height = 325
     Align = alLeft
     TabOrder = 1
-    ExplicitHeight = 324
     object AdminBtn: TButton
       Left = 1
       Top = 1

@@ -1,183 +1,219 @@
-//   Window List Component 1.5 by Jerry Ryle
-//
-//   Aaugh! I accidentally uploaded the wrong source
-//   which had a nasty bug in the refresh procedure!
-//   Thanks to Serge, who found my mistake and suggested
-//   a few other improvements!
-//
-//   This component will enumerate windows and return
-//   information about them in the Windows property.
-//   The component currently returns a handle, caption text,
-//   associated ProcessID, visibility, and dimensions.
-//   For documentation, please read the accompanying
-//   WindowList.txt
-//
-//   This component is completely free of course. If you find
-//   it useful, and are compelled to send me cash, beer, or
-//   dead things in envelopes, please feel free to do so.
-//
-//   email me if you make it better:  gryle@calpoly.edu
-
-unit WindowList;
+﻿unit WindowList;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, PsAPI;
+  Windows, Messages, SysUtils, Classes, PsAPI, WLHelper;
 
 type
-
   TWindowObject = record
-    WinHandle  : HWnd;    // Window Handle
-    WinCaption : string;  // Window Caption Text (If any)
-    ProcessID  : Integer; // Process the window belongs to
-    IsVisible  : Boolean; // Is the window visible?
-    IsEnabled  : Boolean; // Is the window enabled for mouse/keyboard input?
-    IsIconic   : Boolean; // Is the window minimized?
-    WindowRect : TRect;   // Window Dimensions
+    WinHandle  : HWND;
+    WinCaption : string;
+    ProcessID  : Cardinal;
+    IsVisible  : Boolean;
+    IsEnabled  : Boolean;
+    IsIconic   : Boolean;
+    WindowRect : TRect;
     WinClass   : string;
     ExePath    : string;
     ExeDesc    : string;
-
-    // Add more properties here if you like,
-    // then fill them in at the WindowCallback
-    // function.
   end;
   PTWindowObject = ^TWindowObject;
 
   TWindowList = class(TComponent)
   private
-    WindowLst: TList;
-    FCount: integer;
-  protected
-    function GetAWindow(Index: integer) : TWindowObject;
+    FList: TList;
+    FCount: Integer;
+    function GetAWindow(Index: Integer): TWindowObject;
+    function IsWindows7: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     procedure Refresh;
-    property Windows[index: integer]: TWindowObject read GetAWindow;
-    property Count: integer read FCount;
-  published
-    // Published declarations
+
+    property Windows[Index: Integer]: TWindowObject read GetAWindow;
+    property Count: Integer read FCount;
   end;
 
 procedure Register;
 
 implementation
 
-uses
-  WLHelper;
+// ============================================================================
+// OS DETECTION
+// ============================================================================
+function TWindowList.IsWindows7: Boolean;
+var
+  vi: TOSVersionInfo;
+begin
+  ZeroMemory(@vi, SizeOf(vi));
+  vi.dwOSVersionInfoSize := SizeOf(vi);
+  GetVersionEx(vi);
+  Result := (vi.dwMajorVersion = 6) and (vi.dwMinorVersion = 1);
+end;
 
-// Note that this function is not a member of WindowList.
-// Therefore, the list to be filled needs to be passed
-// as a pointer. Note that this is passed as a VAR. if you
-// don't do this, bad things happen in memory.
+function IsProcessElevated_W7(PID: Cardinal): Boolean;
+var
+  hProcess: THandle;
+begin
+  // Windows 7 rule:
+  // If PROCESS_QUERY_INFORMATION fails → process is elevated
+  hProcess := OpenProcess(PROCESS_QUERY_INFORMATION, False, PID);
+  Result := (hProcess = 0);
+  if hProcess <> 0 then
+    CloseHandle(hProcess);
+end;
 
-Function WindowCallback(WHandle: HWnd; var Parm: Pointer): boolean; stdcall;
-// This function is called once for each window
+// ============================================================================
+// WINDOWS 7 CALLBACK (exact original)
+// ============================================================================
+function WindowCallback_W7(WHandle: HWND; lParam: LPARAM): BOOL; stdcall;
+const
+  MAX_TEXT = 255;
+var
+  Obj: PTWindowObject;
+  tmpPID: Cardinal;
+  ClassBuf: array[0..MAX_TEXT] of Char;
+  TextBuf: array[0..MAX_TEXT] of Char;
+begin
+  New(Obj);
+
+  Obj^.WinHandle := WHandle;
+
+  if GetWindowText(WHandle, TextBuf, MAX_TEXT) > 0 then
+    Obj^.WinCaption := TextBuf
+  else
+    Obj^.WinCaption := '';
+
+  GetWindowThreadProcessId(WHandle, @tmpPID);
+  Obj^.ProcessID := tmpPID;
+
+  Obj^.IsVisible := IsWindowVisible(WHandle);
+  Obj^.IsEnabled := IsWindowEnabled(WHandle);
+  Obj^.IsIconic  := IsIconic(WHandle);
+
+  GetWindowRect(WHandle, Obj^.WindowRect);
+
+  if GetClassName(WHandle, ClassBuf, MAX_TEXT) > 0 then
+    Obj^.WinClass := ClassBuf
+  else
+    Obj^.WinClass := '';
+
+  Obj^.ExePath := GetPathFromPID(tmpPID);
+  Obj^.ExeDesc := GetProcessFileDescription(tmpPID);
+
+  // If description is blank AND process is elevated → say so
+  if (Obj^.ExeDesc = '') and IsProcessElevated_W7(tmpPID) then
+    Obj^.ExeDesc := '[Elevated] <restricted>';
+
+  TList(lParam).Add(Obj);
+  Result := True;
+end;
+
+// ============================================================================
+// WINDOWS 11 CALLBACK (exact original)
+// ============================================================================
+function WindowCallback_W11(WHandle: HWND; lParam: LPARAM): BOOL; stdcall;
 const
   MAX_TEXT = 255;
 var
   MyString: PChar;
-  MyInt: integer;
-  MyWindowPtr: ^TWindowObject;
-  strClass: array [0 .. MAX_TEXT] of char;
+  MyWindowPtr: PTWindowObject;
+  strClass: array[0..MAX_TEXT] of Char;
   tmpEXEVersionData: TEXEVersionData;
-  tmpProcID: cardinal;
+  tmpProcID: Cardinal;
 begin
   New(MyWindowPtr);
 
-  // Window Handle (Passed by the enumeration)
-  MyWindowPtr.WinHandle := WHandle;
-
-  // Window text
-  MyString := Allocmem(255);
-  GetWindowText(WHandle,MyString, 255);
-  MyWindowPtr.WinCaption := string(MyString);
+  MyString := AllocMem(255);
+  GetWindowText(WHandle, MyString, 255);
+  MyWindowPtr^.WinCaption := string(MyString);
   FreeMem(MyString, 255);
 
-  // Process ID
-  MyInt := 0;
-  MyWindowPtr.ProcessID := GetWindowThreadProcessId(WHandle, @MyInt);
   GetWindowThreadProcessId(WHandle, @tmpProcID);
-  MyWindowPtr.ProcessID := tmpProcID;
+  MyWindowPtr^.ProcessID := tmpProcID;
 
-  // Visiblity
-  MyWindowPtr.IsVisible := IsWindowVisible(WHandle);
+  MyWindowPtr^.WinHandle := WHandle;
+  MyWindowPtr^.IsVisible := IsWindowVisible(WHandle);
+  MyWindowPtr^.IsEnabled := IsWindowEnabled(WHandle);
+  MyWindowPtr^.IsIconic  := IsIconic(WHandle);
 
-  // Enabled
-  MyWindowPtr.IsEnabled := IsWindowEnabled(WHandle);
+  GetWindowRect(WHandle, MyWindowPtr^.WindowRect);
 
-  // Iconic
-  MyWindowPtr.IsIconic := IsIconic(WHandle);
-
-  // Window Dimensions
-  MyWindowPtr.WindowRect := Rect(0,0,0,0);
-  GetWindowRect(WHandle,MyWindowPtr.WindowRect);
-
-  // Window Class
   GetClassName(WHandle, strClass, MAX_TEXT);
-  MyWindowPtr.WinClass := strClass;
+  MyWindowPtr^.WinClass := strClass;
 
   try
-    MyWindowPtr.ExePath := GetPathFromPID(tmpProcID);
+    MyWindowPtr^.ExePath := GetPathFromPID(tmpProcID);
   except
-    MyWindowPtr.ExePath := 'Path<???>';
+    MyWindowPtr^.ExePath := 'Path<???>';
   end;
 
-  if MyWindowPtr.ExePath = 'Path<???>' then
-  begin
-    MyWindowPtr.ExeDesc := 'FileDesc<???>';
-  end
+  if MyWindowPtr^.ExePath = 'Path<???>' then
+    MyWindowPtr^.ExeDesc := 'FileDesc<???>'
   else
   begin
-    tmpEXEVersionData := GetEXEVersionData(MyWindowPtr.ExePath);
-    MyWindowPtr.ExeDesc := tmpEXEVersionData.FileDescription;
+    tmpEXEVersionData := GetEXEVersionData(MyWindowPtr^.ExePath);
+    MyWindowPtr^.ExeDesc := tmpEXEVersionData.FileDescription;
   end;
 
-  // Add the structure to the list. Do not dereference Parm...
-  // once again, bad things happen.
-  TList(Parm).Add(MyWindowPtr);
-  Result := true; // Everything's okay. Continue to enumerate windows
+  TList(lParam).Add(MyWindowPtr);
+  Result := True;
 end;
 
+// ============================================================================
+// COMPONENT IMPLEMENTATION
+// ============================================================================
 constructor TWindowList.Create(AOwner: TComponent);
 begin
   inherited;
-  WindowLst := TList.Create;
+  FList := TList.Create;
+
   if not (csDesigning in ComponentState) then
-    begin
-      EnumWindows(@WindowCallback, longint(@WindowLst));
-      FCount := WindowLst.Count;
-    end
+  begin
+    if IsWindows7 then
+      EnumWindows(@WindowCallback_W7, LPARAM(FList))
+    else
+      EnumWindows(@WindowCallback_W11, LPARAM(FList));
+
+    FCount := FList.Count;
+  end
   else
     FCount := 0;
 end;
 
 destructor TWindowList.Destroy;
 var
-  i: integer;
+  i: Integer;
 begin
-  if WindowLst.Count > 0 then
-    begin
-      for i := 0 to (WindowLst.Count - 1) do
-        Dispose(PTWindowObject(WindowLst[i]));
-    end;
-  WindowLst.Free;
+  for i := 0 to FList.Count - 1 do
+    Dispose(PTWindowObject(FList[i]));
+
+  FList.Free;
   inherited;
 end;
 
 procedure TWindowList.Refresh;
+var
+  i: Integer;
 begin
-  WindowLst.Clear; {Clear the list!}
-  EnumWindows(@WindowCallback, longint(@WindowLst));
-  FCount := WindowLst.Count;
+  for i := 0 to FList.Count - 1 do
+    Dispose(PTWindowObject(FList[i]));
+
+  FList.Clear;
+
+  if IsWindows7 then
+    EnumWindows(@WindowCallback_W7, LPARAM(FList))
+  else
+    EnumWindows(@WindowCallback_W11, LPARAM(FList));
+
+  FCount := FList.Count;
 end;
 
-function TWindowList.GetAWindow(Index : Integer) : TWindowObject;
+function TWindowList.GetAWindow(Index: Integer): TWindowObject;
 begin
-  Result := PTWindowObject(WindowLst[Index])^;
+  Result := PTWindowObject(FList[Index])^;
 end;
 
 procedure Register;
@@ -186,3 +222,4 @@ begin
 end;
 
 end.
+

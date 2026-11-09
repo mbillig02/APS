@@ -48,7 +48,6 @@ object AboutBox: TAboutBox
     BevelOuter = bvLowered
     ParentColor = True
     TabOrder = 1
-    ExplicitWidth = 274
     DesignSize = (
       278
       105)
@@ -249,7 +248,6 @@ object AboutBox: TAboutBox
     Default = True
     ModalResult = 1
     TabOrder = 0
-    ExplicitLeft = 252
   end
   object fadeTimer: TTimer
     Enabled = False

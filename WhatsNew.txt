@@ -1,3 +1,6 @@
+26.8.18.0
+  Fixed application display on Windows 7
+
 25.10.2.0
   Added hints to Settings-Form default set buttons
 

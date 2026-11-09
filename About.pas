@@ -51,7 +51,7 @@ implementation
 
 {$R *.dfm}
 
-uses ShellAPI, UtlUnit;
+uses ShellAPI, uSystemVersionInfo, uSystemCompilerInfo;
 
 class function TAboutBox.Execute: TModalResult;
 begin
@@ -106,7 +106,7 @@ begin
   fFadeType := ftIn;
   fadeTimer.Enabled := True;
   VersionLbl.Caption := GetVersionInfoStr(ParamStr(0));
-  CompilerLbl.Caption := 'Application compiled with: ' + GetCompilerName(CompilerVersion);
+  CompilerLbl.Caption := 'Application compiled with: ' + GetDelphiCompilerName;
 end;
 
 procedure TAboutBox.MajorGeeksLblDblClick(Sender: TObject);

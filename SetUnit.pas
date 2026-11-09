@@ -162,7 +162,7 @@ implementation
 {$R *.dfm}
 
 uses
-  MFUnit, ClipBrd, ShellApi, Themes, PerlRegex, ActiveX, ComObj, ShlObj, JclSysInfo, IniFiles;
+  MFUnit, ClipBrd, ShellApi, Themes, ActiveX, ComObj, ShlObj, JclSysInfo, IniFiles;
 
 var
   IniFileName: String;
@@ -262,34 +262,56 @@ begin
     MainFormSettingsListBox.Items.Add(TmpStr);
 end;
 
-procedure TSettingsForm.ListToForm(PositionB: Boolean; SizeB: Boolean);
+procedure TSettingsForm.ListToForm(PositionB, SizeB: Boolean);
 var
-  Regex: TPerlRegEx;
-begin
-  if MainFormSettingsListBox.ItemIndex <> -1 then
+  S: string;
+  TopV, LeftV, HeightV, WidthV: Integer;
+
+  function ExtractValue(const Prefix: string): Integer;
+  var
+    P, P2: Integer;
+    Tmp: string;
   begin
-    Regex := TPerlRegEx.Create;
-    try
-      Regex.RegEx := 'T:(?<Top>[0-9]+) \| L:(?<Left>[0-9]+) \| H:(?<Height>[0-9]+) \| W:(?<Width>[0-9]+)';
-      Regex.Options := [];
-      Regex.State := [];
-      Regex.Subject := AnsiToUTF8(MainFormSettingsListBox.Items[MainFormSettingsListBox.ItemIndex]);
-      if Regex.Match then
-      begin
-        if PositionB then
-        begin
-          TScrPosFrame.SpinEditTop.Value := StrToInt(Utf8ToAnsi(Regex.Groups[1]));
-          TScrPosFrame.SpinEditLeft.Value := StrToInt(Utf8ToAnsi(Regex.Groups[2]));
-        end;
-        if SizeB then
-        begin
-          TScrPosFrame.SpinEditHeight.Value := StrToInt(Utf8ToAnsi(Regex.Groups[3]));
-          TScrPosFrame.SpinEditWidth.Value := StrToInt(Utf8ToAnsi(Regex.Groups[4]));
-        end;
-      end;
-    finally
-      Regex.Free;
-    end;
+    // Find "Prefix"
+    P := Pos(Prefix, S);
+    if P = 0 then
+      Exit(0);
+
+    // Move past prefix
+    Inc(P, Length(Prefix));
+
+    // Find next separator " | " or end of string
+    P2 := Pos(' | ', S, P);
+    if P2 = 0 then
+      P2 := Length(S) + 1;
+
+    Tmp := Copy(S, P, P2 - P);
+    Result := StrToIntDef(Tmp, 0);
+  end;
+
+begin
+  if MainFormSettingsListBox.ItemIndex = -1 then
+    Exit;
+
+  S := MainFormSettingsListBox.Items[MainFormSettingsListBox.ItemIndex];
+
+  // Extract values deterministically
+  TopV    := ExtractValue('T:');
+  LeftV   := ExtractValue('L:');
+  HeightV := ExtractValue('H:');
+  WidthV  := ExtractValue('W:');
+
+  // Apply to frame
+  if PositionB then
+  begin
+    TScrPosFrame.SpinEditTop.Value  := TopV;
+    TScrPosFrame.SpinEditLeft.Value := LeftV;
+  end;
+
+  if SizeB then
+  begin
+    TScrPosFrame.SpinEditHeight.Value := HeightV;
+    TScrPosFrame.SpinEditWidth.Value  := WidthV;
   end;
 end;
 
